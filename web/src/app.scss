@@ -1,2 +1,26 @@
 //@import '../node_modules/react-bootstrap/dist/';
 @import '~bootstrap/scss/bootstrap';
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  height: 100%;
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+
+    .container {
+      display: flex;
+      flex: 1 1 auto;
+    }
+  }
+}

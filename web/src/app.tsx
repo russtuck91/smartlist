@@ -10,6 +10,7 @@ import { Account } from './account/account';
 import { Login } from './login/login';
 import { RouteLookup } from './core/routes/route-lookup';
 import { PlaylistBrowser } from './playlists/playlist-browser/playlist-browser';
+import { PlaylistBuilder } from './playlists/playlist-builder/playlist-builder';
 
 export class App extends Component {
     render() {
@@ -20,6 +21,7 @@ export class App extends Component {
                         <Navigation />
                         <div className="container">
                             <Switch>
+                                <Route exact path={RouteLookup.playlists.create} component={PlaylistBuilder} />
                                 <Route exact path={RouteLookup.playlists.base} component={PlaylistBrowser} />
                                 <Route exact path={RouteLookup.login} component={Login} />
                                 <Route exact path={RouteLookup.account} component={Account} />

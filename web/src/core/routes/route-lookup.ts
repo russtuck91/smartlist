@@ -1,12 +1,14 @@
 export const RouteLookup = (() => {
     return {
         home: '/',
-        account: '/account/',
-        login: '/login/',
+        account: '/account',
+        login: '/login',
         playlists: (() => {
-            const base = '/playlists/';
+            const base = '/playlists';
             return {
-                base: base
+                base: base,
+                create: `${base}/create`,
+                edit: `${base}/edit/:id`
             };
         })()
     };
