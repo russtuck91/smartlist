@@ -8,6 +8,7 @@ export class Navigation extends React.Component {
             <div id="navigation">
                 <Navbar>
                     <LinkContainer to="/"><NavItem>Home</NavItem></LinkContainer>
+                    <LinkContainer to="/login/"><NavItem>Login</NavItem></LinkContainer>
                     <LinkContainer to="/account/"><NavItem>My Account</NavItem></LinkContainer>
                 </Navbar>
             </div>
