@@ -4,10 +4,12 @@ import { BrowserRouter } from 'react-router-dom';
 
 import './app.scss';
 import './app-old.css';
-import { Navigation } from "./navigation/navigation";
-import { Home } from "./home";
+import { Navigation } from './navigation/navigation';
+import { Home } from './home';
 import { Account } from './account/account';
 import { Login } from './login/login';
+import { RouteLookup } from './core/routes/route-lookup';
+import { PlaylistBrowser } from './playlists/playlist-browser/playlist-browser';
 
 export class App extends Component {
     render() {
@@ -16,11 +18,14 @@ export class App extends Component {
                 <BrowserRouter>
                     <>
                         <Navigation />
-                        <Switch>
-                            <Route exact path="/login/" component={Login} />
-                            <Route exact path="/account/" component={Account} />
-                            <Route exact path="/" component={Home} />
-                        </Switch>
+                        <div className="container">
+                            <Switch>
+                                <Route exact path={RouteLookup.playlists.base} component={PlaylistBrowser} />
+                                <Route exact path={RouteLookup.login} component={Login} />
+                                <Route exact path={RouteLookup.account} component={Account} />
+                                <Route exact path={RouteLookup.home} component={Home} />
+                            </Switch>
+                        </div>
                     </>
                 </BrowserRouter>
             </div>

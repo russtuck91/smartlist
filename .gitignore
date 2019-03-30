@@ -91,3 +91,7 @@ typings/
 
 # production
 /web/build
+
+# IntelliJ Idea
+.idea/dictionaries/*
+.idea/workspace.xml
