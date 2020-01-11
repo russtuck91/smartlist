@@ -24,7 +24,9 @@ export class Account extends React.Component<any, AccountState> {
                     {!userInfo ? null : (
                         <>
                             <h1>Logged in as {userInfo.display_name}</h1>
-                            <div><img src={userInfo.images[0].url} /></div>
+                            {userInfo.images && userInfo.images.length > 0 ? (
+                                <div><img src={userInfo.images[0].url} /></div>
+                            ) : null}
                             <div>Display name: {userInfo.display_name}</div>
                             <div>Id: {userInfo.id}</div>
                             <div>Email: {userInfo.email}</div>

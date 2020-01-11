@@ -4,6 +4,8 @@ import { Formik, FormikProps } from 'formik';
 import { PlaylistBuilderForm } from './playlist-builder-form';
 import { PlaylistBuilderFormValues } from './models';
 import './playlist-builder.scss';
+import { Playlist } from '../models/playlist';
+import { baseRequestUrl, requests } from '../../core/requests/requests';
 
 export class PlaylistBuilder extends React.Component {
     render() {
@@ -22,8 +24,18 @@ export class PlaylistBuilder extends React.Component {
         );
     }
 
-    private onSubmit(values: PlaylistBuilderFormValues) {
+    private onSubmit = async (values: PlaylistBuilderFormValues) => {
         console.log('in onSubmit');
         console.log(values);
+
+        const playlist = this.mapPlaylistBuilderFormValuesToPlaylist(values);
+
+        await requests.post(`${baseRequestUrl}/playlists/`, playlist);
+    }
+
+    private mapPlaylistBuilderFormValuesToPlaylist(values: PlaylistBuilderFormValues): Playlist {
+        return {
+            title: values.title
+        };
     }
 }

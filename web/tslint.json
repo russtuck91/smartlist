@@ -5,6 +5,7 @@
 //    ],
     "jsRules": {},
     "rules": {
+        "typedef": [true, "property-declaration"],
         "whitespace": [ true, "check-module" ]
     },
     "rulesDirectory": []
