@@ -21,7 +21,7 @@ export class Navigation extends React.Component {
                     {isLoggedIn ? (
                         <LinkContainer to={RouteLookup.account}><NavItem>My Account</NavItem></LinkContainer>
                     ) : (
-                        <LinkContainer to={RouteLookup.login}><NavItem>Login</NavItem></LinkContainer>
+                        <LinkContainer to={RouteLookup.login.login}><NavItem>Login</NavItem></LinkContainer>
                     )}
                 </Navbar>
             </div>

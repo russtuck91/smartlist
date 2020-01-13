@@ -11,6 +11,7 @@ import { Login } from './login/login';
 import { RouteLookup } from './core/routes/route-lookup';
 import { PlaylistBrowser } from './playlists/playlist-browser/playlist-browser';
 import { PlaylistBuilder } from './playlists/playlist-builder/playlist-builder';
+import { LoginCallback } from './login/login-callback';
 
 export class App extends Component {
     render() {
@@ -23,7 +24,8 @@ export class App extends Component {
                             <Switch>
                                 <Route exact path={RouteLookup.playlists.create} component={PlaylistBuilder} />
                                 <Route exact path={RouteLookup.playlists.base} component={PlaylistBrowser} />
-                                <Route exact path={RouteLookup.login} component={Login} />
+                                <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
+                                <Route exact path={RouteLookup.login.login} component={Login} />
                                 <Route exact path={RouteLookup.account} component={Account} />
                                 <Route exact path={RouteLookup.home} component={Home} />
                             </Switch>

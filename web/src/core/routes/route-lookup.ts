@@ -2,7 +2,14 @@ export const RouteLookup = (() => {
     return {
         home: '/',
         account: '/account',
-        login: '/login',
+        login: (() => {
+            const base = '/login';
+            return {
+                base: base,
+                login: base,
+                callback: `${base}/callback/:accessToken/:refreshToken/`
+            };
+        })(),
         playlists: (() => {
             const base = '/playlists';
             return {

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "dev": "node -r dotenv/config ./bin/www"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
@@ -13,6 +14,10 @@
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "mongojs": "^2.6.0",
-    "morgan": "~1.9.0"
+    "morgan": "~1.9.0",
+    "spotify-web-api-node": "^4.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
   }
 }
