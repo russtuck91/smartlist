@@ -9,7 +9,7 @@ var spotifyApi = require('../core/spotify/spotify-api');
 
 var STATE_KEY = 'spotify_auth_state';
 // your application requests authorization
-var scopes = ['user-read-private', 'user-read-email'];
+var scopes = ['user-read-private', 'user-read-email', 'user-library-read'];
 
 /** Generates a random string containing numbers and letters of N characters */
 var generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2);
@@ -59,6 +59,7 @@ router.get('/callback', (req, res) => {
             // we can also pass the token to the browser to make requests from there
             res.redirect(`http://localhost:3000/login/callback/${access_token}/${refresh_token}`);
         }).catch(err => {
+            console.error(err);
             // TODO: error handling
             res.redirect('/error/invalid token');
         });

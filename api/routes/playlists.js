@@ -20,8 +20,7 @@ router.post('/populateList', async (req, res, next) => {
         spotifyApi.setAccessToken(accessToken);
 
         // const list = [];
-        const list = await spotifyApi.getMySavedTracks();
-        // const list = await spotifyApi.getMe();
+        const list = await spotifyApi.getMySavedTracks({ limit: 50, offset: 0 });
         res.send(list);
     } catch (e) {
         console.error(e);
