@@ -2,14 +2,20 @@
   "name": "api",
   "version": "0.0.0",
   "private": true,
+  "main": "build/start.js",
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "nodemon -r dotenv/config ./bin/www"
+    "start": "node build/start.js",
+    "dev": "nodemon",
+    "build": "rm -rf ./build/ && tsc"
   },
   "dependencies": {
+    "@overnightjs/core": "^1.6.12",
+    "@overnightjs/logger": "^1.1.10",
+    "@types/node": "^13.1.6",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
+    "esm": "^3.2.25",
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
@@ -18,7 +24,12 @@
     "spotify-web-api-node": "^4.0.0"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.6",
     "dotenv": "^8.2.0",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.6.1",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.4"
   }
 }
