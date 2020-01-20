@@ -63,7 +63,10 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
                     />
                 </Col>
                 <Col>
-                    <Button type="submit">Save</Button>
+                    <Button type="submit" bsStyle="primary">Save</Button>
+                </Col>
+                <Col>
+                    <Button type="submit">Refresh</Button>
                 </Col>
             </Row>
         );

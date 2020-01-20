@@ -1,6 +1,6 @@
 import { Controller, Get } from '@overnightjs/core';
 import { Request, Response } from 'express';
-import * as mongojs from 'mongojs';
+import mongojs from 'mongojs';
 
 import { spotifyApi } from '../core/spotify/spotify-api';
 

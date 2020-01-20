@@ -35,7 +35,8 @@ export class PlaylistBuilder extends React.Component {
 
     private mapPlaylistBuilderFormValuesToPlaylist(values: PlaylistBuilderFormValues): Playlist {
         return {
-            title: values.title
+            title: values.title,
+            rules: []
         };
     }
 }

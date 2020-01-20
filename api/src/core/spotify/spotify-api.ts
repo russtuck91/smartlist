@@ -1,4 +1,4 @@
-import * as Spotify from 'spotify-web-api-node';
+import Spotify from 'spotify-web-api-node';
 
 const CLIENT_ID = process.env.client_id;
 const CLIENT_SECRET = process.env.client_secret;

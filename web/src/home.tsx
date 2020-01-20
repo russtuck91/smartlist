@@ -5,17 +5,8 @@ export class Home extends React.Component {
         return (
             <div className="home">
                 <p>
-                    Edit <code>src/App.js</code> and save to reload.
+                    Homepage! TODO
                 </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React - Test
-                    Test 2
-                </a>
             </div>
         );
     }
