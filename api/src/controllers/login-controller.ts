@@ -1,10 +1,10 @@
 import { Controller, Get } from '@overnightjs/core';
 import { Request, Response } from 'express';
-import mongojs from 'mongojs';
+import mongoist from 'mongoist';
 
 import { spotifyApi } from '../core/spotify/spotify-api';
 
-const db = mongojs('mongodb://localhost:27017/smartify', ['users']);
+const db = mongoist('mongodb://localhost:27017/smartify');
 
 
 @Controller('login')
@@ -56,7 +56,7 @@ export class LoginController {
                 // Store in DB
                 db.users.update(
                     { username: accessTokenPatch.username },
-                    accessTokenPatch,
+                    { $set: accessTokenPatch },
                     {
                     upsert: true
                     }

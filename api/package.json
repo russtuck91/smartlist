@@ -17,10 +17,10 @@
     "debug": "~2.6.9",
     "esm": "^3.2.25",
     "express": "~4.16.0",
+    "express-http-context": "^1.2.3",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "mongoist": "^2.4.0",
-    "mongojs": "^3.1.0",
     "morgan": "~1.9.0",
     "spotify-web-api-node": "^4.0.0"
   },

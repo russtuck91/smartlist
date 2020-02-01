@@ -4,7 +4,7 @@ import { Formik, FormikProps } from 'formik';
 import { PlaylistBuilderForm } from './playlist-builder-form';
 import { PlaylistBuilderFormValues } from './models';
 import './playlist-builder.scss';
-import { Playlist } from '../models/playlist';
+import { Playlist } from '../../../../shared/playlists/models/playlist';
 import { baseRequestUrl, requests } from '../../core/requests/requests';
 
 export class PlaylistBuilder extends React.Component {

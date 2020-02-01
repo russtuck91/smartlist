@@ -1,9 +1,12 @@
 import { Controller, Get, Post } from '@overnightjs/core';
 import { Request, Response } from 'express';
+import httpContext from 'express-http-context';
 
 import { spotifyApi } from '../core/spotify/spotify-api';
 import { spotifyUtil } from '../core/spotify/spotify-util';
 import { sessionUtil } from '../core/session/session-util';
+
+import { PlaylistRuleGroup } from '../../../shared/playlists/models';
 
 @Controller('playlists')
 export class PlaylistsController {
@@ -12,36 +15,23 @@ export class PlaylistsController {
         // get access token from request headers, apply to spotify api
         const accessToken = req.headers && req.headers.authorization && req.headers.authorization.replace(/^Bearer /, '');
         if (!accessToken) { return; }
+        httpContext.set('accessToken', accessToken);
 
-        try {
+        sessionUtil.doAndRetry(async () => {
             const rules = req.body;
     
-            // // get access token from request headers, apply to spotify api
-            // const accessToken = req.headers && req.headers.authorization && req.headers.authorization.replace(/^Bearer /, '');
-            // if (!accessToken) { return; }
-
-            spotifyApi.setAccessToken(accessToken);
-    
-            const list = await spotifyUtil.getFullMySavedTracks(accessToken);
+            const list = await spotifyUtil.getFullMySavedTracks();
+            // const list = await spotifyUtil.getFullSearchResults([]);
 
             res.send(list);
-        } catch (e) {
-            if (e.statusCode === 401) {
-                // refresh access token
-                const newAccessToken = await sessionUtil.refreshAccessToken(accessToken);
+        }, res);
+    }
 
-                if (newAccessToken) {
-                    // res.cookie();
+    private getListByRules(rules: PlaylistRuleGroup[]) {
+        
+    }
 
-                    // TODO: this should probably be more automatic
-                    const list = await spotifyUtil.getFullMySavedTracks(newAccessToken);
+    private getListForRuleGroup(ruleGroup: PlaylistRuleGroup) {
 
-                    res.set('Access-Token', newAccessToken)
-                    res.send(list);
-                }
-            }
-
-            console.error(e);
-        }
     }
 }
