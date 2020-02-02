@@ -44,6 +44,7 @@ function makeDirectRequest(method: string, url: string, body?: any) {
 
             const newAccessToken = response.headers.get('Access-Token');
             if (newAccessToken) {
+                console.log('Received new access token from API, will update in frontend storage');
                 session.setAccessToken(newAccessToken);
             }
 

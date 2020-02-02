@@ -23,10 +23,10 @@ async function doAndRetry(bodyFn: () => Promise<void>, res: Response) {
             const newAccessToken = await sessionUtil.refreshAccessToken();
 
             if (newAccessToken) {
-                await bodyFn();
-
                 // TODO: should response be added on httpContext?
                 res.set('Access-Token', newAccessToken);
+
+                await bodyFn();
             }
         }
 

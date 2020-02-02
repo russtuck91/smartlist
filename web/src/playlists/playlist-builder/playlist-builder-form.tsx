@@ -7,6 +7,7 @@ import { TextInput } from '../../core/forms/fields';
 
 import { PlaylistBuilderFormValues } from './models';
 import { requests, baseRequestUrl } from '../../core/requests/requests';
+import { PlaylistRuleGroup, RuleGroupType, RuleParam } from '../../../../shared/src/playlists/models';
 
 export interface PlaylistBuilderFormProps {
     formik: FormikProps<PlaylistBuilderFormValues>;
@@ -24,7 +25,15 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
     }
 
     async getListPreview() {
-        const list = await requests.post(`${baseRequestUrl}/playlists/populateList`, []);
+        const dummyRules: PlaylistRuleGroup[] = [
+            {
+                type: RuleGroupType.And,
+                rules: [
+                    { param: RuleParam.Artist, value: 'Jukebox the Ghost' }
+                ]
+            }
+        ];
+        const list = await requests.post(`${baseRequestUrl}/playlists/populateList`, dummyRules);
 
         this.setState({
             listPreview: list

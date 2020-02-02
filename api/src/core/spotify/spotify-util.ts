@@ -1,6 +1,6 @@
 import httpContext from 'express-http-context';
 
-import { PlaylistRule } from '../../../../shared/playlists/models';
+import { PlaylistRule, RuleParam } from '../../../../shared/src/playlists/models';
 import { spotifyApi } from './spotify-api';
 
 
@@ -62,14 +62,34 @@ async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<any>|unde
     });
 }
 
-async function getFullSearchResults(rules: PlaylistRule[]) {
+async function getFullSearchResults(rules: PlaylistRule[]): Promise<SpotifyApi.PagingObject<any>|undefined> {
     console.log('in getFullSearchResults');
     const accessToken = httpContext.get('accessToken');
-
     spotifyApi.setAccessToken(accessToken);
-    const dummySearch = 'artist:"Jukebox the Ghost"';
+
+    let searchString = '';
+    rules.map((rule) => {
+        const fieldFilter = ((param) => {
+            switch (param) {
+                case RuleParam.Artist:
+                    return 'artist';
+                case RuleParam.Album:
+                    return 'album';
+                case RuleParam.Track:
+                    return 'track';
+                case RuleParam.Genre:
+                    return 'genre';
+                case RuleParam.Year:
+                    return 'year';
+                default:
+                    return '';
+            }
+        })(rule.param);
+        searchString += `${fieldFilter}:"${rule.value}"`;
+    });
+
     return getFullPagedResults(async (options) => {
-        const apiResponse: SpResponse<SpotifyApi.SearchResponse> = await spotifyApi.search(dummySearch, [ 'track' ], options);
+        const apiResponse: SpResponse<SpotifyApi.SearchResponse> = await spotifyApi.search(searchString, [ 'track' ], options);
 
         return apiResponse.body.tracks;
     });

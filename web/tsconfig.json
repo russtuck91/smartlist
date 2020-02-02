@@ -1,15 +1,8 @@
 {
+  "extends": "../tsconfig.base",
   "compilerOptions": {
     "jsx": "preserve",
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "es6"
-    ],
     "allowJs": true,
-    "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
@@ -23,6 +16,6 @@
   },
   "include": [
     "src",
-    "../shared/playlists/models"
+    "../shared/src"
   ]
 }

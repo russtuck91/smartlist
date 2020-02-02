@@ -5,8 +5,17 @@ export interface Playlist {
 }
 
 export interface PlaylistRuleGroup {
-    type: 'and'|'or';
+    type: RuleGroupType;
     rules: (PlaylistRule|PlaylistRuleGroup)[];
+}
+export function isPlaylistRuleGroup(input: any): input is PlaylistRuleGroup {
+    const typed: PlaylistRuleGroup = input;
+    return typed.type !== undefined && typed.rules !== undefined;
+}
+
+export enum RuleGroupType {
+    And = 'And',
+    Or = 'Or'
 }
 
 export interface PlaylistRule {
@@ -15,7 +24,7 @@ export interface PlaylistRule {
     value: string;
 }
 
-enum RuleParam {
+export enum RuleParam {
     Saved = 'Saved',
     Artist = 'Artist',
     Album = 'Album',
