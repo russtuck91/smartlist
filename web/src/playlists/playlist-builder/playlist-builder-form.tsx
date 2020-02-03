@@ -2,19 +2,20 @@ import { FormikProps } from 'formik';
 import * as React from 'react';
 import { Button, Col, Row } from 'react-bootstrap';
 
+import { PlaylistRuleGroup, RuleGroupType, RuleParam } from '../../../../shared/src/playlists/models';
+
 import { Column } from '../../core/components/column';
 import { TextInput } from '../../core/forms/fields';
+import { baseRequestUrl, requests } from '../../core/requests/requests';
 
 import { PlaylistBuilderFormValues } from './models';
-import { requests, baseRequestUrl } from '../../core/requests/requests';
-import { PlaylistRuleGroup, RuleGroupType, RuleParam } from '../../../../shared/src/playlists/models';
 
 export interface PlaylistBuilderFormProps {
     formik: FormikProps<PlaylistBuilderFormValues>;
 }
 
 interface PlaylistBuilderFormState {
-    listPreview?: any;
+    listPreview?: SpotifyApi.TrackObjectFull[];
 }
 
 export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProps, PlaylistBuilderFormState> {
@@ -82,9 +83,28 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
     }
 
     private renderPreviewArea() {
-        console.log(this.state.listPreview);
         return (
-            <div id="preview-area"></div>
+            <div id="preview-area">
+                {this.renderPreviewContent()}
+            </div>
         );
+    }
+
+    private renderPreviewContent() {
+        const { listPreview } = this.state;
+        
+        if (!listPreview) {
+            return null;
+        }
+
+        return listPreview.map((item, index) => {
+            return (
+                <div key={index} style={{ marginBottom: 20 }}>
+                    <div>{item.name}</div>
+                    <div>{item.artists[0].name}</div>
+                    <div>{item.album.name}</div>
+                </div>
+            );
+        });
     }
 }

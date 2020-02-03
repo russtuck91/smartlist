@@ -12,7 +12,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "strict": false,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": [
+      "spotify-api"
+    ]
   },
   "include": [
     "src",

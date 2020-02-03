@@ -1,8 +1,8 @@
 import { Controller, Get, Post } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import httpContext from 'express-http-context';
+import { intersection, union } from 'lodash';
 
-import { spotifyApi } from '../core/spotify/spotify-api';
 import { spotifyUtil } from '../core/spotify/spotify-util';
 import { sessionUtil } from '../core/session/session-util';
 
@@ -23,37 +23,48 @@ export class PlaylistsController {
             // const list = await spotifyUtil.getFullMySavedTracks();
             // const list = await spotifyUtil.getFullSearchResults([]);
 
-            this.getListByAllRules(rules);
+            const list = await this.getListByAllRules(rules);
 
-            res.send([]);
+            res.send(list);
         }, res);
     }
 
-    private getListByAllRules(rules: PlaylistRuleGroup[]) {
-        const results1 = rules.map((rule) => {
-            return this.getListForRuleGroup(rule);
-        });
+    private async getListByAllRules(rules: PlaylistRuleGroup[]): Promise<SpotifyApi.TrackObjectFull[]> {
+        const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
+            rules.map((rule) => {
+                return this.getListForRuleGroup(rule);
+            })
+        );
 
-        console.log('Results, #1, ', results1);
+        // console.log('Results, #1, ', results);
+
+        const unionResult = union(...results);
+
+        return unionResult;
     }
 
-    private async getListForRuleGroup(ruleGroup: PlaylistRuleGroup) {
+    private async getListForRuleGroup(ruleGroup: PlaylistRuleGroup): Promise<SpotifyApi.TrackObjectFull[]> {
         if (ruleGroup.type === RuleGroupType.Or) {
             // Send each individual rule to getListForRules
-            const results = ruleGroup.rules.map((rule) => {
-                if (isPlaylistRuleGroup(rule)) {
-                    return this.getListForRuleGroup(rule);
-                } else {
-                    return this.getListForRules([ rule ]);
-                }
-            });
+            const listOfTrackResults = await Promise.all(
+                ruleGroup.rules.map((rule) => {
+                    if (isPlaylistRuleGroup(rule)) {
+                        return this.getListForRuleGroup(rule);
+                    } else {
+                        return this.getListForRules([ rule ]);
+                    }
+                })
+            );
 
-            console.log('Query Results, OR path, ', results);
+            console.log('Query Results, OR path, ', listOfTrackResults);
 
-            // TODO: take all lists of items from `results` and "OR" them together. Flatten all into 1 list together.
-            return results[0];
+            // Get "OR" union
+            const results = union(...listOfTrackResults);
+
+            return results;
         } else {
             // Send batches of PlaylistRules to getListForRules, send individual PlaylistRuleGroups
+            // TODO: special handling for Saved songs? Or by Playlist?
             const straightRules: PlaylistRule[] = [];
             const nestedRuleGroups: PlaylistRuleGroup[] = [];
 
@@ -65,24 +76,30 @@ export class PlaylistsController {
                 }
             });
 
-            const results: any[] = nestedRuleGroups.map((rule) => {
-                return this.getListForRuleGroup(rule);
-            });
+            const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
+                nestedRuleGroups.map((rule) => {
+                    return this.getListForRuleGroup(rule);
+                })
+            );
             const straightRuleResults = await this.getListForRules(straightRules);
-            results.push(straightRuleResults);
+            listsOfTrackResults.push(straightRuleResults);
 
-            console.log('Query Results, AND path, ', results);
+            // console.log('Query Results, AND path, ', listsOfTrackResults);
 
-            // TODO: take all lists of items from `results` and "AND" them together. Only keep them if it's present in all lists of `results`
-            return results[0];
+            // Get "AND" intersection
+            const results = intersection(...listsOfTrackResults);
+
+            return results;
         }
     }
 
-    private async getListForRules(rules: PlaylistRule[]): Promise<SpotifyApi.PagingObject<any>|undefined> {
+    private async getListForRules(rules: PlaylistRule[]): Promise<SpotifyApi.TrackObjectFull[]> {
         console.log('IN getListForRules');
         const results = await spotifyUtil.getFullSearchResults(rules);
 
+        if (!results) { return []; }
+
         // console.log(results);
-        return results;
+        return results.items;
     }
 }

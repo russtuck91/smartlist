@@ -14,12 +14,6 @@ export class Login extends React.Component {
                 <div>
                     Access token is: {session.getAccessToken()}
                 </div>
-                {/* <SpotifyLogin
-                    clientId={CLIENT_ID}
-                    redirectUri={'http://localhost:3000'}
-                    onSuccess={this.onSuccess}
-                    onFailure={this.onFailure}
-                /> */}
                 <a href={`${baseRequestUrl}/login`}>Login with Spotify</a>
             </div>
         );
