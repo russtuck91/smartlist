@@ -1,11 +1,12 @@
 import { FormikProps } from 'formik';
+import { get } from 'lodash';
 import * as React from 'react';
-import { Button, Col, Row } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-import { PlaylistRuleGroup, RuleGroupType, RuleParam } from '../../../../shared/src/playlists/models';
+import { PlaylistRuleGroup, RuleGroupType, RuleParam, PlaylistRule, isPlaylistRuleGroup } from '../../../../shared/src/playlists/models';
 
-import { Column } from '../../core/components/column';
-import { TextInput } from '../../core/forms/fields';
+import { Column, Row } from '../../core/components/layout';
+import { TextInput, TextField } from '../../core/forms/fields';
 import { baseRequestUrl, requests } from '../../core/requests/requests';
 
 import { PlaylistBuilderFormValues } from './models';
@@ -20,6 +21,8 @@ interface PlaylistBuilderFormState {
 
 export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProps, PlaylistBuilderFormState> {
     state: PlaylistBuilderFormState = {};
+
+    private DEFAULT_NEW_CONDITION: PlaylistRule = { param: RuleParam.Artist, value: '' };
 
     componentDidMount() {
         this.getListPreview();
@@ -49,10 +52,10 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
             <form id="playlist-builder" onSubmit={handleSubmit}>
                 <h1>Playlist Builder</h1>
                 <Row>
-                    <Column>
+                    <Column flexProps={{ flexBasis: '50%' }}>
                         {this.renderFormArea()}
                     </Column>
-                    <Column>
+                    <Column flexProps={{ flexBasis: '50%' }}>
                         {this.renderPreviewArea()}
                     </Column>
                 </Row>
@@ -65,20 +68,69 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
         const { values } = formik;
 
         return (
+            <>
+                <Row flexProps={{ flexGrow: 0 }}>
+                    <Column>
+                        <TextField
+                            id="title"
+                            value={values.title}
+                        />
+                    </Column>
+                    <Column>
+                        <Button type="submit" bsStyle="primary">Save</Button>
+                    </Column>
+                    <Column>
+                        <Button type="submit" bsStyle="primary">Refresh</Button>
+                    </Column>
+                </Row>
+                {this.renderRulesFormArea()}
+            </>
+        );
+    }
+
+    private renderRulesFormArea() {
+        const { values } = this.props.formik;
+        return (
             <Row>
-                <Col>
-                    <TextInput
-                        id="title"
-                        value={values.title}
-                    />
-                </Col>
-                <Col>
-                    <Button type="submit" bsStyle="primary">Save</Button>
-                </Col>
-                <Col>
-                    <Button type="submit">Refresh</Button>
-                </Col>
+                {values.rules.map((rule, index) => this.renderRuleGroup(rule, index))}
             </Row>
+        );
+    }
+
+    private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number, treeIdPrefix: string = '') => {
+        const thisItemTreeId = `${treeIdPrefix ? treeIdPrefix + '.' : ''}rules[${groupIndex}]`;
+
+        return (
+            <div className="rule-group" key={groupIndex}>
+                <Row flexProps={{ justifyContent: 'space-between' }}>
+                    <div>Type: {ruleGroup.type}</div>
+                    <div>
+                        <Button onClick={() => this.addCondition(thisItemTreeId)}>Add condition</Button>
+                        <Button onClick={() => this.addGroup(thisItemTreeId)}>Add group</Button>
+                    </div>
+                </Row>
+                {ruleGroup.rules.map((rule, index) => {
+                    if (isPlaylistRuleGroup(rule)) {
+                        return this.renderRuleGroup(rule, index, thisItemTreeId);
+                    } else {
+                        return this.renderRuleField(rule, index, thisItemTreeId);
+                    }
+                })}
+            </div>
+        );
+    }
+
+    private renderRuleField(rule: PlaylistRule, index: number, treeIdPrefix: string) {
+        const { values } = this.props.formik;
+        
+        const thisItemTreeId = `${treeIdPrefix}.rules[${index}]`;
+        const thisItemValue = get(values, thisItemTreeId);
+        return (
+            <div className="rule" key={index}>
+                {/* TODO: dropdown for param */}
+                <TextField id={`${thisItemTreeId}.value`} value={thisItemValue.value} />
+                {/* TODO: remove button */}
+            </div>
         );
     }
 
@@ -106,5 +158,21 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
                 </div>
             );
         });
+    }
+
+    private addCondition(treeId: string) {
+        const { values, setFieldValue } = this.props.formik;
+        
+        const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
+        atTreeLoc.rules.push(this.DEFAULT_NEW_CONDITION);
+        setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
+    }
+
+    private addGroup(treeId: string) {
+        const { values, setFieldValue } = this.props.formik;
+        
+        const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
+        atTreeLoc.rules.push({ type: RuleGroupType.And, rules: [ this.DEFAULT_NEW_CONDITION ] });
+        setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
     }
 }

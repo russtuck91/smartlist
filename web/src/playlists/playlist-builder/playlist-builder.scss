@@ -3,8 +3,17 @@
   flex: 1 1 auto;
   flex-direction: column;
 
+  .rule-group {
+    flex: 1 1 auto;
+    padding: 6px;
+    border: 1px solid #666;
+  }
+
   #preview-area {
     // display: flex;
     flex: 1 1 auto;
+
+    max-height: 400px;
+    overflow-y: auto;
   }
 }

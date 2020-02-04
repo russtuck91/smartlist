@@ -65,6 +65,7 @@ async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<any>|unde
 async function getFullSearchResults(rules: PlaylistRule[]): Promise<SpotifyApi.PagingObject<any>|undefined> {
     console.log('in getFullSearchResults');
     const accessToken = httpContext.get('accessToken');
+    console.log('accessToken :: ', accessToken);
     spotifyApi.setAccessToken(accessToken);
 
     let searchString = '';

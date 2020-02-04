@@ -4,16 +4,14 @@ import { Formik, FormikProps } from 'formik';
 import { PlaylistBuilderForm } from './playlist-builder-form';
 import { PlaylistBuilderFormValues } from './models';
 import './playlist-builder.scss';
-import { Playlist } from '../../../../shared/src/playlists/models/playlist';
+import { Playlist, RuleGroupType, RuleParam } from '../../../../shared/src/playlists/models/playlist';
 import { baseRequestUrl, requests } from '../../core/requests/requests';
 
 export class PlaylistBuilder extends React.Component {
     render() {
         return (
             <Formik
-                initialValues={{
-                    title: ''
-                }}
+                initialValues={this.getDefaultFormValues()}
                 onSubmit={this.onSubmit}
                 render={(formikProps: FormikProps<PlaylistBuilderFormValues>) => (
                     <PlaylistBuilderForm
@@ -22,6 +20,25 @@ export class PlaylistBuilder extends React.Component {
                 )}
             />
         );
+    }
+
+    private getDefaultFormValues(): PlaylistBuilderFormValues {
+        return {
+            title: '',
+            rules: [
+                {
+                    type: RuleGroupType.And,
+                    rules: [
+                        { param: RuleParam.Artist, value: '' },
+                        { type: RuleGroupType.And, rules:
+                            [ 
+                                { param: RuleParam.Artist, value: 'TEST' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
     }
 
     private onSubmit = async (values: PlaylistBuilderFormValues) => {
