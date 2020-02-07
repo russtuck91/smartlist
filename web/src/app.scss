@@ -12,13 +12,13 @@ body {
 }
 
 #root {
-  display: flex;
   height: 100%;
 
   .app {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
+    height: 100%;
 
     .container {
       display: flex;

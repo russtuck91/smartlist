@@ -11,8 +11,6 @@ export interface TextInputProps {
 
 export class TextInput extends React.Component<TextInputProps> {
     render() {
-        const { id, value, onChange } = this.props;
-
         return (
             <input
                 {...this.props}

@@ -6,7 +6,7 @@ import { Button } from 'react-bootstrap';
 import { PlaylistRuleGroup, RuleGroupType, RuleParam, PlaylistRule, isPlaylistRuleGroup } from '../../../../shared/src/playlists/models';
 
 import { Column, Row } from '../../core/components/layout';
-import { TextInput, TextField } from '../../core/forms/fields';
+import { TextField, DropdownField } from '../../core/forms/fields';
 import { baseRequestUrl, requests } from '../../core/requests/requests';
 
 import { PlaylistBuilderFormValues } from './models';
@@ -46,7 +46,7 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
 
     render() {
         const { formik } = this.props;
-        const { values, handleSubmit } = formik;
+        const { handleSubmit } = formik;
 
         return (
             <form id="playlist-builder" onSubmit={handleSubmit}>
@@ -97,7 +97,7 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
         );
     }
 
-    private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number, treeIdPrefix: string = '') => {
+    private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number, treeIdPrefix = '') => {
         const thisItemTreeId = `${treeIdPrefix ? treeIdPrefix + '.' : ''}rules[${groupIndex}]`;
 
         return (
@@ -128,7 +128,15 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
         return (
             <div className="rule" key={index}>
                 {/* TODO: dropdown for param */}
-                <TextField id={`${thisItemTreeId}.value`} value={thisItemValue.value} />
+                <DropdownField
+                    id={`${thisItemTreeId}.param`}
+                    value={thisItemValue.param}
+                    options={[]}
+                />
+                <TextField
+                    id={`${thisItemTreeId}.value`}
+                    value={thisItemValue.value}
+                />
                 {/* TODO: remove button */}
             </div>
         );
