@@ -1,6 +1,5 @@
 import { Field } from 'formik';
 import * as React from 'react';
-import { ControlLabel } from 'react-bootstrap';
 
 export interface FormFieldProps {
     label?: React.ReactNode;
@@ -18,7 +17,6 @@ export function asFormField<T extends FormFieldProps>(
         render() {
             return (
                 <div className="form-field">
-                    {this.renderLabel()}
                     <Field
                         render={({ field, form }) => {
                             return (
@@ -34,16 +32,6 @@ export function asFormField<T extends FormFieldProps>(
             );
         }
 
-        private renderLabel() {
-            const { label } = this.props;
-
-            if (!label) {
-                return null;
-            }
-
-            return <ControlLabel>{label}</ControlLabel>
-        }
-
         private renderError() {
             const { error } = this.props;
 
@@ -53,5 +41,5 @@ export function asFormField<T extends FormFieldProps>(
 
             return error;
         }
-    }
+    };
 }

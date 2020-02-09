@@ -1,5 +1,5 @@
 //@import '../node_modules/react-bootstrap/dist/';
-@import '~bootstrap/scss/bootstrap';
+// @import '~bootstrap/scss/bootstrap';
 
 html {
   height: 100%;
@@ -7,7 +7,7 @@ html {
 
 body {
   height: 100%;
-  background-color: #333;
+  background-color: #212121;
   color: #eee;
 }
 
@@ -19,11 +19,6 @@ body {
     flex-direction: column;
     flex: 1 1 auto;
     height: 100%;
-
-    .container {
-      display: flex;
-      flex: 1 1 auto;
-    }
   }
 }
 

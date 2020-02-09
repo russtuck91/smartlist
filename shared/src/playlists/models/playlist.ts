@@ -1,5 +1,5 @@
 export interface Playlist {
-    title: string;
+    name: string;
 
     rules: PlaylistRuleGroup[];
 }

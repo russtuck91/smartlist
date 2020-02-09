@@ -13,5 +13,36 @@
     },
     "plugins": [
         "react"
-    ]
+    ],
+    "rules": {
+        "jsx-quotes": "error",
+
+        "react/jsx-closing-bracket-location": 1,
+        "react/jsx-closing-tag-location": 1,
+        "react/jsx-curly-brace-presence": 1,
+        "react/jsx-curly-newline": "consistent",
+        "react/jsx-curly-spacing": 1,
+        "react/jsx-equals-spacing": 2,
+        "react/jsx-first-prop-new-line": [ 2, "multiline" ],
+        "react/jsx-indent": 2,
+        "react/jsx-indent-props": [ 1, "first" ],
+        "react/jsx-key": 1,
+        "react/jsx-max-props-per-line": [ 1, { "when": "multiline" } ],
+        "react/jsx-one-expression-per-line": [ 1, { "allow": "single-child" } ],
+        "react/jsx-tag-spacing": 1,
+        "react/jsx-wrap-multilines": [
+            1,
+            {
+                "declaration": "parens-new-line",
+                "assignment": "parens-new-line",
+                "return": "parens-new-line",
+                "arrow": "parens-new-line",
+                "condition": "parens-new-line",
+                "logical": "parens-new-line",
+                "prop": "parens-new-line"
+            }
+        ],
+        "react/no-unused-state": 1,
+        "react/self-closing-comp": 1
+    }
 }

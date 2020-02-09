@@ -24,7 +24,7 @@ export class PlaylistBuilder extends React.Component {
 
     private getDefaultFormValues(): PlaylistBuilderFormValues {
         return {
-            title: '',
+            name: '',
             rules: [
                 {
                     type: RuleGroupType.And,
@@ -52,7 +52,7 @@ export class PlaylistBuilder extends React.Component {
 
     private mapPlaylistBuilderFormValuesToPlaylist(values: PlaylistBuilderFormValues): Playlist {
         return {
-            title: values.title,
+            name: values.name,
             rules: []
         };
     }

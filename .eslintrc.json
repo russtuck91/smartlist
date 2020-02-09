@@ -25,12 +25,14 @@
             4,
             { "SwitchCase": 1 }
         ],
+        "key-spacing": 1,
         "linebreak-style": [
             "error",
             "unix"
         ],
-        "no-console": [ 0 ],
-        "no-useless-catch": [ 0 ],
+        "no-console": 0,
+        "no-multi-spaces": 1,
+        "no-useless-catch": 0,
         "quotes": [
             "error",
             "single"
@@ -40,7 +42,8 @@
             "always"
         ],
 
-        "@typescript-eslint/explicit-function-return-type": [ 0 ],
-        "@typescript-eslint/no-explicit-any": [ 0 ]
+        "@typescript-eslint/explicit-function-return-type": 0,
+        "@typescript-eslint/no-empty-interface": [ 1, { "allowSingleExtends": true } ],
+        "@typescript-eslint/no-explicit-any": 0
     }
 }

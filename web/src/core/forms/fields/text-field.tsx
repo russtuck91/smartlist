@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { TextField as MUITextField } from '@material-ui/core';
 
-import { asFormField, FormFieldProps } from '../as-form-field';
+import { FormFieldProps, asFormField } from '../as-form-field';
 import { onChangeHandler } from './models';
 
-export interface TextInputProps {
+interface TextInputProps {
     id: string;
     value: any;
     onChange?: onChangeHandler;
@@ -12,8 +13,9 @@ export interface TextInputProps {
 export class TextInput extends React.Component<TextInputProps> {
     render() {
         return (
-            <input
+            <MUITextField
                 {...this.props}
+                style={{ width: '100%' }}
             />
         );
     }

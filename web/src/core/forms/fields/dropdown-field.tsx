@@ -1,24 +1,52 @@
+import { MenuItem, Select } from '@material-ui/core';
+import { Theme, withStyles } from '@material-ui/core/styles';
 import { FormikProps } from 'formik';
 import * as React from 'react';
-import Select from 'react-select';
 
 import { asFormField, FormFieldProps } from '../as-form-field';
 
-export interface DropdownInputProps {
+interface DropdownInputProps {
     id: string;
     value: any;
-    options: any[];
-    onChange?: FormikProps<any>['setFieldValue'];
+    options: string[];
+    onChange?: FormikProps<any>['handleChange'];
 }
 
-export class DropdownInput extends React.Component<DropdownInputProps> {
+const useStyles = (theme: Theme) => ({
+    select: {
+        padding: '8px'
+    }
+});
+
+export class RawDropdownInput extends React.Component<DropdownInputProps> {
     render() {
         return (
             <Select
                 {...this.props}
-            />
+                name={this.props.id}
+                variant="outlined"
+            >
+                {this.renderMenuItems()}
+            </Select>
         );
     }
+
+    private renderMenuItems() {
+        const { options } = this.props;
+
+        return options.map((opt, index) => {
+            return (
+                <MenuItem
+                    key={index}
+                    value={opt}
+                >
+                    {opt}
+                </MenuItem>
+            );
+        });
+    }
 }
+
+export const DropdownInput = withStyles(useStyles)(RawDropdownInput);
 
 export const DropdownField = asFormField<DropdownInputProps & FormFieldProps>(DropdownInput);

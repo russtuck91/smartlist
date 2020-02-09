@@ -1,5 +1,7 @@
+import { Button, Link } from '@material-ui/core';
 import * as React from 'react';
-import { Button } from 'react-bootstrap';
+import { Link as RouterLink } from 'react-router-dom';
+
 import { RouteLookup } from '../../core/routes/route-lookup';
 
 export class PlaylistBrowser extends React.Component<any> {
@@ -7,7 +9,7 @@ export class PlaylistBrowser extends React.Component<any> {
         return (
             <div>
                 <h1>Playlists</h1>
-                <Button onClick={this.transitionToBuilder}>Create New Playlist</Button>
+                <Link to={RouteLookup.playlists.create} component={RouterLink}><Button>Create New Playlist</Button></Link>
             </div>
         );
     }
