@@ -29,12 +29,8 @@ export class PlaylistBuilder extends React.Component {
                 {
                     type: RuleGroupType.And,
                     rules: [
-                        { param: RuleParam.Artist, value: '' },
-                        { type: RuleGroupType.And, rules:
-                            [ 
-                                { param: RuleParam.Artist, value: 'TEST' }
-                            ]
-                        }
+                        { param: RuleParam.Saved, value: true },
+                        { param: RuleParam.Artist, value: '' }
                     ]
                 }
             ]

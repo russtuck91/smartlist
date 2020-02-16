@@ -2,8 +2,11 @@ import { Field } from 'formik';
 import * as React from 'react';
 
 export interface FormFieldProps {
+    id: string;
     label?: React.ReactNode;
     error?: React.ReactNode;
+
+    required?: boolean;
 }
 
 export function asFormField<T extends FormFieldProps>(
@@ -18,6 +21,7 @@ export function asFormField<T extends FormFieldProps>(
             return (
                 <div className="form-field">
                     <Field
+                        name={this.props.id}
                         render={({ field, form }) => {
                             return (
                                 <WrappedComponent
@@ -26,6 +30,7 @@ export function asFormField<T extends FormFieldProps>(
                                 />
                             );
                         }}
+                        validate={this.validate}
                     />
                     {this.renderError()}
                 </div>
@@ -40,6 +45,14 @@ export function asFormField<T extends FormFieldProps>(
             }
 
             return error;
+        }
+
+        private validate = (value: any) => {
+            const { required } = this.props;
+
+            if (required && (value === undefined || value === null || value === '')) {
+                return 'Field is required';
+            }
         }
     };
 }

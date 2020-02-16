@@ -7,7 +7,7 @@ import * as React from 'react';
 import { PlaylistRuleGroup, RuleGroupType, RuleParam, PlaylistRule, isPlaylistRuleGroup } from '../../../../shared/src/playlists/models';
 import { objectUtil } from '../../../../shared/src/util/object-util';
 
-import { DropdownField, TextField } from '../../core/forms/fields';
+import { DropdownField, TextField, CheckboxField } from '../../core/forms/fields';
 import { baseRequestUrl, requests } from '../../core/requests/requests';
 
 import { PlaylistBuilderFormValues } from './models';
@@ -32,16 +32,14 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
         this.getListPreview();
     }
 
-    async getListPreview() {
-        const dummyRules: PlaylistRuleGroup[] = [
-            {
-                type: RuleGroupType.And,
-                rules: [
-                    { param: RuleParam.Artist, value: 'Jukebox the Ghost' }
-                ]
-            }
-        ];
-        const list = await requests.post(`${baseRequestUrl}/playlists/populateList`, dummyRules);
+    getListPreview = async () => {
+        const { values, isValid } = this.props.formik;
+
+        if (!isValid) {
+            return;
+        }
+
+        const list = await requests.post(`${baseRequestUrl}/playlists/populateList`, values.rules);
 
         this.setState({
             listPreview: list
@@ -69,23 +67,24 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
 
     private renderFormArea() {
         const { formik } = this.props;
-        const { values } = formik;
+        const { values, isValid, isSubmitting } = formik;
 
         return (
             <Grid container spacing={2}>
-                <Grid item container spacing={2}>
+                <Grid item container spacing={2} alignItems="flex-end">
                     <Grid item xs>
                         <TextField
                             id="name"
                             value={values.name}
                             label="Name"
+                            required
                         />
                     </Grid>
                     <Grid item>
-                        <Button type="submit" variant="contained">Save</Button>
+                        <Button type="submit" variant="contained" disabled={!isValid || isSubmitting}>Save</Button>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained">Refresh</Button>
+                        <Button variant="contained" disabled={!isValid} onClick={this.getListPreview}>Refresh</Button>
                     </Grid>
                 </Grid>
                 {this.renderRulesFormArea()}
@@ -103,6 +102,8 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
     }
 
     private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number, treeIdPrefix = '') => {
+        const { setFieldValue } = this.props.formik;
+
         const thisItemTreeId = `${treeIdPrefix ? treeIdPrefix + '.' : ''}rules[${groupIndex}]`;
 
         return (
@@ -118,7 +119,7 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
                                         {this.ruleGroupTypes.map((type, index) => (
                                             <Button
                                                 key={index}
-                                                onClick={() => this.setGroupType(thisItemTreeId, type)}
+                                                onClick={() => setFieldValue(`${thisItemTreeId}.type`, type)}
                                                 size="small"
                                                 variant={ruleGroup.type === type ? 'contained' : undefined}
                                             >
@@ -183,10 +184,18 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
                         />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField
-                            id={`${thisItemTreeId}.value`}
-                            value={thisItemValue.value}
-                        />
+                        {thisItemValue.param === RuleParam.Saved ? (
+                            <CheckboxField
+                                id={`${thisItemTreeId}.value`}
+                                value={thisItemValue.value}
+                            />
+                        ) : (
+                            <TextField
+                                id={`${thisItemTreeId}.value`}
+                                value={thisItemValue.value}
+                                required
+                            />
+                        )}
                     </Grid>
                     <Grid item xs>
                         <IconButton onClick={() => this.removeCondition(treeIdPrefix, index)}>
@@ -241,20 +250,26 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
     }
 
     private removeCondition(treeId: string, indexToRemove: number) {
+        console.log('in removeCondition');
+        console.log('treeId:', treeId);
         const { values, setFieldValue } = this.props.formik;
 
         const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
         atTreeLoc.rules.splice(indexToRemove, 1);
-        setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
 
-        // TODO: if condition is now empty, remove it
-    }
+        // if condition is now empty, remove it
+        if (atTreeLoc.rules.length === 0) {
+            const treeIdParts = treeId.split(/\[(\d+)\]$/);
+            console.log(treeIdParts);
 
-    private setGroupType(treeId: string, value: RuleGroupType) {
-        const { values, setFieldValue } = this.props.formik;
+            const containingListId = treeIdParts[0];
+            const ruleGroupIndex = parseInt(treeIdParts[1]);
 
-        // const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
-        // atTreeLoc.type = value;
-        setFieldValue(`${treeId}.type`, value);
+            const newContainingListVal = get(values, containingListId);
+            newContainingListVal.splice(ruleGroupIndex, 1);
+            setFieldValue(containingListId, newContainingListVal);
+        } else {
+            setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
+        }
     }
 }

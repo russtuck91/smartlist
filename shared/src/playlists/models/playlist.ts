@@ -21,7 +21,7 @@ export enum RuleGroupType {
 export interface PlaylistRule {
     param: RuleParam;
     // comparator? equals, contains, gt, lt
-    value: string;
+    value: string|boolean;
 }
 
 export enum RuleParam {
