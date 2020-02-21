@@ -43,13 +43,13 @@ export class PlaylistBuilder extends React.Component {
 
         const playlist = this.mapPlaylistBuilderFormValuesToPlaylist(values);
 
-        await requests.post(`${baseRequestUrl}/playlists/`, playlist);
+        await requests.post(`${baseRequestUrl}/playlists/list`, playlist);
     }
 
     private mapPlaylistBuilderFormValuesToPlaylist(values: PlaylistBuilderFormValues): Playlist {
         return {
             name: values.name,
-            rules: []
+            rules: values.rules
         };
     }
 }

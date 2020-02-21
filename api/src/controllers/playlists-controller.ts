@@ -1,15 +1,46 @@
-import { Controller, Get, Post } from '@overnightjs/core';
+import { Controller, Delete, Get, Post, Put } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import httpContext from 'express-http-context';
-import { intersection, union } from 'lodash';
+import { intersectionWith, union } from 'lodash';
 
-import { spotifyUtil } from '../core/spotify/spotify-util';
+import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleGroupType, RuleParam } from '../../../shared/src/playlists/models';
+
 import { sessionUtil } from '../core/session/session-util';
-
-import { PlaylistRuleGroup, PlaylistRule, RuleGroupType, isPlaylistRuleGroup } from '../../../shared/src/playlists/models';
+import { spotifyUtil } from '../core/spotify/spotify-util';
+import { createPlaylist, getPlaylists } from '../services/playlist-service';
 
 @Controller('playlists')
 export class PlaylistsController {
+    @Get('lists')
+    private async getPlaylists(req: Request, res: Response) {
+        sessionUtil.setAccessTokenContext(req);
+
+        const playlists = await getPlaylists();
+
+        res.send(playlists);
+    }
+
+    @Put('list/:id')
+    private updatePlaylist(req: Request, res: Response) {
+
+    }
+
+    @Post('list')
+    private async createPlaylist(req: Request, res: Response) {
+        sessionUtil.setAccessTokenContext(req);
+
+        const playlist: Playlist = req.body;
+        createPlaylist(playlist);
+
+        res.send();
+    }
+
+    @Delete('list/:id')
+    private deletePlaylist(req: Request, res: Response) {
+
+    }
+
+
     @Post('populateList')
     private async populatePlaylist(req: Request, res: Response) {
         // get access token from request headers, apply to spotify api
@@ -18,10 +49,7 @@ export class PlaylistsController {
         httpContext.set('accessToken', accessToken);
 
         sessionUtil.doAndRetry(async () => {
-            const rules = req.body;
-    
-            // const list = await spotifyUtil.getFullMySavedTracks();
-            // const list = await spotifyUtil.getFullSearchResults([]);
+            const rules: PlaylistRuleGroup[] = req.body;
 
             const list = await this.getListByAllRules(rules);
 
@@ -64,7 +92,6 @@ export class PlaylistsController {
             return results;
         } else {
             // Send batches of PlaylistRules to getListForRules, send individual PlaylistRuleGroups
-            // TODO: special handling for Saved songs? Or by Playlist?
             const straightRules: PlaylistRule[] = [];
             const nestedRuleGroups: PlaylistRuleGroup[] = [];
 
@@ -81,13 +108,31 @@ export class PlaylistsController {
                     return this.getListForRuleGroup(rule);
                 })
             );
-            const straightRuleResults = await this.getListForRules(straightRules);
-            listsOfTrackResults.push(straightRuleResults);
 
-            // console.log('Query Results, AND path, ', listsOfTrackResults);
+            if (straightRules.length > 0) {
+                const straightRuleResults = await this.getListForRules(straightRules);
+                listsOfTrackResults.push(straightRuleResults);
+            }
+
+            console.log('Query Results, AND path...');
+            // console.log(listsOfTrackResults[0][0]);
+            // console.log(listsOfTrackResults[1][0]);
+
+            if (listsOfTrackResults.length <= 1) {
+                return listsOfTrackResults[0];
+            }
 
             // Get "AND" intersection
-            const results = intersection(...listsOfTrackResults);
+            const listOne = listsOfTrackResults[0];
+            const results = intersectionWith<SpotifyApi.TrackObjectFull, SpotifyApi.TrackObjectFull, SpotifyApi.TrackObjectFull, SpotifyApi.TrackObjectFull>(
+                listOne,
+                listOne,
+                listOne,
+                ...listsOfTrackResults,
+                (a: SpotifyApi.TrackObjectFull, b: SpotifyApi.TrackObjectFull) => {
+                    return a.id === b.id;
+                }
+            );
 
             return results;
         }
@@ -95,11 +140,81 @@ export class PlaylistsController {
 
     private async getListForRules(rules: PlaylistRule[]): Promise<SpotifyApi.TrackObjectFull[]> {
         console.log('IN getListForRules');
-        const results = await spotifyUtil.getFullSearchResults(rules);
+        
+        // Bundle Saved rule with regular search rules (all but playlist)
+        // if no Saved rule, do regular search
+        // TODO: what about playlist rule
+
+        const hasSavedRule: boolean = !!(rules.find(rule => rule.param === RuleParam.Saved));
+        
+        let results: SpotifyApi.TrackObjectFull[]|undefined;
+        if (hasSavedRule) {
+            results = await this.getFilteredListOfSavedSongs(rules);
+        } else {
+            const searchResults = await spotifyUtil.getFullSearchResults(rules);
+            results = searchResults && searchResults.items;
+        }
 
         if (!results) { return []; }
 
         // console.log(results);
-        return results.items;
+        return results;
+    }
+
+    private async getFilteredListOfSavedSongs(rules: PlaylistRule[]) {
+        const savedTrackObjects = await spotifyUtil.getFullMySavedTracks();
+
+        if (!savedTrackObjects) { return []; }
+
+        const savedTracks: SpotifyApi.TrackObjectFull[] = savedTrackObjects.items.map(item => item.track);
+
+        const filterObj = rules.reduce((obj, item) => {
+            obj[item.param] = item.value;
+            return obj;
+        }, {});
+
+        const filteredList = savedTracks.filter((track) => {
+            if (filterObj[RuleParam.Artist]) {
+                return track.artists.some((artist) => {
+                    return artist.name.toLowerCase() === filterObj[RuleParam.Artist].toLowerCase();
+                });
+            }
+
+            if (filterObj[RuleParam.Album]) {
+                return track.album.name.toLowerCase() === filterObj[RuleParam.Album].toLowerCase();
+            }
+
+            if (filterObj[RuleParam.Track]) {
+                return track.name.toLowerCase() === filterObj[RuleParam.Track].toLowerCase();
+            }
+
+            // TODO
+            if (filterObj[RuleParam.Genre]) {
+
+            }
+
+            // TODO
+            if (filterObj[RuleParam.Year]) {
+
+            }
+
+            return true;
+        });
+
+        return filteredList;
+    }
+
+    private async getListForSpecialRule(rule: PlaylistRule): Promise<SpotifyApi.TrackObjectFull[]> {
+        console.log('IN getListForSpecialRule');
+
+        if (rule.param === RuleParam.Saved) {
+            const results = await spotifyUtil.getFullMySavedTracks();
+
+            if (!results) { return []; }
+
+            return results.items.map((item) => item.track);
+        }
+
+        return [];
     }
 }

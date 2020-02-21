@@ -50,13 +50,13 @@ async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.P
     }
 }
 
-async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<any>|undefined> {
+async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined> {
     console.log('in getFullMySavedTracks');
     const accessToken = httpContext.get('accessToken');
 
     spotifyApi.setAccessToken(accessToken);
     return getFullPagedResults(async (options) => {
-        const apiResponse: SpResponse<SpotifyApi.PagingObject<any>> = await spotifyApi.getMySavedTracks(options);
+        const apiResponse: SpResponse<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>> = await spotifyApi.getMySavedTracks(options);
 
         return apiResponse.body;
     });
@@ -65,7 +65,7 @@ async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<any>|unde
 async function getFullSearchResults(rules: PlaylistRule[]): Promise<SpotifyApi.PagingObject<any>|undefined> {
     console.log('in getFullSearchResults');
     const accessToken = httpContext.get('accessToken');
-    console.log('accessToken :: ', accessToken);
+    // console.log('accessToken :: ', accessToken);
     spotifyApi.setAccessToken(accessToken);
 
     let searchString = '';

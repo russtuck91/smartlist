@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import httpContext from 'express-http-context';
 import mongoist from 'mongoist';
 
@@ -9,7 +9,8 @@ const db = mongoist('mongodb://localhost:27017/smartify');
 
 export const sessionUtil = {
     doAndRetry: doAndRetry,
-    refreshAccessToken: refreshAccessToken
+    refreshAccessToken: refreshAccessToken,
+    setAccessTokenContext: setAccessTokenContext
 };
 
 
@@ -63,4 +64,10 @@ async function refreshAccessToken(): Promise<string|undefined> {
     } catch (e) {
         console.error(e);
     }
+}
+
+function setAccessTokenContext(req: Request) {
+    const accessToken = req.headers && req.headers.authorization && req.headers.authorization.replace(/^Bearer /, '');
+    if (!accessToken) { return; }
+    httpContext.set('accessToken', accessToken);
 }
