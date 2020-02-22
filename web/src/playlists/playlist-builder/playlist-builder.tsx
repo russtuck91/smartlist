@@ -1,17 +1,54 @@
-import * as React from 'react';
+import { CircularProgress } from '@material-ui/core';
 import { Formik, FormikProps } from 'formik';
+import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 
-import { PlaylistBuilderForm } from './playlist-builder-form';
-import { PlaylistBuilderFormValues } from './models';
-import './playlist-builder.scss';
 import { Playlist, RuleGroupType, RuleParam } from '../../../../shared/src/playlists/models/playlist';
-import { baseRequestUrl, requests } from '../../core/requests/requests';
 
-export class PlaylistBuilder extends React.Component {
+import { history } from '../../core/history/history';
+import { requests } from '../../core/requests/requests';
+import { RouteLookup } from '../../core/routes/route-lookup';
+
+import { PlaylistContainer } from '../playlist-container';
+import { PlaylistBuilderFormValues } from './models';
+import { PlaylistBuilderForm } from './playlist-builder-form';
+import './playlist-builder.scss';
+
+
+interface MatchParams {
+    id?: string;
+}
+interface PlaylistBuilderProps extends RouteComponentProps<MatchParams> {}
+
+interface PlaylistBuilderState {
+    existingPlaylist?: Playlist;
+}
+
+export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, PlaylistBuilderState> {
+    state: PlaylistBuilderState = {};
+
+    componentDidMount() {
+        this.loadPlaylist();
+    }
+
+    async loadPlaylist() {
+        const { id } = this.props.match.params;
+
+        const playlist = await requests.get(`${PlaylistContainer.requestUrl}/${id}`);
+        this.setState({
+            existingPlaylist: playlist
+        });
+    }
+
     render() {
+        if (this.isEditMode() && !this.state.existingPlaylist) {
+            return <CircularProgress />;
+        }
+
         return (
             <Formik
                 initialValues={this.getDefaultFormValues()}
+                enableReinitialize
                 onSubmit={this.onSubmit}
                 render={(formikProps: FormikProps<PlaylistBuilderFormValues>) => (
                     <PlaylistBuilderForm
@@ -22,7 +59,15 @@ export class PlaylistBuilder extends React.Component {
         );
     }
 
+    private isEditMode() {
+        return !!this.props.match.params.id;
+    }
+
     private getDefaultFormValues(): PlaylistBuilderFormValues {
+        if (this.state.existingPlaylist) {
+            return this.state.existingPlaylist;
+        }
+
         return {
             name: '',
             rules: [
@@ -38,18 +83,26 @@ export class PlaylistBuilder extends React.Component {
     }
 
     private onSubmit = async (values: PlaylistBuilderFormValues) => {
-        console.log('in onSubmit');
-        console.log(values);
+        const { id } = this.props.match.params;
 
         const playlist = this.mapPlaylistBuilderFormValuesToPlaylist(values);
 
-        await requests.post(`${baseRequestUrl}/playlists/list`, playlist);
+        if (id) {
+            await requests.put(`${PlaylistContainer.requestUrl}/${id}`, playlist);
+        } else {
+            await requests.post(`${PlaylistContainer.requestUrl}`, playlist);
+        }
+
+        this.transitionToBrowse();
     }
 
     private mapPlaylistBuilderFormValuesToPlaylist(values: PlaylistBuilderFormValues): Playlist {
         return {
-            name: values.name,
-            rules: values.rules
+            ...values
         };
+    }
+
+    private transitionToBrowse() {
+        history.push(RouteLookup.playlists.base);
     }
 }

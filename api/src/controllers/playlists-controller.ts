@@ -7,10 +7,11 @@ import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleGro
 
 import { sessionUtil } from '../core/session/session-util';
 import { spotifyUtil } from '../core/spotify/spotify-util';
-import { createPlaylist, getPlaylists } from '../services/playlist-service';
+import { createPlaylist, getPlaylists, getPlaylistById, updatePlaylist, deletePlaylist } from '../services/playlist-service';
 
 @Controller('playlists')
 export class PlaylistsController {
+    // todo: rename? ""? "mine"?
     @Get('lists')
     private async getPlaylists(req: Request, res: Response) {
         sessionUtil.setAccessTokenContext(req);
@@ -20,24 +21,59 @@ export class PlaylistsController {
         res.send(playlists);
     }
 
-    @Put('list/:id')
+    @Get(':id')
+    private async getPlaylistById(req: Request, res: Response) {
+        try {
+            sessionUtil.setAccessTokenContext(req);
+
+            const playlist = await getPlaylistById(req.params.id);
+
+            res.send(playlist);
+        } catch (e) {
+            console.log(e);
+            res.sendStatus(e.statusCode);
+        }
+    }
+
+    @Put(':id')
     private updatePlaylist(req: Request, res: Response) {
+        try {
+            sessionUtil.setAccessTokenContext(req);
 
+            const playlist: Playlist = req.body;
+            updatePlaylist(req.params.id, playlist);
+
+            res.send();
+        } catch (e) {
+            res.sendStatus(e.statusCode);
+        }
     }
 
-    @Post('list')
+    @Post('')
     private async createPlaylist(req: Request, res: Response) {
-        sessionUtil.setAccessTokenContext(req);
+        try {
+            sessionUtil.setAccessTokenContext(req);
 
-        const playlist: Playlist = req.body;
-        createPlaylist(playlist);
+            const playlist: Playlist = req.body;
+            createPlaylist(playlist);
 
-        res.send();
+            res.send();
+        } catch (e) {
+            res.sendStatus(e.statusCode);
+        }
     }
 
-    @Delete('list/:id')
+    @Delete(':id')
     private deletePlaylist(req: Request, res: Response) {
+        try {
+            sessionUtil.setAccessTokenContext(req);
 
+            deletePlaylist(req.params.id);
+
+            res.send();
+        } catch (e) {
+            res.sendStatus(e.statusCode);
+        }
     }
 
 
@@ -57,6 +93,8 @@ export class PlaylistsController {
         }, res);
     }
 
+
+    // TODO: move these methods to PlaylistService
     private async getListByAllRules(rules: PlaylistRuleGroup[]): Promise<SpotifyApi.TrackObjectFull[]> {
         const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
             rules.map((rule) => {

@@ -1,4 +1,6 @@
-export interface Playlist {
+import { SimpleDBObject } from '../../shared-models/db';
+
+export interface Playlist extends Partial<SimpleDBObject> {
     name: string;
 
     rules: PlaylistRuleGroup[];

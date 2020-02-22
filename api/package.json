@@ -18,9 +18,10 @@
     "esm": "^3.2.25",
     "express": "~4.16.0",
     "express-http-context": "^1.2.3",
-    "http-errors": "~1.6.2",
+    "http-errors": "^1.6.3",
     "jade": "~1.11.0",
     "lodash": "^4.17.15",
+    "mongodb": "^3.5.3",
     "mongoist": "^2.4.0",
     "morgan": "~1.9.0",
     "spotify-web-api-node": "^4.0.0"
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.6",
+    "@types/http-errors": "^1.6.3",
     "@types/lodash": "^4.14.149",
     "@types/mongodb": "^3.3.16",
     "@types/spotify-api": "0.0.2",

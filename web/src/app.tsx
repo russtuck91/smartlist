@@ -1,18 +1,17 @@
 import { Container, createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { teal } from '@material-ui/core/colors';
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router';
-import { BrowserRouter } from 'react-router-dom';
+import { Route, Router, Switch } from 'react-router';
 
 import { Account } from './account/account';
 import './app.scss';
+import { history } from './core/history/history';
 import { RouteLookup } from './core/routes/route-lookup';
 import { Home } from './home';
 import { Login } from './login/login';
 import { LoginCallback } from './login/login-callback';
 import { Navigation } from './navigation/navigation';
-import { PlaylistBrowser } from './playlists/playlist-browser/playlist-browser';
-import { PlaylistBuilder } from './playlists/playlist-builder/playlist-builder';
+import { PlaylistContainer } from './playlists/playlist-container';
 
 export class App extends Component {
     render() {
@@ -33,13 +32,12 @@ export class App extends Component {
         return (
             <div className="app">
                 <ThemeProvider theme={theme}>
-                    <BrowserRouter>
+                    <Router history={history}>
                     <>
                         <Navigation />
                         <Container>
                             <Switch>
-                                <Route exact path={RouteLookup.playlists.create} component={PlaylistBuilder} />
-                                <Route exact path={RouteLookup.playlists.base} component={PlaylistBrowser} />
+                                <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
                                 <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
                                 <Route exact path={RouteLookup.login.login} component={Login} />
                                 <Route exact path={RouteLookup.account} component={Account} />
@@ -47,7 +45,7 @@ export class App extends Component {
                             </Switch>
                         </Container>
                     </>
-                    </BrowserRouter>
+                    </Router>
                 </ThemeProvider>
             </div>
         );

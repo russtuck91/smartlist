@@ -1,11 +1,12 @@
 import { session } from '../session/session';
 
-export const baseRequestUrl = `http://localhost:5000`;
+export const baseRequestUrl = 'http://localhost:5000';
 
 export const requests = {
     get: getRequest,
     post: postRequest,
-    put: putRequest
+    put: putRequest,
+    delete: deleteRequest
 };
 
 async function getRequest(url: string): Promise<any> {
@@ -20,12 +21,16 @@ async function putRequest(url: string, body: any) {
     return makeDirectRequest('PUT', url, body);
 }
 
+async function deleteRequest(url: string) {
+    return makeDirectRequest('DELETE', url);
+}
+
 function makeDirectRequest(method: string, url: string, body?: any) {
     return fetch(url, {
         method: method,
         body: JSON.stringify(body),
         headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${session.getAccessToken()}`
         }
     })
@@ -48,7 +53,11 @@ function makeDirectRequest(method: string, url: string, body?: any) {
                 session.setAccessToken(newAccessToken);
             }
 
-            // TODO: only if there is a json response
-            return await response.json();
+            try {
+                return await response.json();
+            } catch (e) {
+                // console.log(e);
+                // return;
+            }
         });
 }

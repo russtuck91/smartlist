@@ -8,8 +8,9 @@ import { PlaylistRuleGroup, RuleGroupType, RuleParam, PlaylistRule, isPlaylistRu
 import { objectUtil } from '../../../../shared/src/util/object-util';
 
 import { DropdownField, TextField, CheckboxField } from '../../core/forms/fields';
-import { baseRequestUrl, requests } from '../../core/requests/requests';
+import { requests } from '../../core/requests/requests';
 
+import { PlaylistContainer } from '../playlist-container';
 import { PlaylistBuilderFormValues } from './models';
 
 export interface PlaylistBuilderFormProps {
@@ -39,7 +40,7 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
             return;
         }
 
-        const list = await requests.post(`${baseRequestUrl}/playlists/populateList`, values.rules);
+        const list = await requests.post(`${PlaylistContainer.requestUrl}/populateList`, values.rules);
 
         this.setState({
             listPreview: list

@@ -1,22 +1,31 @@
 import { Button, CircularProgress, IconButton, Link, Paper, TableContainer } from '@material-ui/core';
 import { Edit, Delete } from '@material-ui/icons';
 import * as React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
 
 import { Playlist } from '../../../../shared/src/playlists/models';
 
 import { ColumnConfig, ColumnFormatType, ColumnSet } from '../../core/components/tables/models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';
-import { baseRequestUrl, requests } from '../../core/requests/requests';
+import { history } from '../../core/history/history';
+import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
+import { DialogControl } from '../../core/components/modals/dialog-control';
+
+import { PlaylistContainer } from '../playlist-container';
 
 
 interface PlaylistBrowserState {
     playlists?: Playlist[];
+    
+    showDeleteModal: boolean;
+    activeItem?: Playlist;
 }
 
 export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> {
-    state: PlaylistBrowserState = {};
+    state: PlaylistBrowserState = {
+        showDeleteModal: false
+    };
 
     private columnSet: ColumnSet = [
         { title: 'Name', mapsToField: 'name' },
@@ -28,7 +37,10 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
     }
 
     async loadPlaylists() {
-        const playlists = await requests.get(`${baseRequestUrl}/playlists/lists`);
+        this.setState({
+            playlists: undefined
+        });
+        const playlists = await requests.get(`${PlaylistContainer.requestUrl}/lists`);
         this.setState({
             playlists: playlists
         });
@@ -42,6 +54,7 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
                     <Button variant="contained">Create New Playlist</Button>
                 </Link>
                 {this.renderPlaylistList()}
+                {this.renderDeleteModal()}
             </div>
         );
     }
@@ -72,13 +85,66 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
     private renderActionsCell(item: Playlist) {
         return (
             <div>
-                <IconButton onClick={() => {}}>
+                <IconButton onClick={() => this.transitionToEdit(item)}>
                     <Edit fontSize="small" />
                 </IconButton>
-                <IconButton onClick={() => {}}>
+                <IconButton onClick={() => this.openDeleteModal(item)}>
                     <Delete fontSize="small" />
                 </IconButton>
             </div>
         );
+    }
+
+    private renderDeleteModal() {
+        const { showDeleteModal } = this.state;
+
+        return (
+            <DialogControl
+                open={showDeleteModal}
+                onClose={this.closeDeleteModal}
+                onConfirm={this.onConfirmDelete}
+                body={this.renderDeleteModalBody()}
+            />
+        );
+    }
+
+    private renderDeleteModalBody() {
+        return (
+            <div>
+                <p>Are you sure you want to delete this playlist?</p>
+            </div>
+        );
+    }
+
+    private transitionToEdit(item: Playlist) {
+        history.push(generatePath(RouteLookup.playlists.edit, { id: item._id }));
+    }
+
+    private openDeleteModal = (playlist: Playlist) => {
+        this.setState({
+            showDeleteModal: true,
+            activeItem: playlist
+        });
+    }
+
+    private closeDeleteModal = () => {
+        this.setState({
+            showDeleteModal: false,
+            activeItem: undefined
+        });
+    }
+
+    private onConfirmDelete = () => {
+        if (!this.state.activeItem) { return; }
+
+        this.deletePlaylist(this.state.activeItem);
+
+        this.closeDeleteModal();
+
+        this.loadPlaylists();
+    }
+
+    private async deletePlaylist(playlist: Playlist) {
+        await requests.delete(`${PlaylistContainer.requestUrl}/${playlist._id}`);
     }
 }
