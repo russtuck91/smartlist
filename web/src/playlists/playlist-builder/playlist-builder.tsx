@@ -33,6 +33,9 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
 
     async loadPlaylist() {
         const { id } = this.props.match.params;
+        if (!id) {
+            return;
+        }
 
         const playlist = await requests.get(`${PlaylistContainer.requestUrl}/${id}`);
         this.setState({
@@ -49,6 +52,7 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
             <Formik
                 initialValues={this.getDefaultFormValues()}
                 enableReinitialize
+                isInitialValid={!!this.state.existingPlaylist}
                 onSubmit={this.onSubmit}
                 render={(formikProps: FormikProps<PlaylistBuilderFormValues>) => (
                     <PlaylistBuilderForm

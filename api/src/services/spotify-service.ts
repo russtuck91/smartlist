@@ -1,7 +1,7 @@
 import httpContext from 'express-http-context';
 
-import { PlaylistRule, RuleParam } from '../../../../shared/src/playlists/models';
-import { spotifyApi } from './spotify-api';
+import { PlaylistRule, RuleParam } from '../../../shared/src/playlists/models';
+import { spotifyApi } from '../core/spotify/spotify-api';
 
 
 interface SpResponse<T> {
@@ -9,12 +9,6 @@ interface SpResponse<T> {
     headers: Record<string, string>;
     statusCode: number;
 }
-
-
-export const spotifyUtil = {
-    getFullMySavedTracks: getFullMySavedTracks,
-    getFullSearchResults: getFullSearchResults
-};
 
 
 async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.PagingObject<any>|undefined>) {
@@ -50,7 +44,7 @@ async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.P
     }
 }
 
-async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined> {
+export async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined> {
     console.log('in getFullMySavedTracks');
     const accessToken = httpContext.get('accessToken');
 
@@ -62,7 +56,7 @@ async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<SpotifyAp
     });
 }
 
-async function getFullSearchResults(rules: PlaylistRule[]): Promise<SpotifyApi.PagingObject<any>|undefined> {
+export async function getFullSearchResults(rules: PlaylistRule[]): Promise<SpotifyApi.PagingObject<any>|undefined> {
     console.log('in getFullSearchResults');
     const accessToken = httpContext.get('accessToken');
     // console.log('accessToken :: ', accessToken);
