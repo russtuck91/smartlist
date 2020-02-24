@@ -1,11 +1,11 @@
 
-export interface ColumnConfig {
+export interface ColumnConfig<T = any> {
     title: string;
-    mapsToField: string;
+    mapsToField: keyof T|'';
     type?: ColumnFormatType;
 }
 
-export type ColumnSet = ColumnConfig[];
+export type ColumnSet<T = any> = ColumnConfig<T>[];
 
 
 export enum ColumnFormatType {

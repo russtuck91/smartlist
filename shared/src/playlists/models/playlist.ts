@@ -4,6 +4,9 @@ export interface Playlist extends Partial<SimpleDBObject> {
     name: string;
 
     rules: PlaylistRuleGroup[];
+
+    spotifyPlaylistId?: string;
+    lastPublished?: Date;
 }
 
 export interface PlaylistRuleGroup {

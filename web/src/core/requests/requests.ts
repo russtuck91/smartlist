@@ -13,7 +13,7 @@ async function getRequest(url: string): Promise<any> {
     return makeDirectRequest('GET', url);
 }
 
-async function postRequest(url: string, body: any) {
+async function postRequest(url: string, body?: any) {
     return makeDirectRequest('POST', url, body);
 }
 

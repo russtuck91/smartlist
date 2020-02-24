@@ -1,7 +1,10 @@
 import httpContext from 'express-http-context';
+import { chunk } from 'lodash';
 
 import { PlaylistRule, RuleParam } from '../../../shared/src/playlists/models';
+
 import { spotifyApi } from '../core/spotify/spotify-api';
+import { getCurrentUser } from './user-service';
 
 
 interface SpResponse<T> {
@@ -87,6 +90,39 @@ export async function getFullSearchResults(rules: PlaylistRule[]): Promise<Spoti
         const apiResponse: SpResponse<SpotifyApi.SearchResponse> = await spotifyApi.search(searchString, [ 'track' ], options);
 
         return apiResponse.body.tracks;
+    });
+}
+
+export async function createNewPlaylist(playlistName: string) {
+    console.log('in createNewPlaylist');
+    const currentUser = await getCurrentUser();
+
+    spotifyApi.setAccessToken(currentUser.accessToken);
+    const playlist = await spotifyApi.createPlaylist(currentUser.username, playlistName, {
+        description: 'Created by SmartList'
+    });
+
+    return playlist.body;
+}
+
+export async function removeTracksFromPlaylist(playlistId: string) {
+    console.log('in removeTracksFromPlaylist');
+
+    spotifyApi.setAccessToken(httpContext.get('accessToken'));
+    await spotifyApi.replaceTracksInPlaylist(playlistId, []);
+}
+
+export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi.TrackObjectFull[]) {
+    console.log('in addTracksToPlaylist');
+    const trackUris = tracks.map((track) => track.uri);
+
+    // Spotify API requires batches of 100 max
+    const batchSize = 100;
+    const batchedUris = chunk(trackUris, batchSize);
+
+    spotifyApi.setAccessToken(httpContext.get('accessToken'));
+    batchedUris.map(async (uriBatch) => {
+        await spotifyApi.addTracksToPlaylist(playlistId, uriBatch);
     });
 }
 

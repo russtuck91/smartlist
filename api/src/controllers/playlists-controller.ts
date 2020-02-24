@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { Playlist, PlaylistRuleGroup } from '../../../shared/src/playlists/models';
 
 import { sessionUtil } from '../core/session/session-util';
-import { createPlaylist, deletePlaylist, getPlaylistById, getPlaylists, populateListByRules, updatePlaylist } from '../services/playlist-service';
+import { createPlaylist, deletePlaylist, getPlaylistById, getPlaylists, populateListByRules, updatePlaylist, publishPlaylist } from '../services/playlist-service';
 
 @Controller('playlists')
 export class PlaylistsController {
@@ -85,5 +85,19 @@ export class PlaylistsController {
 
             res.send(list);
         }, res);
+    }
+
+
+    @Post('publish/:id')
+    private async publishPlaylist(req: Request, res: Response) {
+        try {
+            sessionUtil.setAccessTokenContext(req);
+
+            await publishPlaylist(req.params.id);
+
+            res.send();
+        } catch (e) {
+            res.sendStatus(e.statusCode);
+        }
     }
 }

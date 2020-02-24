@@ -1,5 +1,5 @@
 import { Button, CircularProgress, IconButton, Link, Paper, TableContainer } from '@material-ui/core';
-import { Edit, Delete } from '@material-ui/icons';
+import { Edit, Delete, Publish } from '@material-ui/icons';
 import * as React from 'react';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
 
@@ -18,17 +18,20 @@ import { PlaylistContainer } from '../playlist-container';
 interface PlaylistBrowserState {
     playlists?: Playlist[];
     
-    showDeleteModal: boolean;
     activeItem?: Playlist;
+    showDeleteDialog: boolean;
+    showPublishDialog: boolean;
 }
 
 export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> {
     state: PlaylistBrowserState = {
-        showDeleteModal: false
+        showDeleteDialog: false,
+        showPublishDialog: false
     };
 
-    private columnSet: ColumnSet = [
+    private columnSet: ColumnSet<Playlist> = [
         { title: 'Name', mapsToField: 'name' },
+        { title: 'Last Published', mapsToField: 'lastPublished' },
         { title: 'Actions', mapsToField: '', type: ColumnFormatType.Actions }
     ];
 
@@ -54,7 +57,8 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
                     <Button variant="contained">Create New Playlist</Button>
                 </Link>
                 {this.renderPlaylistList()}
-                {this.renderDeleteModal()}
+                {this.renderDeleteDialog()}
+                {this.renderPublishDialog()}
             </div>
         );
     }
@@ -88,20 +92,23 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
                 <IconButton onClick={() => this.transitionToEdit(item)}>
                     <Edit fontSize="small" />
                 </IconButton>
-                <IconButton onClick={() => this.openDeleteModal(item)}>
+                <IconButton onClick={() => this.openDeleteDialog(item)}>
                     <Delete fontSize="small" />
+                </IconButton>
+                <IconButton onClick={() => this.openPublishDialog(item)}>
+                    <Publish fontSize="small" />
                 </IconButton>
             </div>
         );
     }
 
-    private renderDeleteModal() {
-        const { showDeleteModal } = this.state;
+    private renderDeleteDialog() {
+        const { showDeleteDialog } = this.state;
 
         return (
             <DialogControl
-                open={showDeleteModal}
-                onClose={this.closeDeleteModal}
+                open={showDeleteDialog}
+                onClose={this.closeDeleteDialog}
                 onConfirm={this.onConfirmDelete}
                 body={this.renderDeleteModalBody()}
             />
@@ -116,20 +123,33 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
         );
     }
 
+    private renderPublishDialog() {
+        const { showPublishDialog } = this.state;
+
+        return (
+            <DialogControl
+                open={showPublishDialog}
+                onClose={this.closePublishDialog}
+                onConfirm={this.onConfirmPublish}
+                body={<p>Publish this playlist?</p>}
+            />
+        );
+    }
+
     private transitionToEdit(item: Playlist) {
         history.push(generatePath(RouteLookup.playlists.edit, { id: item._id }));
     }
 
-    private openDeleteModal = (playlist: Playlist) => {
+    private openDeleteDialog = (playlist: Playlist) => {
         this.setState({
-            showDeleteModal: true,
+            showDeleteDialog: true,
             activeItem: playlist
         });
     }
 
-    private closeDeleteModal = () => {
+    private closeDeleteDialog = () => {
         this.setState({
-            showDeleteModal: false,
+            showDeleteDialog: false,
             activeItem: undefined
         });
     }
@@ -139,12 +159,38 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
 
         this.deletePlaylist(this.state.activeItem);
 
-        this.closeDeleteModal();
+        this.closeDeleteDialog();
 
         this.loadPlaylists();
     }
 
     private async deletePlaylist(playlist: Playlist) {
         await requests.delete(`${PlaylistContainer.requestUrl}/${playlist._id}`);
+    }
+
+    private openPublishDialog = (playlist: Playlist) => {
+        this.setState({
+            activeItem: playlist,
+            showPublishDialog: true
+        });
+    }
+
+    private closePublishDialog = () => {
+        this.setState({
+            activeItem: undefined,
+            showPublishDialog: false
+        });
+    }
+
+    private onConfirmPublish = () => {
+        if (!this.state.activeItem) { return; }
+
+        this.publishPlaylist(this.state.activeItem);
+
+        this.closePublishDialog();
+    }
+
+    private async publishPlaylist(playlist: Playlist) {
+        await requests.post(`${PlaylistContainer.requestUrl}/publish/${playlist._id}`);
     }
 }

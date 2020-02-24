@@ -82,7 +82,7 @@ export async function populateListByRules(rules: PlaylistRuleGroup[]): Promise<S
     return unionResult;
 }
 
-export async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup): Promise<SpotifyApi.TrackObjectFull[]> {
     if (ruleGroup.type === RuleGroupType.Or) {
         // Send each individual rule to getListForRules
         const listOfTrackResults = await Promise.all(
@@ -150,7 +150,7 @@ export async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup): Promise
     }
 }
 
-export async function getListForRules(rules: PlaylistRule[]): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRules(rules: PlaylistRule[]): Promise<SpotifyApi.TrackObjectFull[]> {
     console.log('IN getListForRules');
     
     // Bundle Saved rule with regular search rules (all but playlist)
@@ -173,7 +173,7 @@ export async function getListForRules(rules: PlaylistRule[]): Promise<SpotifyApi
     return results;
 }
 
-export async function getFilteredListOfSavedSongs(rules: PlaylistRule[]) {
+async function getFilteredListOfSavedSongs(rules: PlaylistRule[]) {
     const savedTrackObjects = await spotifyService.getFullMySavedTracks();
 
     if (!savedTrackObjects) { return []; }
@@ -214,5 +214,42 @@ export async function getFilteredListOfSavedSongs(rules: PlaylistRule[]) {
     });
 
     return filteredList;
+}
+
+
+
+export async function publishPlaylist(id: string) {
+    const playlist = await getPlaylistById(id);
+
+    const list = await populateListByRules(playlist.rules);
+    console.log('publishing playlist will have ', list.length, ' songs');
+
+    if (playlist.spotifyPlaylistId) {
+        // Remove all tracks from playlist
+        await spotifyService.removeTracksFromPlaylist(playlist.spotifyPlaylistId);
+
+        // Add tracks to playlist (batches of 100)
+        spotifyService.addTracksToPlaylist(playlist.spotifyPlaylistId, list);
+
+        // Save last published date
+        const playlistUpdate: Playlist = {
+            ...playlist,
+            lastPublished: new Date()
+        };
+        updatePlaylist(id, playlistUpdate);
+    } else {
+        const newPlaylist = await spotifyService.createNewPlaylist(playlist.name);
+
+        // Save new playlist id to DB as spotifyPlaylistId
+        const playlistUpdate: Playlist = {
+            ...playlist,
+            spotifyPlaylistId: newPlaylist.id,
+            lastPublished: new Date()
+        };
+        updatePlaylist(id, playlistUpdate);
+
+        // Add tracks to playlist
+        spotifyService.addTracksToPlaylist(newPlaylist.id, list);
+    }
 }
 
