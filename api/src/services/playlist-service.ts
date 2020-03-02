@@ -1,3 +1,4 @@
+import httpContext from 'express-http-context';
 import { NotFound } from 'http-errors';
 import { intersectionWith, union } from 'lodash';
 import { ObjectId } from 'mongodb';
@@ -8,14 +9,11 @@ import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleGro
 import { User } from '../../src/core/session/models';
 
 import * as spotifyService from './spotify-service';
-import { getCurrentUser } from './user-service';
+import { getCurrentUser, getUserById } from './user-service';
+import { doAndRetryV2 } from '../core/session/session-util';
+import { spotifyApi } from '../core/spotify/spotify-api';
 
 const db = mongoist('mongodb://localhost:27017/smartify');
-
-
-interface UPlaylist extends Playlist {
-    userId: ObjectId;
-}
 
 
 export async function getPlaylists() {
@@ -38,22 +36,19 @@ export async function getPlaylistById(id: string) {
     return playlist;
 }
 
-export async function updatePlaylist(id: string, playlist: Playlist) {
-    const currentUser: User = await getCurrentUser();
-
-    const playlistUpdate: UPlaylist = { ...playlist, userId: currentUser._id };
-    delete playlistUpdate._id;
+export async function updatePlaylist(id: string, playlist: Partial<Playlist>) {
+    delete playlist._id;
 
     db.playlists.update(
-        { _id: new ObjectId(id), userId: currentUser._id },
-        { $set: playlistUpdate }
+        { _id: new ObjectId(id) },
+        { $set: playlist }
     );
 }
 
 export async function createPlaylist(playlist: Playlist) {
     const currentUser: User = await getCurrentUser();
 
-    const newPlaylist: UPlaylist = { ...playlist, userId: currentUser._id };
+    const newPlaylist: Playlist = { ...playlist, userId: currentUser._id };
     db.playlists.insertOne(newPlaylist);
 }
 
@@ -68,7 +63,7 @@ export async function deletePlaylist(id: string) {
 
 
 
-export async function populateListByRules(rules: PlaylistRuleGroup[]): Promise<SpotifyApi.TrackObjectFull[]> {
+export async function populateListByRules(rules: PlaylistRuleGroup[], accessToken?: string): Promise<SpotifyApi.TrackObjectFull[]> {
     const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
         rules.map((rule) => {
             return getListForRuleGroup(rule);
@@ -218,9 +213,13 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[]) {
 
 
 
-export async function publishPlaylist(id: string) {
+export async function publishPlaylistById(id: string) {
     const playlist = await getPlaylistById(id);
 
+    await publishPlaylist(playlist);
+}
+
+export async function publishPlaylist(playlist: Playlist) {
     const list = await populateListByRules(playlist.rules);
     console.log('publishing playlist will have ', list.length, ' songs');
 
@@ -232,24 +231,39 @@ export async function publishPlaylist(id: string) {
         spotifyService.addTracksToPlaylist(playlist.spotifyPlaylistId, list);
 
         // Save last published date
-        const playlistUpdate: Playlist = {
-            ...playlist,
+        const playlistUpdate: Partial<Playlist> = {
             lastPublished: new Date()
         };
-        updatePlaylist(id, playlistUpdate);
+        updatePlaylist(playlist._id!, playlistUpdate);
     } else {
-        const newPlaylist = await spotifyService.createNewPlaylist(playlist.name);
+        const newPlaylist = await spotifyService.createNewPlaylist(playlist.name, playlist.userId);
 
         // Save new playlist id to DB as spotifyPlaylistId
-        const playlistUpdate: Playlist = {
-            ...playlist,
+        const playlistUpdate: Partial<Playlist> = {
             spotifyPlaylistId: newPlaylist.id,
             lastPublished: new Date()
         };
-        updatePlaylist(id, playlistUpdate);
+        updatePlaylist(playlist._id!, playlistUpdate);
 
         // Add tracks to playlist
         spotifyService.addTracksToPlaylist(newPlaylist.id, list);
     }
+}
+
+export async function publishAllPlaylists() {
+    console.log('in publishAllPlaylists');
+
+    const playlists = await db.playlists.find();
+    playlists.forEach(async (playlist: Playlist) => {
+        const user = await getUserById(playlist.userId);
+        if (user) {
+            // httpContext.set('accessToken', user.accessToken);
+            spotifyApi.setAccessToken(user.accessToken);
+
+            doAndRetryV2(async () => {
+                publishPlaylist(playlist);
+            }, user);
+        }
+    });
 }
 

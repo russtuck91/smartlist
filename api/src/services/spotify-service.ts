@@ -1,10 +1,11 @@
 import httpContext from 'express-http-context';
 import { chunk } from 'lodash';
+import { ObjectId } from 'mongodb';
 
 import { PlaylistRule, RuleParam } from '../../../shared/src/playlists/models';
 
 import { spotifyApi } from '../core/spotify/spotify-api';
-import { getCurrentUser } from './user-service';
+import { getUserById } from './user-service';
 
 
 interface SpResponse<T> {
@@ -49,9 +50,11 @@ async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.P
 
 export async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined> {
     console.log('in getFullMySavedTracks');
-    const accessToken = httpContext.get('accessToken');
 
-    spotifyApi.setAccessToken(accessToken);
+    const accessToken = httpContext.get('accessToken');
+    // console.log('accessToken :: ', accessToken);
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+
     return getFullPagedResults(async (options) => {
         const apiResponse: SpResponse<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>> = await spotifyApi.getMySavedTracks(options);
 
@@ -61,9 +64,11 @@ export async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<Sp
 
 export async function getFullSearchResults(rules: PlaylistRule[]): Promise<SpotifyApi.PagingObject<any>|undefined> {
     console.log('in getFullSearchResults');
+
     const accessToken = httpContext.get('accessToken');
     // console.log('accessToken :: ', accessToken);
-    spotifyApi.setAccessToken(accessToken);
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    console.log('!!! access token ::', spotifyApi.getAccessToken());
 
     let searchString = '';
     rules.map((rule) => {
@@ -93,12 +98,13 @@ export async function getFullSearchResults(rules: PlaylistRule[]): Promise<Spoti
     });
 }
 
-export async function createNewPlaylist(playlistName: string) {
+export async function createNewPlaylist(playlistName: string, userId: ObjectId) {
     console.log('in createNewPlaylist');
-    const currentUser = await getCurrentUser();
 
-    spotifyApi.setAccessToken(currentUser.accessToken);
-    const playlist = await spotifyApi.createPlaylist(currentUser.username, playlistName, {
+    const user = await getUserById(userId);
+    spotifyApi.setAccessToken(user.accessToken);
+
+    const playlist = await spotifyApi.createPlaylist(user.username, playlistName, {
         description: 'Created by SmartList'
     });
 
@@ -108,7 +114,10 @@ export async function createNewPlaylist(playlistName: string) {
 export async function removeTracksFromPlaylist(playlistId: string) {
     console.log('in removeTracksFromPlaylist');
 
-    spotifyApi.setAccessToken(httpContext.get('accessToken'));
+    const accessToken = httpContext.get('accessToken');
+    // console.log('accessToken :: ', accessToken);
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+
     await spotifyApi.replaceTracksInPlaylist(playlistId, []);
 }
 
@@ -120,7 +129,10 @@ export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi
     const batchSize = 100;
     const batchedUris = chunk(trackUris, batchSize);
 
-    spotifyApi.setAccessToken(httpContext.get('accessToken'));
+    const accessToken = httpContext.get('accessToken');
+    // console.log('accessToken :: ', accessToken);
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+
     batchedUris.map(async (uriBatch) => {
         await spotifyApi.addTracksToPlaylist(playlistId, uriBatch);
     });

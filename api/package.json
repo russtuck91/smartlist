@@ -12,6 +12,7 @@
     "@overnightjs/core": "^1.6.12",
     "@overnightjs/logger": "^1.1.10",
     "@types/node": "^13.1.6",
+    "agenda": "^3.0.0",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
@@ -27,6 +28,7 @@
     "spotify-web-api-node": "^4.0.0"
   },
   "devDependencies": {
+    "@types/agenda": "^2.0.6",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.6",
     "@types/http-errors": "^1.6.3",

@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import { SimpleDBObject } from '../../shared-models/db';
 
 export interface Playlist extends Partial<SimpleDBObject> {
@@ -5,6 +7,7 @@ export interface Playlist extends Partial<SimpleDBObject> {
 
     rules: PlaylistRuleGroup[];
 
+    userId: ObjectId;
     spotifyPlaylistId?: string;
     lastPublished?: Date;
 }

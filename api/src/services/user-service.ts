@@ -17,3 +17,11 @@ export async function getCurrentUser(): Promise<User> {
     return currentUser;
 }
 
+export async function getUserById(id: ObjectId) {
+    const user: User|null = await db.users.findOne({ _id: id });
+    if (!user) {
+        throw new NotFound();
+    }
+    return user;
+}
+
