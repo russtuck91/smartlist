@@ -2,11 +2,13 @@ import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import httpContext from 'express-http-context';
+import session from 'express-session';
 
 import { Server } from '@overnightjs/core';
 import { Logger } from '@overnightjs/logger';
 
 import * as controllers from './controllers';
+import { setSessionTokenContext } from './core/session/session-util';
 
 class AppServer extends Server {
     private readonly SERVER_STARTED = 'Example server started on port: ';
@@ -20,6 +22,11 @@ class AppServer extends Server {
         this.app.use(cookieParser());
         this.app.use(cors());
         this.app.use(httpContext.middleware);
+        this.app.use(setSessionTokenContext);
+
+        this.app.use(session({
+            secret: process.env.client_secret || 'defaultSecret'
+        }));
 
         this.setupControllers();
     }

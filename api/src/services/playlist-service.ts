@@ -10,7 +10,7 @@ import { User } from '../../src/core/session/models';
 
 import * as spotifyService from './spotify-service';
 import { getCurrentUser, getUserById } from './user-service';
-import { doAndRetryV2 } from '../core/session/session-util';
+import { doAndRetry } from '../core/session/session-util';
 import { spotifyApi } from '../core/spotify/spotify-api';
 
 const db = mongoist('mongodb://localhost:27017/smartify');
@@ -64,6 +64,8 @@ export async function deletePlaylist(id: string) {
 
 
 export async function populateListByRules(rules: PlaylistRuleGroup[], accessToken?: string): Promise<SpotifyApi.TrackObjectFull[]> {
+    console.log('in populateListByRules');
+
     const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
         rules.map((rule) => {
             return getListForRuleGroup(rule);
@@ -220,6 +222,8 @@ export async function publishPlaylistById(id: string) {
 }
 
 export async function publishPlaylist(playlist: Playlist) {
+    console.log('in publishPlaylist. ID :: ', playlist._id);
+    
     const list = await populateListByRules(playlist.rules);
     console.log('publishing playlist will have ', list.length, ' songs');
 
@@ -257,11 +261,11 @@ export async function publishAllPlaylists() {
     playlists.forEach(async (playlist: Playlist) => {
         const user = await getUserById(playlist.userId);
         if (user) {
-            // httpContext.set('accessToken', user.accessToken);
+            // TODO: Will this work? collisions?
             spotifyApi.setAccessToken(user.accessToken);
 
-            doAndRetryV2(async () => {
-                publishPlaylist(playlist);
+            doAndRetry(async () => {
+                await publishPlaylist(playlist);
             }, user);
         }
     });

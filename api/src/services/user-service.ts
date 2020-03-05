@@ -9,8 +9,8 @@ const db = mongoist('mongodb://localhost:27017/smartify');
 
 
 export async function getCurrentUser(): Promise<User> {
-    const accessToken = httpContext.get('accessToken');
-    const currentUser: User|null = await db.users.findOne({ accessToken: accessToken });
+    const sessionToken = httpContext.get('sessionToken');
+    const currentUser: User|null = await db.users.findOne({ sessionToken: sessionToken });
     if (!currentUser) {
         throw new NotFound();
     }
@@ -23,5 +23,18 @@ export async function getUserById(id: ObjectId) {
         throw new NotFound();
     }
     return user;
+}
+
+export async function updateUser(username: string, user: Partial<User>, sessionToken: string) {
+    db.users.update(
+        { username: username },
+        {
+            $set: user,
+            $push: { sessionToken: sessionToken }
+        },
+        {
+            upsert: true
+        }
+    );
 }
 

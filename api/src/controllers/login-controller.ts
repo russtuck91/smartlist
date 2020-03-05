@@ -1,10 +1,10 @@
 import { Controller, Get } from '@overnightjs/core';
 import { Request, Response } from 'express';
-import mongoist from 'mongoist';
 
+import { User } from '../core/session/models';
 import { spotifyApi } from '../core/spotify/spotify-api';
-
-const db = mongoist('mongodb://localhost:27017/smartify');
+import { updateUser } from '../services/user-service';
+import { getMe } from '../services/spotify-service';
 
 
 @Controller('login')
@@ -25,7 +25,7 @@ export class LoginController {
 
 
     @Get('callback')
-    private processSpotifyAuth(req: Request, res: Response) {
+    private async processSpotifyAuth(req: Request, res: Response) {
         const { code, state } = req.query;
         const storedState = req.cookies ? req.cookies[this.STATE_KEY] : null;
 
@@ -36,39 +36,30 @@ export class LoginController {
         // if the state is valid, get the authorization code and pass it on to the client
         } else {
             res.clearCookie(this.STATE_KEY);
-            // Retrieve an access token and a refresh token
-            spotifyApi.authorizationCodeGrant(code).then(async (data: any) => {
+            try {
+                const data = await spotifyApi.authorizationCodeGrant(code);
                 const { expires_in, access_token, refresh_token } = data.body;
         
-                // Set the access token on the API object to use it in later calls
-                spotifyApi.setAccessToken(access_token);
-                spotifyApi.setRefreshToken(refresh_token);
+                const user = await getMe(access_token);
 
-                const userInfo = await spotifyApi.getMe();
-                console.log(userInfo.body);
-
-                const accessTokenPatch = {
-                    username: userInfo.body.id,
+                const username = user.id;
+                const accessTokenPatch: Partial<User> = {
+                    username: username,
                     accessToken: access_token,
                     refreshToken: refresh_token
                 };
+                const sessionID = req.sessionID!;
 
                 // Store in DB
-                db.users.update(
-                    { username: accessTokenPatch.username },
-                    { $set: accessTokenPatch },
-                    {
-                    upsert: true
-                    }
-                );
+                updateUser(username, accessTokenPatch, sessionID);
         
-                // we can also pass the token to the browser to make requests from there
-                res.redirect(`http://localhost:3000/login/callback/${access_token}/${refresh_token}`);
-            }).catch((err: any) => {
+                // pass the token to the frontend
+                res.redirect(`http://localhost:3000/login/callback/${sessionID}`);
+            } catch (err) {
                 console.error(err);
                 // TODO: error handling
                 res.redirect('/error/invalid token');
-            });
+            }
         }
     }
     

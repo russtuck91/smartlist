@@ -1,19 +1,19 @@
-const ACCESS_TOKEN_KEY = 'accessToken';
+const SESSION_TOKEN_KEY = 'sessionToken';
 
 export const session = {
-    getAccessToken: getAccessToken,
-    setAccessToken: setAccessToken,
-    clearAccessToken: clearAccessToken
+    getSessionToken: getSessionToken,
+    setSessionToken: setSessionToken,
+    clearSessionToken: clearSessionToken
 };
 
-function getAccessToken() {
-    return localStorage.getItem(ACCESS_TOKEN_KEY)
+function getSessionToken() {
+    return localStorage.getItem(SESSION_TOKEN_KEY);
 }
 
-function setAccessToken(newToken: string) {
-    localStorage.setItem(ACCESS_TOKEN_KEY, newToken);
+function setSessionToken(newToken: string) {
+    localStorage.setItem(SESSION_TOKEN_KEY, newToken);
 }
 
-function clearAccessToken() {
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
+function clearSessionToken() {
+    localStorage.removeItem(SESSION_TOKEN_KEY);
 }

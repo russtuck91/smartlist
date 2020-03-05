@@ -7,7 +7,7 @@ export const RouteLookup = (() => {
             return {
                 base: base,
                 login: base,
-                callback: `${base}/callback/:accessToken/:refreshToken/`
+                callback: `${base}/callback/:sessionToken/`
             };
         })(),
         playlists: (() => {

@@ -3,26 +3,27 @@ import { Request, Response } from 'express';
 
 import { Playlist, PlaylistRuleGroup } from '../../../shared/src/playlists/models';
 
-import { sessionUtil } from '../core/session/session-util';
-import { createPlaylist, deletePlaylist, getPlaylistById, getPlaylists, populateListByRules, updatePlaylist, publishPlaylist, publishPlaylistById } from '../services/playlist-service';
+import { doAndRetryWithCurrentUser } from '../core/session/session-util';
+import { createPlaylist, deletePlaylist, getPlaylistById, getPlaylists, populateListByRules, updatePlaylist, publishPlaylistById } from '../services/playlist-service';
 
 @Controller('playlists')
 export class PlaylistsController {
     // todo: rename? ""? "mine"?
     @Get('lists')
     private async getPlaylists(req: Request, res: Response) {
-        sessionUtil.setAccessTokenContext(req);
+        try {
+            const playlists = await getPlaylists();
 
-        const playlists = await getPlaylists();
-
-        res.send(playlists);
+            res.send(playlists);
+        } catch (e) {
+            console.log(e);
+            res.sendStatus(e.statusCode);
+        }
     }
 
     @Get(':id')
     private async getPlaylistById(req: Request, res: Response) {
         try {
-            sessionUtil.setAccessTokenContext(req);
-
             const playlist = await getPlaylistById(req.params.id);
 
             res.send(playlist);
@@ -35,8 +36,6 @@ export class PlaylistsController {
     @Put(':id')
     private updatePlaylist(req: Request, res: Response) {
         try {
-            sessionUtil.setAccessTokenContext(req);
-
             const playlist: Playlist = req.body;
             updatePlaylist(req.params.id, playlist);
 
@@ -49,8 +48,6 @@ export class PlaylistsController {
     @Post('')
     private async createPlaylist(req: Request, res: Response) {
         try {
-            sessionUtil.setAccessTokenContext(req);
-
             const playlist: Playlist = req.body;
             createPlaylist(playlist);
 
@@ -63,8 +60,6 @@ export class PlaylistsController {
     @Delete(':id')
     private deletePlaylist(req: Request, res: Response) {
         try {
-            sessionUtil.setAccessTokenContext(req);
-
             deletePlaylist(req.params.id);
 
             res.send();
@@ -76,23 +71,19 @@ export class PlaylistsController {
 
     @Post('populateList')
     private async populatePlaylist(req: Request, res: Response) {
-        sessionUtil.setAccessTokenContext(req);
-
-        sessionUtil.doAndRetry(async () => {
+        doAndRetryWithCurrentUser(async () => {
             const rules: PlaylistRuleGroup[] = req.body;
 
             const list = await populateListByRules(rules);
 
             res.send(list);
-        }, res);
+        });
     }
 
 
     @Post('publish/:id')
     private async publishPlaylist(req: Request, res: Response) {
         try {
-            sessionUtil.setAccessTokenContext(req);
-
             await publishPlaylistById(req.params.id);
 
             res.send();

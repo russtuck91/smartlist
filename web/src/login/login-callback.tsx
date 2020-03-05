@@ -5,15 +5,14 @@ import { RouteLookup } from '../core/routes/route-lookup';
 import { session } from '../core/session/session';
 
 interface LoginCallbackParams {
-    accessToken: string;
-    refreshToken: string;
+    sessionToken: string;
 }
 
 export class LoginCallback extends React.Component<RouteComponentProps<LoginCallbackParams>> {
     componentDidMount() {
         const { match: { params } } = this.props;
 
-        session.setAccessToken(params.accessToken);
+        session.setSessionToken(params.sessionToken);
     }
 
     render() {

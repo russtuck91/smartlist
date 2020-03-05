@@ -31,7 +31,7 @@ function makeDirectRequest(method: string, url: string, body?: any) {
         body: JSON.stringify(body),
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.getAccessToken()}`
+            Authorization: `Bearer ${session.getSessionToken()}`
         }
     })
         .then(async (response: Response) => {
@@ -39,18 +39,12 @@ function makeDirectRequest(method: string, url: string, body?: any) {
                 switch (response.status) {
                     case 401:
                         console.log('unauthorized');
-                        session.clearAccessToken();
+                        session.clearSessionToken();
                         break;
                     default:
                         break;
                 }
                 return;
-            }
-
-            const newAccessToken = response.headers.get('Access-Token');
-            if (newAccessToken) {
-                console.log('Received new access token from API, will update in frontend storage');
-                session.setAccessToken(newAccessToken);
             }
 
             try {

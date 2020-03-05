@@ -28,7 +28,7 @@ type FullProps = NavigationProps & WithStyles<typeof useStyles>;
 export class RawNavigation extends React.Component<FullProps> {
     render() {
         const { classes } = this.props;
-        const isLoggedIn = !!session.getAccessToken();
+        const isLoggedIn = !!session.getSessionToken();
 
         return (
             <AppBar position="sticky" className={classes.root}>

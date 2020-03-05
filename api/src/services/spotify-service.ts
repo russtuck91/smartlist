@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb';
 import { PlaylistRule, RuleParam } from '../../../shared/src/playlists/models';
 
 import { spotifyApi } from '../core/spotify/spotify-api';
-import { getUserById } from './user-service';
+import { getUserById, getCurrentUser } from './user-service';
 
 
 interface SpResponse<T> {
@@ -14,6 +14,15 @@ interface SpResponse<T> {
     statusCode: number;
 }
 
+
+export async function getMe(accessToken: string): Promise<SpotifyApi.CurrentUsersProfileResponse> {
+    spotifyApi.setAccessToken(accessToken);
+
+    const userInfo = await spotifyApi.getMe();
+    const user: SpotifyApi.CurrentUsersProfileResponse = userInfo.body;
+
+    return user;
+}
 
 async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.PagingObject<any>|undefined>) {
     try {
@@ -48,12 +57,21 @@ async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.P
     }
 }
 
+async function setAccessTokenFromCurrentUser() {
+    try {
+        const user = await getCurrentUser();
+        if (user) {
+            spotifyApi.setAccessToken(user.accessToken);
+        }
+    } catch (e) {
+        // no current user, ignore
+    }
+}
+
 export async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined> {
     console.log('in getFullMySavedTracks');
 
-    const accessToken = httpContext.get('accessToken');
-    // console.log('accessToken :: ', accessToken);
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    await setAccessTokenFromCurrentUser();
 
     return getFullPagedResults(async (options) => {
         const apiResponse: SpResponse<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>> = await spotifyApi.getMySavedTracks(options);
@@ -65,9 +83,8 @@ export async function getFullMySavedTracks(): Promise<SpotifyApi.PagingObject<Sp
 export async function getFullSearchResults(rules: PlaylistRule[]): Promise<SpotifyApi.PagingObject<any>|undefined> {
     console.log('in getFullSearchResults');
 
-    const accessToken = httpContext.get('accessToken');
-    // console.log('accessToken :: ', accessToken);
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    await setAccessTokenFromCurrentUser();
+
     console.log('!!! access token ::', spotifyApi.getAccessToken());
 
     let searchString = '';
@@ -114,9 +131,7 @@ export async function createNewPlaylist(playlistName: string, userId: ObjectId) 
 export async function removeTracksFromPlaylist(playlistId: string) {
     console.log('in removeTracksFromPlaylist');
 
-    const accessToken = httpContext.get('accessToken');
-    // console.log('accessToken :: ', accessToken);
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    await setAccessTokenFromCurrentUser();
 
     await spotifyApi.replaceTracksInPlaylist(playlistId, []);
 }
@@ -129,9 +144,7 @@ export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi
     const batchSize = 100;
     const batchedUris = chunk(trackUris, batchSize);
 
-    const accessToken = httpContext.get('accessToken');
-    // console.log('accessToken :: ', accessToken);
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    await setAccessTokenFromCurrentUser();
 
     batchedUris.map(async (uriBatch) => {
         await spotifyApi.addTracksToPlaylist(playlistId, uriBatch);

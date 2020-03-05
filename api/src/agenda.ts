@@ -18,10 +18,13 @@ if (jobTypes.length) {
         console.log('started agenda');
 
         await agenda.every('24 hours', 'playlistPublishing');
+
+        // await agenda.now('playlistPublishing');
     })();
 }
 
 async function graceful() {
+    console.log('in graceful shutdown');
     await agenda.stop();
     process.exit(0);
 }
