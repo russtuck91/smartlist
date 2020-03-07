@@ -1,4 +1,3 @@
-import httpContext from 'express-http-context';
 import { NotFound } from 'http-errors';
 import { intersectionWith, union } from 'lodash';
 import { ObjectId } from 'mongodb';
@@ -6,12 +5,11 @@ import mongoist from 'mongoist';
 
 import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleGroupType, RuleParam } from '../../../shared/src/playlists/models';
 
-import { User } from '../../src/core/session/models';
+import { User } from '../core/session/models';
+import { doAndRetry } from '../core/session/session-util';
 
 import * as spotifyService from './spotify-service';
 import { getCurrentUser, getUserById } from './user-service';
-import { doAndRetry } from '../core/session/session-util';
-import { spotifyApi } from '../core/spotify/spotify-api';
 
 const db = mongoist('mongodb://localhost:27017/smartify');
 
@@ -39,7 +37,7 @@ export async function getPlaylistById(id: string) {
 export async function updatePlaylist(id: string, playlist: Partial<Playlist>) {
     delete playlist._id;
 
-    db.playlists.update(
+    await db.playlists.update(
         { _id: new ObjectId(id) },
         { $set: playlist }
     );
@@ -68,7 +66,7 @@ export async function populateListByRules(rules: PlaylistRuleGroup[], accessToke
 
     const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
         rules.map((rule) => {
-            return getListForRuleGroup(rule);
+            return getListForRuleGroup(rule, accessToken);
         })
     );
 
@@ -79,15 +77,15 @@ export async function populateListByRules(rules: PlaylistRuleGroup[], accessToke
     return unionResult;
 }
 
-async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken?: string): Promise<SpotifyApi.TrackObjectFull[]> {
     if (ruleGroup.type === RuleGroupType.Or) {
         // Send each individual rule to getListForRules
         const listOfTrackResults = await Promise.all(
             ruleGroup.rules.map((rule) => {
                 if (isPlaylistRuleGroup(rule)) {
-                    return getListForRuleGroup(rule);
+                    return getListForRuleGroup(rule, accessToken);
                 } else {
-                    return getListForRules([ rule ]);
+                    return getListForRules([ rule ], accessToken);
                 }
             })
         );
@@ -114,12 +112,12 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup): Promise<Spotif
 
         const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
             nestedRuleGroups.map((rule) => {
-                return getListForRuleGroup(rule);
+                return getListForRuleGroup(rule, accessToken);
             })
         );
 
         if (straightRules.length > 0) {
-            const straightRuleResults = await getListForRules(straightRules);
+            const straightRuleResults = await getListForRules(straightRules, accessToken);
             listsOfTrackResults.push(straightRuleResults);
         }
 
@@ -147,7 +145,7 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup): Promise<Spotif
     }
 }
 
-async function getListForRules(rules: PlaylistRule[]): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRules(rules: PlaylistRule[], accessToken?: string): Promise<SpotifyApi.TrackObjectFull[]> {
     console.log('IN getListForRules');
     
     // Bundle Saved rule with regular search rules (all but playlist)
@@ -158,9 +156,9 @@ async function getListForRules(rules: PlaylistRule[]): Promise<SpotifyApi.TrackO
     
     let results: SpotifyApi.TrackObjectFull[]|undefined;
     if (hasSavedRule) {
-        results = await getFilteredListOfSavedSongs(rules);
+        results = await getFilteredListOfSavedSongs(rules, accessToken);
     } else {
-        const searchResults = await spotifyService.getFullSearchResults(rules);
+        const searchResults = await spotifyService.getFullSearchResults(rules, accessToken);
         results = searchResults && searchResults.items;
     }
 
@@ -170,8 +168,8 @@ async function getListForRules(rules: PlaylistRule[]): Promise<SpotifyApi.TrackO
     return results;
 }
 
-async function getFilteredListOfSavedSongs(rules: PlaylistRule[]) {
-    const savedTrackObjects = await spotifyService.getFullMySavedTracks();
+async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken?: string) {
+    const savedTrackObjects = await spotifyService.getFullMySavedTracks(accessToken);
 
     if (!savedTrackObjects) { return []; }
 
@@ -221,18 +219,18 @@ export async function publishPlaylistById(id: string) {
     await publishPlaylist(playlist);
 }
 
-export async function publishPlaylist(playlist: Playlist) {
+export async function publishPlaylist(playlist: Playlist, accessToken?: string) {
     console.log('in publishPlaylist. ID :: ', playlist._id);
     
-    const list = await populateListByRules(playlist.rules);
+    const list = await populateListByRules(playlist.rules, accessToken);
     console.log('publishing playlist will have ', list.length, ' songs');
 
     if (playlist.spotifyPlaylistId) {
         // Remove all tracks from playlist
-        await spotifyService.removeTracksFromPlaylist(playlist.spotifyPlaylistId);
+        await spotifyService.removeTracksFromPlaylist(playlist.spotifyPlaylistId, accessToken);
 
         // Add tracks to playlist (batches of 100)
-        spotifyService.addTracksToPlaylist(playlist.spotifyPlaylistId, list);
+        spotifyService.addTracksToPlaylist(playlist.spotifyPlaylistId, list, accessToken);
 
         // Save last published date
         const playlistUpdate: Partial<Playlist> = {
@@ -250,7 +248,7 @@ export async function publishPlaylist(playlist: Playlist) {
         updatePlaylist(playlist._id!, playlistUpdate);
 
         // Add tracks to playlist
-        spotifyService.addTracksToPlaylist(newPlaylist.id, list);
+        spotifyService.addTracksToPlaylist(newPlaylist.id, list, accessToken);
     }
 }
 
@@ -261,11 +259,8 @@ export async function publishAllPlaylists() {
     playlists.forEach(async (playlist: Playlist) => {
         const user = await getUserById(playlist.userId);
         if (user) {
-            // TODO: Will this work? collisions?
-            spotifyApi.setAccessToken(user.accessToken);
-
-            doAndRetry(async () => {
-                await publishPlaylist(playlist);
+            doAndRetry(async (accessToken: string) => {
+                await publishPlaylist(playlist, accessToken);
             }, user);
         }
     });

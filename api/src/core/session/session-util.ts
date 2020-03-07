@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import httpContext from 'express-http-context';
 import mongoist from 'mongoist';
 
-import { spotifyApi } from '../spotify/spotify-api';
+import { SpotifyApi } from '../spotify/spotify-api';
 import { User } from './models/user';
 import { getCurrentUser } from '../../services/user-service';
 
@@ -16,23 +16,24 @@ export async function doAndRetryWithCurrentUser(bodyFn: () => Promise<void>) {
     await doAndRetry(bodyFn, currentUser);
 }
 
-export async function doAndRetry(bodyFn: () => Promise<void>, user: User) {
+export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>, user: User) {
     console.log('in doAndRetry');
     try {
-        return await bodyFn();
+        return await bodyFn(user.accessToken);
     } catch (e) {
         console.log('error found in doAndRetry');
         if (e.statusCode === 401) {
             const newAccessToken = await refreshAccessToken(user);
 
             if (newAccessToken) {
-                spotifyApi.setAccessToken(newAccessToken);
+                console.log('got new access token! ', newAccessToken);
 
-                return await bodyFn();
+                return await bodyFn(newAccessToken);
             }
         }
 
         // console.error(e);
+        console.log(e);
     }
 }
 
@@ -41,6 +42,7 @@ export async function refreshAccessToken(user: User) {
         console.log('in refreshAccessToken');
 
         const refreshToken = user.refreshToken;
+        const spotifyApi = new SpotifyApi();
         spotifyApi.setRefreshToken(refreshToken);
 
         const refreshResponse = await spotifyApi.refreshAccessToken();

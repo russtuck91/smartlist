@@ -1,17 +1,17 @@
+import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 
-import { SpotifyUserObject } from '../core/spotify/models';
-import { requests } from '../core/requests/requests';
+import { requests, baseRequestUrl } from '../core/requests/requests';
 
 interface AccountState {
-    userInfo?: SpotifyUserObject;
+    userInfo?: SpotifyApi.CurrentUsersProfileResponse;
 }
 
 export class Account extends React.Component<any, AccountState> {
     state: AccountState = {};
 
     componentDidMount() {
-        // this.getUserInfo();
+        this.getUserInfo();
     }
 
     render() {
@@ -20,7 +20,7 @@ export class Account extends React.Component<any, AccountState> {
         return (
             <div>
                 <div>
-                    {!userInfo ? null : (
+                    {!userInfo ? (<CircularProgress />) : (
                         <>
                             <h1>
                                 Logged in as
@@ -53,12 +53,8 @@ export class Account extends React.Component<any, AccountState> {
     }
 
     private async getUserInfo() {
-        // TODO: go through smartlist API
-        const url = 'https://api.spotify.com/v1/me';
-
+        const url = `${baseRequestUrl}/users/me`;
         const userInfo = await requests.get(url);
-
-        console.log('userInfo:', userInfo);
 
         this.setState({
             userInfo: userInfo

@@ -39,6 +39,7 @@
             "error",
             "single"
         ],
+        "require-await": 1,
         "semi": [
             "error",
             "always"

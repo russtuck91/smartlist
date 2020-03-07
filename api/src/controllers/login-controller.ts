@@ -2,7 +2,9 @@ import { Controller, Get } from '@overnightjs/core';
 import { Request, Response } from 'express';
 
 import { User } from '../core/session/models';
-import { spotifyApi } from '../core/spotify/spotify-api';
+import { baseUiUrl } from '../core/shared-models';
+import { SpotifyApi } from '../core/spotify/spotify-api';
+
 import { updateUser } from '../services/user-service';
 import { getMe } from '../services/spotify-service';
 
@@ -20,6 +22,8 @@ export class LoginController {
     private getSpotifyLoginUrl(req: Request, res: Response) {
         const state = this.generateRandomString(16);
         res.cookie(this.STATE_KEY, state);
+
+        const spotifyApi = new SpotifyApi();
         res.redirect(spotifyApi.createAuthorizeURL(this.scopes, state));
     }
 
@@ -32,11 +36,12 @@ export class LoginController {
         // first do state validation
         if (state === null || state !== storedState) {
             // TODO: error handling
-            res.redirect('/#/error/state mismatch');
+            res.redirect(`${baseUiUrl}/login/error/state mismatch`);
         // if the state is valid, get the authorization code and pass it on to the client
         } else {
             res.clearCookie(this.STATE_KEY);
             try {
+                const spotifyApi = new SpotifyApi();
                 const data = await spotifyApi.authorizationCodeGrant(code);
                 const { expires_in, access_token, refresh_token } = data.body;
         
@@ -54,11 +59,11 @@ export class LoginController {
                 updateUser(username, accessTokenPatch, sessionID);
         
                 // pass the token to the frontend
-                res.redirect(`http://localhost:3000/login/callback/${sessionID}`);
+                res.redirect(`${baseUiUrl}/login/callback/${sessionID}`);
             } catch (err) {
                 console.error(err);
                 // TODO: error handling
-                res.redirect('/error/invalid token');
+                res.redirect(`${baseUiUrl}/login/error/invalid token`);
             }
         }
     }
