@@ -1,6 +1,6 @@
 import { FormikProps } from 'formik';
 import { get } from 'lodash';
-import { Button, IconButton, Grid, ButtonGroup, Paper } from '@material-ui/core';
+import { Button, IconButton, Grid, ButtonGroup, Paper, Theme, WithStyles, withStyles, StyleRules } from '@material-ui/core';
 import { RemoveCircleOutline } from '@material-ui/icons';
 import * as React from 'react';
 
@@ -12,6 +12,8 @@ import { requests } from '../../core/requests/requests';
 
 import { PlaylistContainer } from '../playlist-container';
 import { PlaylistBuilderFormValues } from './models';
+import { TableRenderer } from '../../core/components/tables/table-renderer';
+import { ColumnSet } from '../../core/components/tables/models';
 
 export interface PlaylistBuilderFormProps {
     formik: FormikProps<PlaylistBuilderFormValues>;
@@ -21,13 +23,33 @@ interface PlaylistBuilderFormState {
     listPreview?: SpotifyApi.TrackObjectFull[];
 }
 
-export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProps, PlaylistBuilderFormState> {
+const useStyles = (theme: Theme) => {
+    const rules: StyleRules = {
+        previewArea: {
+            position: 'fixed',
+            top: 65,
+            bottom: 0,
+            overflowY: 'auto'
+        }
+    };
+    return rules;
+};
+
+type FullProps = PlaylistBuilderFormProps & WithStyles<typeof useStyles>;
+
+export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistBuilderFormState> {
     state: PlaylistBuilderFormState = {};
 
     private DEFAULT_NEW_CONDITION: PlaylistRule = { param: RuleParam.Artist, value: '' };
 
     private ruleGroupTypes = objectUtil.convertEnumToArray<RuleGroupType>(RuleGroupType);
     private ruleParams = objectUtil.convertEnumToArray(RuleParam);
+
+    private listPreviewColumnSet: ColumnSet<SpotifyApi.TrackObjectFull> = [
+        { title: 'Name', mapsToField: 'name' },
+        { title: 'Artist', mapsToField: 'artists[0].name' },
+        { title: 'Album', mapsToField: 'album.name' }
+    ];
 
     componentDidMount() {
         this.getListPreview();
@@ -53,7 +75,7 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
 
         return (
             <form id="playlist-builder" onSubmit={handleSubmit}>
-                <h1>Playlist Builder</h1>
+                <h5>Playlist Builder</h5>
                 <Grid container spacing={2}>
                     <Grid item xs>
                         {this.renderFormArea()}
@@ -209,8 +231,9 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
     }
 
     private renderPreviewArea() {
+        const { classes } = this.props;
         return (
-            <div id="preview-area">
+            <div className={classes.previewArea}>
                 {this.renderPreviewContent()}
             </div>
         );
@@ -223,15 +246,14 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
             return null;
         }
 
-        return listPreview.map((item, index) => {
-            return (
-                <div key={index} style={{ marginBottom: 20 }}>
-                    <div>{item.name}</div>
-                    <div>{item.artists[0].name}</div>
-                    <div>{item.album.name}</div>
-                </div>
-            );
-        });
+        return (
+            <TableRenderer
+                data={listPreview}
+                columns={this.listPreviewColumnSet}
+
+                stickyHeader
+            />
+        );
     }
 
     private addCondition(treeId: string) {
@@ -274,3 +296,5 @@ export class PlaylistBuilderForm extends React.Component<PlaylistBuilderFormProp
         }
     }
 }
+
+export const PlaylistBuilderForm = withStyles(useStyles)(RawPlaylistBuilderForm);

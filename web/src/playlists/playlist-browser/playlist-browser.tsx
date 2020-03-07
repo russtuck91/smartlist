@@ -31,7 +31,7 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
 
     private columnSet: ColumnSet<Playlist> = [
         { title: 'Name', mapsToField: 'name' },
-        { title: 'Last Published', mapsToField: 'lastPublished' },
+        { title: 'Last Published', mapsToField: 'lastPublished', type: ColumnFormatType.DateTime },
         { title: 'Actions', mapsToField: '', type: ColumnFormatType.Actions }
     ];
 

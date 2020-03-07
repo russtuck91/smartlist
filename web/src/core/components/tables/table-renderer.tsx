@@ -2,19 +2,23 @@ import { Table, TableHead, TableRow, TableBody, TableCell } from '@material-ui/c
 import { get } from 'lodash';
 import * as React from 'react';
 
-import { ColumnSet, ColumnConfig } from './models';
+import { ColumnSet, ColumnConfig, ColumnFormatType } from './models';
+import { toDateTimeFormat } from '../../utils/date-util';
 
 export interface TableRendererProps {
     data: any[];
     columns: ColumnSet;
 
     customCellFormatter?: (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: any, rowIndex: number) => any;
+    stickyHeader?: boolean;
 }
 
 export class TableRenderer extends React.Component<TableRendererProps> {
     render() {
         return (
-            <Table>
+            <Table
+                stickyHeader={this.props.stickyHeader}
+            >
                 {this.renderHead()}
                 {this.renderBody()}
             </Table>
@@ -73,6 +77,10 @@ export class TableRenderer extends React.Component<TableRendererProps> {
             if (customFormatResult != null) {
                 return customFormatResult;
             }
+        }
+
+        if (column.type === ColumnFormatType.DateTime) {
+            return toDateTimeFormat(cellValue);
         }
 
         return cellValue;
