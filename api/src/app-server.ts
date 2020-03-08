@@ -1,6 +1,7 @@
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { Request, Response, NextFunction } from 'express';
 import httpContext from 'express-http-context';
 import session from 'express-session';
 
@@ -29,6 +30,16 @@ class AppServer extends Server {
         }));
 
         this.setupControllers();
+
+        // Error handling
+        this.app.use(this.errorHandler);
+    }
+
+    private errorHandler(error: any, req: Request, res: Response, next: NextFunction) {
+        console.log('in errorHandler');
+        console.log(error);
+
+        res.sendStatus(error.statusCode);
     }
 
     private setupControllers(): void {

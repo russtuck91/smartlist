@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Post, Put } from '@overnightjs/core';
+import { Controller, Delete, Get, Post, Put, Wrapper } from '@overnightjs/core';
 import { Request, Response } from 'express';
+import expressAsyncHandler from 'express-async-handler';
 
 import { Playlist, PlaylistRuleGroup } from '../../../shared/src/playlists/models';
 
@@ -10,89 +11,66 @@ import { createPlaylist, deletePlaylist, getPlaylistById, getPlaylists, populate
 export class PlaylistsController {
     // todo: rename? ""? "mine"?
     @Get('lists')
+    @Wrapper(expressAsyncHandler)
     private async getPlaylists(req: Request, res: Response) {
-        try {
-            const playlists = await getPlaylists();
+        const playlists = await getPlaylists();
 
-            res.send(playlists);
-        } catch (e) {
-            console.log(e);
-            res.sendStatus(e.statusCode);
-        }
+        res.send(playlists);
     }
 
     @Get(':id')
+    @Wrapper(expressAsyncHandler)
     private async getPlaylistById(req: Request, res: Response) {
-        try {
-            const playlist = await getPlaylistById(req.params.id);
+        const playlist = await getPlaylistById(req.params.id);
 
-            res.send(playlist);
-        } catch (e) {
-            console.log(e);
-            res.sendStatus(e.statusCode);
-        }
+        res.send(playlist);
     }
 
     @Put(':id')
-    private updatePlaylist(req: Request, res: Response) {
-        try {
-            const playlist: Playlist = req.body;
-            updatePlaylist(req.params.id, playlist);
+    @Wrapper(expressAsyncHandler)
+    private async updatePlaylist(req: Request, res: Response) {
+        const playlist: Playlist = req.body;
+        await updatePlaylist(req.params.id, playlist);
 
-            res.send();
-        } catch (e) {
-            res.sendStatus(e.statusCode);
-        }
+        res.send();
     }
 
     @Post('')
+    @Wrapper(expressAsyncHandler)
     private async createPlaylist(req: Request, res: Response) {
-        try {
-            const playlist: Playlist = req.body;
-            createPlaylist(playlist);
+        const playlist: Playlist = req.body;
+        await createPlaylist(playlist);
 
-            res.send();
-        } catch (e) {
-            res.sendStatus(e.statusCode);
-        }
+        res.send();
     }
 
     @Delete(':id')
-    private deletePlaylist(req: Request, res: Response) {
-        try {
-            deletePlaylist(req.params.id);
+    @Wrapper(expressAsyncHandler)
+    private async deletePlaylist(req: Request, res: Response) {
+        await deletePlaylist(req.params.id);
 
-            res.send();
-        } catch (e) {
-            res.sendStatus(e.statusCode);
-        }
+        res.send();
     }
 
 
     @Post('populateList')
+    @Wrapper(expressAsyncHandler)
     private async populatePlaylist(req: Request, res: Response) {
-        try {
-            await doAndRetryWithCurrentUser(async (accessToken) => {
-                const rules: PlaylistRuleGroup[] = req.body;
+        await doAndRetryWithCurrentUser(async (accessToken) => {
+            const rules: PlaylistRuleGroup[] = req.body;
 
-                const list = await populateListByRules(rules, accessToken);
+            const list = await populateListByRules(rules, accessToken);
 
-                res.send(list);
-            });
-        } catch (e) {
-            res.sendStatus(e.statusCode);
-        }
+            res.send(list);
+        });
     }
 
 
     @Post('publish/:id')
+    @Wrapper(expressAsyncHandler)
     private async publishPlaylist(req: Request, res: Response) {
-        try {
-            await publishPlaylistById(req.params.id);
+        await publishPlaylistById(req.params.id);
 
-            res.send();
-        } catch (e) {
-            res.sendStatus(e.statusCode);
-        }
+        res.send();
     }
 }
