@@ -10,6 +10,7 @@ import { doAndRetry } from '../core/session/session-util';
 
 import * as spotifyService from './spotify-service';
 import { getCurrentUser, getUserById } from './user-service';
+import { spCache } from './spotify-service-cache';
 
 const db = mongoist('mongodb://localhost:27017/smartify');
 
@@ -180,24 +181,53 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken?: 
         return obj;
     }, {});
 
+    const allAlbumIds: string[] = [];
+    const allArtistIds: string[] = [];
+    savedTracks.map((track) => {
+        allAlbumIds.push(track.album.id);
+        track.artists.map((artist) => {
+            allArtistIds.push(artist.id);
+        });
+    });
+
+    const albumMap = await spCache.getAlbums(allAlbumIds);
+    const artistMap = await spCache.getArtists(allArtistIds);
+
     const filteredList = savedTracks.filter((track) => {
         if (filterObj[RuleParam.Artist]) {
-            return track.artists.some((artist) => {
+            const thisFilter = track.artists.some((artist) => {
                 return artist.name.toLowerCase() === filterObj[RuleParam.Artist].toLowerCase();
+                // contains logic:
+                // return artist.name.toLowerCase().indexOf(filterObj[RuleParam.Artist].toLowerCase()) > -1;
             });
+            if (!thisFilter) { return false; }
         }
 
         if (filterObj[RuleParam.Album]) {
-            return track.album.name.toLowerCase() === filterObj[RuleParam.Album].toLowerCase();
+            const thisFilter = track.album.name.toLowerCase() === filterObj[RuleParam.Album].toLowerCase();
+            if (!thisFilter) { return false; }
         }
 
         if (filterObj[RuleParam.Track]) {
-            return track.name.toLowerCase() === filterObj[RuleParam.Track].toLowerCase();
+            const thisFilter = track.name.toLowerCase() === filterObj[RuleParam.Track].toLowerCase();
+            if (!thisFilter) { return false; }
         }
 
-        // TODO
         if (filterObj[RuleParam.Genre]) {
+            const fullAlbum = albumMap[track.album.id];
+            const fullArtists = track.artists.map((artist) => artistMap[artist.id]);
 
+            let allGenres: string[] = [];
+            if (fullAlbum) {
+                allGenres = allGenres.concat(fullAlbum.genres);
+            }
+            fullArtists.map((artist) => {
+                allGenres = allGenres.concat(artist.genres);
+            });
+            // console.log('all genres ::', allGenres);
+
+            const thisFilter = allGenres.some((genre) => genre.toLowerCase() === filterObj[RuleParam.Genre].toLowerCase());
+            if (!thisFilter) { return false; }
         }
 
         // TODO

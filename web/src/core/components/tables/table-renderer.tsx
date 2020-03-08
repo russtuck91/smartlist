@@ -79,6 +79,10 @@ export class TableRenderer extends React.Component<TableRendererProps> {
             }
         }
 
+        if (cellValue === null || cellValue === undefined) {
+            return null;
+        }
+
         if (column.type === ColumnFormatType.DateTime) {
             return toDateTimeFormat(cellValue);
         }

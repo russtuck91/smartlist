@@ -71,13 +71,17 @@ export class PlaylistsController {
 
     @Post('populateList')
     private async populatePlaylist(req: Request, res: Response) {
-        doAndRetryWithCurrentUser(async () => {
-            const rules: PlaylistRuleGroup[] = req.body;
+        try {
+            await doAndRetryWithCurrentUser(async (accessToken) => {
+                const rules: PlaylistRuleGroup[] = req.body;
 
-            const list = await populateListByRules(rules);
+                const list = await populateListByRules(rules, accessToken);
 
-            res.send(list);
-        });
+                res.send(list);
+            });
+        } catch (e) {
+            res.sendStatus(e.statusCode);
+        }
     }
 
 

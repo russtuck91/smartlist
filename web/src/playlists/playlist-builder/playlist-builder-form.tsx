@@ -1,6 +1,6 @@
 import { FormikProps } from 'formik';
 import { get } from 'lodash';
-import { Button, IconButton, Grid, ButtonGroup, Paper, Theme, WithStyles, withStyles, StyleRules } from '@material-ui/core';
+import { Button, IconButton, Grid, ButtonGroup, Paper, Theme, WithStyles, withStyles, StyleRules, CircularProgress } from '@material-ui/core';
 import { RemoveCircleOutline } from '@material-ui/icons';
 import * as React from 'react';
 
@@ -14,13 +14,14 @@ import { PlaylistContainer } from '../playlist-container';
 import { PlaylistBuilderFormValues } from './models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';
 import { ColumnSet } from '../../core/components/tables/models';
+import { Nullable } from '../../core/shared-models/types';
 
 export interface PlaylistBuilderFormProps {
     formik: FormikProps<PlaylistBuilderFormValues>;
 }
 
 interface PlaylistBuilderFormState {
-    listPreview?: SpotifyApi.TrackObjectFull[];
+    listPreview?: Nullable<SpotifyApi.TrackObjectFull[]>;
 }
 
 const useStyles = (theme: Theme) => {
@@ -59,8 +60,14 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         const { values, isValid } = this.props.formik;
 
         if (!isValid) {
+            this.setState({
+                listPreview: null
+            });
             return;
         }
+        this.setState({
+            listPreview: undefined
+        });
 
         const list = await requests.post(`${PlaylistContainer.requestUrl}/populateList`, values.rules);
 
@@ -242,7 +249,11 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     private renderPreviewContent() {
         const { listPreview } = this.state;
         
-        if (!listPreview) {
+        if (listPreview === undefined) {
+            return <CircularProgress />;
+        }
+
+        if (listPreview === null) {
             return null;
         }
 

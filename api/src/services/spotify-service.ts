@@ -1,4 +1,3 @@
-import httpContext from 'express-http-context';
 import { chunk } from 'lodash';
 import { ObjectId } from 'mongodb';
 
@@ -25,6 +24,7 @@ export async function getMe(accessToken?: string): Promise<SpotifyApi.CurrentUse
 
     return user;
 }
+
 
 async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.PagingObject<any>|undefined>) {
     try {
@@ -74,8 +74,10 @@ export async function getFullMySavedTracks(accessToken?: string): Promise<Spotif
     console.log('in getFullMySavedTracks');
 
     const spotifyApi = new SpotifyApi();
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
     await setAccessTokenFromCurrentUser(spotifyApi);
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+
+    console.log('!!! access token ::', spotifyApi.getAccessToken());
 
     return getFullPagedResults(async (options) => {
         const apiResponse: SpResponse<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>> = await spotifyApi.getMySavedTracks(options);
@@ -121,6 +123,7 @@ export async function getFullSearchResults(rules: PlaylistRule[], accessToken?: 
     });
 }
 
+
 export async function createNewPlaylist(playlistName: string, userId: ObjectId) {
     console.log('in createNewPlaylist');
 
@@ -160,5 +163,59 @@ export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi
     batchedUris.map(async (uriBatch) => {
         await spotifyApi.addTracksToPlaylist(playlistId, uriBatch);
     });
+}
+
+
+export async function getAlbum(albumId: string, accessToken?: string): Promise<SpotifyApi.SingleAlbumResponse> {
+    console.log('in getAlbum');
+
+    const spotifyApi = new SpotifyApi();
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    await setAccessTokenFromCurrentUser(spotifyApi);
+
+    const albumResponse = await spotifyApi.getAlbum(albumId);
+    const album = albumResponse.body;
+
+    return album;
+}
+
+export async function getAlbums(albumIds: string[], accessToken?: string): Promise<SpotifyApi.AlbumObjectFull[]> {
+    console.log('in getAlbums');
+
+    const spotifyApi = new SpotifyApi();
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    await setAccessTokenFromCurrentUser(spotifyApi);
+
+    // Spotify API requires batches of 20 max
+    const batchSize = 20;
+    const batchedIds = chunk(albumIds, batchSize);
+
+    let albums: SpotifyApi.AlbumObjectFull[] = [];
+    await Promise.all(batchedIds.map(async (batch) => {
+        const albumResponse = await spotifyApi.getAlbums(batch);
+        albums = albums.concat(albumResponse.body.albums);
+    }));
+
+    return albums;
+}
+
+export async function getArtists(artistIds: string[], accessToken?: string): Promise<SpotifyApi.ArtistObjectFull[]> {
+    console.log('in getArtists');
+
+    const spotifyApi = new SpotifyApi();
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    await setAccessTokenFromCurrentUser(spotifyApi);
+
+    // Spotify API requires batches of 50 max
+    const batchSize = 50;
+    const batchedIds = chunk(artistIds, batchSize);
+
+    let artists: SpotifyApi.ArtistObjectFull[] = [];
+    await Promise.all(batchedIds.map(async (batch) => {
+        const artistResponse = await spotifyApi.getArtists(batch);
+        artists = artists.concat(artistResponse.body.artists);
+    }));
+
+    return artists;
 }
 

@@ -26,7 +26,7 @@ export async function getUserById(id: ObjectId) {
 }
 
 export async function updateUser(username: string, user: Partial<User>, sessionToken: string) {
-    db.users.update(
+    await db.users.update(
         { username: username },
         {
             $set: user,

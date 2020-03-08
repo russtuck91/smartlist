@@ -10,7 +10,7 @@ const db = mongoist('mongodb://localhost:27017/smartify');
 
 
 
-export async function doAndRetryWithCurrentUser(bodyFn: () => Promise<void>) {
+export async function doAndRetryWithCurrentUser(bodyFn: (accessToken: string) => Promise<void>) {
     const currentUser = await getCurrentUser();
 
     await doAndRetry(bodyFn, currentUser);
@@ -34,6 +34,7 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
 
         // console.error(e);
         console.log(e);
+        throw e;
     }
 }
 
