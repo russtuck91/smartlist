@@ -10,6 +10,7 @@ import { RouteLookup } from './core/routes/route-lookup';
 import { Home } from './home';
 import { Login } from './login/login';
 import { LoginCallback } from './login/login-callback';
+import { Logout } from './login/logout';
 import { Navigation } from './navigation/navigation';
 import { PlaylistContainer } from './playlists/playlist-container';
 
@@ -38,8 +39,11 @@ export class App extends Component {
                         <Container>
                             <Switch>
                                 <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
+
                                 <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
                                 <Route exact path={RouteLookup.login.login} component={Login} />
+                                <Route exact path={RouteLookup.logout} component={Logout} />
+
                                 <Route exact path={RouteLookup.account} component={Account} />
                                 <Route exact path={RouteLookup.home} component={Home} />
                             </Switch>

@@ -1,4 +1,5 @@
-import { session } from '../session/session';
+import { clearSessionToken } from '../redux/actions';
+import { store } from '../redux/stores';
 
 export const baseRequestUrl = 'http://localhost:5000';
 
@@ -26,12 +27,14 @@ async function deleteRequest(url: string) {
 }
 
 function makeDirectRequest(method: string, url: string, body?: any) {
+    const state = store.getState();
+
     return fetch(url, {
         method: method,
         body: JSON.stringify(body),
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.getSessionToken()}`
+            Authorization: `Bearer ${state.session.sessionToken}`
         }
     })
         .then(async (response: Response) => {
@@ -39,7 +42,7 @@ function makeDirectRequest(method: string, url: string, body?: any) {
                 switch (response.status) {
                     case 401:
                         console.log('unauthorized');
-                        session.clearSessionToken();
+                        store.dispatch(clearSessionToken());
                         break;
                     default:
                         break;

@@ -53,7 +53,7 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
         return (
             <div>
                 <h1>Playlists</h1>
-                <Link to={RouteLookup.playlists.create} component={RouterLink}>
+                <Link to={RouteLookup.playlists.create} component={RouterLink} underline="none">
                     <Button variant="contained">Create New Playlist</Button>
                 </Link>
                 {this.renderPlaylistList()}

@@ -10,6 +10,7 @@ export const RouteLookup = (() => {
                 callback: `${base}/callback/:sessionToken/`
             };
         })(),
+        logout: '/logout',
         playlists: (() => {
             const base = '/playlists';
             return {

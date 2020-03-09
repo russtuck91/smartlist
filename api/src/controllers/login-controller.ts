@@ -5,7 +5,7 @@ import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
 import { SpotifyApi } from '../core/spotify/spotify-api';
 
-import { updateUser } from '../services/user-service';
+import { updateUser, removeSessionTokenFromCurrentUser } from '../services/user-service';
 import { getMe } from '../services/spotify-service';
 
 
@@ -66,6 +66,14 @@ export class LoginController {
                 res.redirect(`${baseUiUrl}/login/error/invalid token`);
             }
         }
+    }
+
+
+    @Get('logout')
+    private async logout(req: Request, res: Response) {
+        await removeSessionTokenFromCurrentUser();
+
+        res.send();
     }
     
     

@@ -38,3 +38,14 @@ export async function updateUser(username: string, user: Partial<User>, sessionT
     );
 }
 
+export async function removeSessionTokenFromCurrentUser() {
+    const sessionToken = httpContext.get('sessionToken');
+
+    await db.users.update(
+        { sessionToken: sessionToken },
+        {
+            $pull: { sessionToken: sessionToken }
+        }
+    );
+}
+
