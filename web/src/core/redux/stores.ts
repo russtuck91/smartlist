@@ -25,6 +25,11 @@ function onStateChange() {
     const state = store.getState();
     console.log(state);
 
-    session.setSessionToken(state.session.sessionToken);
+    const sessionToken = state.session.sessionToken;
+    if (sessionToken) {
+        session.setSessionToken(sessionToken);
+    } else {
+        session.clearSessionToken();
+    }
 }
 

@@ -41,7 +41,7 @@ export class App extends Component {
                                 <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
 
                                 <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
-                                <Route exact path={RouteLookup.login.login} component={Login} />
+                                <Route path={RouteLookup.login.login} component={Login} />
                                 <Route exact path={RouteLookup.logout} component={Logout} />
 
                                 <Route exact path={RouteLookup.account} component={Account} />

@@ -7,7 +7,8 @@ export const RouteLookup = (() => {
             return {
                 base: base,
                 login: base,
-                callback: `${base}/callback/:sessionToken/`
+                callback: `${base}/callback/:sessionToken/`,
+                error: `${base}/error/:message/`
             };
         })(),
         logout: '/logout',
