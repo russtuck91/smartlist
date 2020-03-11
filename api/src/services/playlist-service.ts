@@ -12,7 +12,7 @@ import * as spotifyService from './spotify-service';
 import { getCurrentUser, getUserById } from './user-service';
 import { spCache } from './spotify-service-cache';
 
-const db = mongoist('mongodb://localhost:27017/smartify');
+const db = mongoist('mongodb://localhost:27017/smartlist');
 
 
 export async function getPlaylists() {

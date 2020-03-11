@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/smartify.iml" filepath="$PROJECT_DIR$/.idea/smartify.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/smartlist.iml" filepath="$PROJECT_DIR$/.idea/smartlist.iml" />
     </modules>
   </component>
 </project>

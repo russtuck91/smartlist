@@ -6,7 +6,7 @@ import { SpotifyApi } from '../spotify/spotify-api';
 import { User } from './models/user';
 import { getCurrentUser } from '../../services/user-service';
 
-const db = mongoist('mongodb://localhost:27017/smartify');
+const db = mongoist('mongodb://localhost:27017/smartlist');
 
 
 

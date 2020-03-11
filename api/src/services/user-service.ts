@@ -5,7 +5,7 @@ import mongoist from 'mongoist';
 
 import { User } from '../core/session/models';
 
-const db = mongoist('mongodb://localhost:27017/smartify');
+const db = mongoist('mongodb://localhost:27017/smartlist');
 
 
 export async function getCurrentUser(): Promise<User> {

@@ -1,7 +1,7 @@
 import Agenda from 'agenda';
 import { kebabCase } from 'lodash';
 
-const connectionOpts = { db: { address: 'localhost:27017/smartify', collection: 'jobs' } };
+const connectionOpts = { db: { address: 'localhost:27017/smartlist', collection: 'jobs' } };
 
 export const agenda = new Agenda(connectionOpts);
 

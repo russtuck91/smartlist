@@ -4,7 +4,7 @@
     <option name="serverConfigurations">
       <list>
         <ServerConfiguration>
-          <option name="label" value="Smartify" />
+          <option name="label" value="Smartlist" />
           <option name="serverUrls">
             <list>
               <option value="localhost:27017" />
