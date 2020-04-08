@@ -26,9 +26,18 @@ export class App extends Component {
                     root: {
                         width: '100%'
                     }
+                },
+                MuiTableCell: {
+                    head: {
+                        fontWeight: 'bold'
+                    }
                 }
             }
         });
+        theme.overrides!.MuiTableCell!.head = {
+            ...theme.overrides!.MuiTableCell!.head,
+            backgroundColor: theme.palette.background.default
+        };
 
         return (
             <div className="app">
