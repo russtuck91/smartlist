@@ -1,7 +1,7 @@
 import { chunk } from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import { PlaylistRule, RuleParam } from '../../../shared/src/playlists/models';
+import { PlaylistRule, RuleParam } from '../../../shared/src';
 
 import { SpotifyApi } from '../core/spotify/spotify-api';
 import { getUserById, getCurrentUser } from './user-service';

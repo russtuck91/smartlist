@@ -1,6 +1,10 @@
 {
     "extends": "../tsconfig.base",
     "compilerOptions": {
-        "declaration": true
-    }
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "outDir": "build"
+    },
+    "references": []
 }

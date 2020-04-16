@@ -2,9 +2,9 @@
   "name": "api",
   "version": "0.0.0",
   "private": true,
-  "main": "build/start.js",
+  "main": "build/api/src/start.js",
   "scripts": {
-    "start": "node build/start.js",
+    "start": "node build/api/src/start.js",
     "dev": "nodemon",
     "build": "rm -rf ./build/ && tsc"
   },

@@ -4,7 +4,7 @@ import { Button, IconButton, Grid, ButtonGroup, Paper, Theme, WithStyles, withSt
 import { RemoveCircleOutline } from '@material-ui/icons';
 import * as React from 'react';
 
-import { PlaylistRuleGroup, RuleGroupType, RuleParam, PlaylistRule, isPlaylistRuleGroup } from '../../../../shared/src/playlists/models';
+import { PlaylistRuleGroup, RuleGroupType, RuleParam, PlaylistRule, isPlaylistRuleGroup } from '../../../../shared';
 import { objectUtil } from '../../../../shared/src/util/object-util';
 
 import { DropdownField, TextField, CheckboxField } from '../../core/forms/fields';

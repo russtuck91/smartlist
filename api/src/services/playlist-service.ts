@@ -3,7 +3,7 @@ import { intersectionWith, union } from 'lodash';
 import { ObjectId } from 'mongodb';
 import mongoist from 'mongoist';
 
-import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleGroupType, RuleParam } from '../../../shared/src/playlists/models';
+import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleGroupType, RuleParam } from '../../../shared';
 
 import { User } from '../core/session/models';
 import { doAndRetry } from '../core/session/session-util';

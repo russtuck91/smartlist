@@ -92,6 +92,7 @@ typings/
 # production
 /api/build
 /web/build
+/shared/build
 
 # IntelliJ Idea
 .idea/dictionaries/*

@@ -3,7 +3,7 @@ import { Edit, Delete, Publish } from '@material-ui/icons';
 import * as React from 'react';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
 
-import { Playlist } from '../../../../shared/src/playlists/models';
+import { Playlist } from '../../../../shared';
 
 import { ColumnConfig, ColumnFormatType, ColumnSet } from '../../core/components/tables/models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';

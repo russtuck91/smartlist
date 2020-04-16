@@ -3,7 +3,7 @@ import { Formik, FormikProps } from 'formik';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 
-import { Playlist, RuleGroupType, RuleParam } from '../../../../shared/src/playlists/models/playlist';
+import { Playlist, RuleGroupType, RuleParam } from '../../../../shared';
 
 import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';

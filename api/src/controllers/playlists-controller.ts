@@ -2,7 +2,7 @@ import { Controller, Delete, Get, Post, Put, Wrapper } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 
-import { Playlist, PlaylistRuleGroup } from '../../../shared/src/playlists/models';
+import { Playlist, PlaylistRuleGroup } from '../../../shared';
 
 import { doAndRetryWithCurrentUser } from '../core/session/session-util';
 import { createPlaylist, deletePlaylist, getPlaylistById, getPlaylists, populateListByRules, updatePlaylist, publishPlaylistById } from '../services/playlist-service';
