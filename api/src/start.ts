@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import AppServer from './app-server';
 require('./agenda');
 
