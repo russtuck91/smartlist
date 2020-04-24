@@ -29,7 +29,7 @@ export class LoginController {
 
 
     @Get('callback')
-    private async processSpotifyAuth(req: Request, res: Response) {
+    private async processSpotifyAuth(req: Request<any>, res: Response) {
         const { code, state } = req.query;
         const storedState = req.cookies ? req.cookies[this.STATE_KEY] : null;
 
