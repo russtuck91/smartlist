@@ -9,6 +9,11 @@ import { updateUser, removeSessionTokenFromCurrentUser } from '../services/user-
 import { getMe } from '../services/spotify-service';
 
 
+interface SessionRequest extends Request {
+    sessionID: string;
+}
+
+
 @Controller('login')
 export class LoginController {
     private STATE_KEY = 'spotify_auth_state';
@@ -29,7 +34,7 @@ export class LoginController {
 
 
     @Get('callback')
-    private async processSpotifyAuth(req: Request<any>, res: Response) {
+    private async processSpotifyAuth(req: SessionRequest, res: Response) {
         const { code, state } = req.query;
         const storedState = req.cookies ? req.cookies[this.STATE_KEY] : null;
 
