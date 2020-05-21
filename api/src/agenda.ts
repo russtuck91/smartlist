@@ -1,7 +1,9 @@
 import Agenda from 'agenda';
 import { kebabCase } from 'lodash';
 
-const connectionOpts = { db: { address: 'localhost:27017/smartlist', collection: 'jobs' } };
+import { MONGODB_URI } from './core/db/db';
+
+const connectionOpts = { db: { address: MONGODB_URI, collection: 'jobs' } };
 
 export const agenda = new Agenda(connectionOpts);
 
