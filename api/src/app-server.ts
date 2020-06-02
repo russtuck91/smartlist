@@ -1,9 +1,10 @@
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, static as serveStatic } from 'express';
 import httpContext from 'express-http-context';
 import session from 'express-session';
+import path from 'path';
 
 import { Server } from '@overnightjs/core';
 import { Logger } from '@overnightjs/logger';
@@ -55,9 +56,17 @@ class AppServer extends Server {
 
 
     public start(port: number): void {
-        this.app.get('*', (req, res) => {
-            res.send(this.SERVER_STARTED + port);
-        });
+        console.log('NODE_ENV', process.env.NODE_ENV);
+        if (process.env.NODE_ENV === 'production') {
+            this.app.use(serveStatic('../web/build/'));
+            this.app.get('*', (req, res) => {
+                res.sendFile(path.resolve('../web/build/index.html'));
+            });
+        } else {
+            this.app.get('*', (req, res) => {
+                res.send(this.SERVER_STARTED + port);
+            });
+        }
         this.app.listen(port, () => {
             Logger.Imp(this.SERVER_STARTED + port);
         });
