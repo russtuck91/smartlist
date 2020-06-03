@@ -9,8 +9,8 @@ import path from 'path';
 import { Server } from '@overnightjs/core';
 import { Logger } from '@overnightjs/logger';
 
-import * as controllers from './controllers';
 import { setSessionTokenContext } from './core/session/session-util';
+import { BaseController } from './base-controller';
 
 class AppServer extends Server {
     private readonly SERVER_STARTED = 'Example server started on port: ';
@@ -44,26 +44,16 @@ class AppServer extends Server {
     }
 
     private setupControllers(): void {
-        const ctlrInstances: any[] = [];
-        for (const name in controllers) {
-            if (controllers.hasOwnProperty(name)) {
-                const controller = (controllers as any)[name];
-                ctlrInstances.push(new controller());
-            }
-        }
-        super.addControllers(ctlrInstances);
+        super.addControllers(new BaseController());
     }
 
 
     public start(port: number|string): void {
         console.log('NODE_ENV', process.env.NODE_ENV);
         if (process.env.NODE_ENV === 'production') {
-            console.log('got here, test #1');
             this.app.use(serveStatic('../web/build/'));
             this.app.get('*', (req, res) => {
-                console.log('got here, test #2');
                 res.sendFile(path.resolve('../web/build/index.html'));
-                console.log('got here, test #3');
             });
         } else {
             this.app.get('*', (req, res) => {
