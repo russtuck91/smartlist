@@ -1,7 +1,7 @@
 import { clearSessionToken } from '../redux/actions';
 import { store } from '../redux/stores';
 
-export const baseRequestUrl = `${process.env.APP_URL || 'http://localhost:5000'}/api`;
+export const baseRequestUrl = `${process.env.REACT_APP_URL || process.env.APP_URL || process.env.NODE_ENV !== 'production' ? 'http://localhost:5000' : ''}/api`;
 
 export const requests = {
     get: getRequest,
