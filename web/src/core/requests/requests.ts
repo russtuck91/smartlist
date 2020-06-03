@@ -1,8 +1,7 @@
 import { clearSessionToken } from '../redux/actions';
 import { store } from '../redux/stores';
-import { BASE_API_URL } from '../../../../shared/src/shared-models/requests';
 
-export const baseRequestUrl = BASE_API_URL;
+export const baseRequestUrl = `${process.env.APP_URL || 'http://localhost:5000'}/api`;
 
 export const requests = {
     get: getRequest,

@@ -22,8 +22,7 @@
         ]
     },
     "include": [
-        "./src/**/*.ts",
-        "../shared/src"
+        "./src/**/*.ts"
     ],
     "exclude": [
         "./src/public/"
