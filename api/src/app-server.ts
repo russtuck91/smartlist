@@ -55,12 +55,15 @@ class AppServer extends Server {
     }
 
 
-    public start(port: number): void {
+    public start(port: number|string): void {
         console.log('NODE_ENV', process.env.NODE_ENV);
         if (process.env.NODE_ENV === 'production') {
+            console.log('got here, test #1');
             this.app.use(serveStatic('../web/build/'));
             this.app.get('*', (req, res) => {
+                console.log('got here, test #2');
                 res.sendFile(path.resolve('../web/build/index.html'));
+                console.log('got here, test #3');
             });
         } else {
             this.app.get('*', (req, res) => {
