@@ -2,6 +2,7 @@ import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { Request, Response, NextFunction, static as serveStatic } from 'express';
+import connectMongo from 'connect-mongo';
 import httpContext from 'express-http-context';
 import session from 'express-session';
 import path from 'path';
@@ -9,8 +10,11 @@ import path from 'path';
 import { Server } from '@overnightjs/core';
 import { Logger } from '@overnightjs/logger';
 
+import { MONGODB_URI } from './core/db/db';
 import { setSessionTokenContext } from './core/session/session-util';
 import { BaseController } from './base-controller';
+
+const MongoStore = connectMongo(session);
 
 class AppServer extends Server {
     private readonly SERVER_STARTED = 'Example server started on port: ';
@@ -27,7 +31,8 @@ class AppServer extends Server {
         this.app.use(setSessionTokenContext);
 
         this.app.use(session({
-            secret: process.env.client_secret || 'defaultSecret'
+            secret: process.env.client_secret || 'defaultSecret',
+            store: new MongoStore({ url: MONGODB_URI })
         }));
 
         this.setupControllers();
