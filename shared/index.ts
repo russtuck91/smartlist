@@ -1,1 +1,1 @@
-export * from './src/playlists/models';
+export * from './src/shared-models';

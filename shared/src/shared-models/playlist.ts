@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { SimpleDBObject } from '../../shared-models/db';
+import { SimpleDBObject } from './db';
 
 export interface Playlist extends Partial<SimpleDBObject> {
     name: string;

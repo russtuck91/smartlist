@@ -1,4 +1,4 @@
-import { Table, TableHead, TableRow, TableBody, TableCell } from '@material-ui/core';
+import { Box, Table, TableHead, TableRow, TableBody, TableCell, Typography } from '@material-ui/core';
 import { get } from 'lodash';
 import * as React from 'react';
 
@@ -18,6 +18,7 @@ export class TableRenderer extends React.Component<TableRendererProps> {
         return (
             <Table
                 stickyHeader={this.props.stickyHeader}
+                size="small"
             >
                 {this.renderHead()}
                 {this.renderBody()}
@@ -44,11 +45,23 @@ export class TableRenderer extends React.Component<TableRendererProps> {
     }
 
     private renderBody() {
-        const { data } = this.props;
+        const { data, columns } = this.props;
 
         return (
             <TableBody>
-                {data.map(this.renderRow)}
+                {data.length === 0 ? (
+                    <tr>
+                        <td colSpan={columns.length}>
+                            <Box p={3}>
+                                <Typography align="center">
+                                    No records to display
+                                </Typography>
+                            </Box>
+                        </td>
+                    </tr>
+                ) :
+                    data.map(this.renderRow)
+                }
             </TableBody>
         );
     }

@@ -1,4 +1,4 @@
-import { Button, CircularProgress, IconButton, Link, Paper, TableContainer } from '@material-ui/core';
+import { Button, CircularProgress, IconButton, Link, Paper, TableContainer, Grid, Box } from '@material-ui/core';
 import { Edit, Delete, Publish } from '@material-ui/icons';
 import * as React from 'react';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
@@ -21,12 +21,14 @@ interface PlaylistBrowserState {
     activeItem?: Playlist;
     showDeleteDialog: boolean;
     showPublishDialog: boolean;
+    publishInProgress: { [id: string]: boolean };
 }
 
 export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> {
     state: PlaylistBrowserState = {
         showDeleteDialog: false,
-        showPublishDialog: false
+        showPublishDialog: false,
+        publishInProgress: {}
     };
 
     private columnSet: ColumnSet<Playlist> = [
@@ -39,10 +41,13 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
         this.loadPlaylists();
     }
 
-    async loadPlaylists() {
-        this.setState({
-            playlists: undefined
-        });
+    async loadPlaylists(reload?: boolean) {
+        if (reload) {
+            this.setState({
+                playlists: undefined
+            });
+        }
+
         const playlists = await requests.get(`${PlaylistContainer.requestUrl}/lists`);
         this.setState({
             playlists: playlists
@@ -52,10 +57,18 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
     render() {
         return (
             <div>
-                <h1>Playlists</h1>
-                <Link to={RouteLookup.playlists.create} component={RouterLink} underline="none">
-                    <Button variant="contained">Create New Playlist</Button>
-                </Link>
+                <Box my={3}>
+                    <Grid container alignItems="flex-end">
+                        <Grid item xs>
+                            <h1 style={{ marginBottom: 0 }}>Playlists</h1>
+                        </Grid>
+                        <Grid item>
+                            <Link to={RouteLookup.playlists.create} component={RouterLink} underline="none">
+                                <Button variant="contained">Create New Playlist</Button>
+                            </Link>
+                        </Grid>
+                    </Grid>
+                </Box>
                 {this.renderPlaylistList()}
                 {this.renderDeleteDialog()}
                 {this.renderPublishDialog()}
@@ -66,7 +79,13 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
     private renderPlaylistList() {
         const { playlists } = this.state;
 
-        if (!playlists) { return <CircularProgress />; }
+        if (!playlists) {
+            return (
+                <Box display="flex" justifyContent="center">
+                    <CircularProgress size={60} />
+                </Box>
+            );
+        }
 
         return (
             <TableContainer component={Paper}>
@@ -81,7 +100,12 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
     }
 
     private cellFormatter = (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: Playlist, rowIndex: number) => {
-        if (column.type === ColumnFormatType.Actions) {
+        if (column.type === ColumnFormatType.DateTime) {
+            const isPublishInProgress: boolean = !!rowData._id && this.state.publishInProgress[rowData._id];
+            if (isPublishInProgress) {
+                return <CircularProgress size={20} />;
+            }
+        } else if (column.type === ColumnFormatType.Actions) {
             return this.renderActionsCell(rowData);
         }
     }
@@ -154,14 +178,14 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
         });
     }
 
-    private onConfirmDelete = () => {
+    private onConfirmDelete = async () => {
         if (!this.state.activeItem) { return; }
 
-        this.deletePlaylist(this.state.activeItem);
+        await this.deletePlaylist(this.state.activeItem);
 
         this.closeDeleteDialog();
 
-        this.loadPlaylists();
+        this.loadPlaylists(true);
     }
 
     private async deletePlaylist(playlist: Playlist) {
@@ -191,6 +215,22 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
     }
 
     private async publishPlaylist(playlist: Playlist) {
+        if (!playlist._id) { return; }
+
+        this.setPublishInProgress(playlist._id, true);
+
         await requests.post(`${PlaylistContainer.requestUrl}/publish/${playlist._id}`);
+        await this.loadPlaylists();
+
+        this.setPublishInProgress(playlist._id, false);
+    }
+
+    private setPublishInProgress(id: string, value: boolean) {
+        this.setState(prevState => ({
+            publishInProgress: {
+                ...prevState.publishInProgress,
+                [id]: value
+            }
+        }));
     }
 }
