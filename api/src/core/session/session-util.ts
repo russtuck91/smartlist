@@ -24,8 +24,6 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
             const newAccessToken = await refreshAccessToken(user);
 
             if (newAccessToken) {
-                console.log('got new access token! ', newAccessToken);
-
                 return await bodyFn(newAccessToken);
             }
         }
@@ -45,7 +43,6 @@ export async function refreshAccessToken(user: User) {
         spotifyApi.setRefreshToken(refreshToken);
 
         const refreshResponse = await spotifyApi.refreshAccessToken();
-        console.log(refreshResponse);
         const newAccessToken = refreshResponse.body.access_token;
 
         db.users.update(

@@ -77,8 +77,6 @@ export async function getFullMySavedTracks(accessToken?: string): Promise<Spotif
     await setAccessTokenFromCurrentUser(spotifyApi);
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
 
-    console.log('!!! access token ::', spotifyApi.getAccessToken());
-
     return getFullPagedResults(async (options) => {
         const apiResponse: SpResponse<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>> = await spotifyApi.getMySavedTracks(options);
 
@@ -92,8 +90,6 @@ export async function getFullSearchResults(rules: PlaylistRule[], accessToken?: 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
     await setAccessTokenFromCurrentUser(spotifyApi);
-
-    console.log('!!! access token ::', spotifyApi.getAccessToken());
 
     let searchString = '';
     rules.map((rule) => {
