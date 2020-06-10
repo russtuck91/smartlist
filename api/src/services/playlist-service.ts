@@ -179,17 +179,22 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken?: 
         return obj;
     }, {});
 
-    const allAlbumIds: string[] = [];
-    const allArtistIds: string[] = [];
-    savedTracks.map((track) => {
-        allAlbumIds.push(track.album.id);
-        track.artists.map((artist) => {
-            allArtistIds.push(artist.id);
+    let albumMap = {};
+    let artistMap = {};
+    // Resources only needed if Genre filter is set
+    if (filterObj[RuleParam.Genre]) {
+        const allAlbumIds: string[] = [];
+        const allArtistIds: string[] = [];
+        savedTracks.map((track) => {
+            allAlbumIds.push(track.album.id);
+            track.artists.map((artist) => {
+                allArtistIds.push(artist.id);
+            });
         });
-    });
 
-    const albumMap = await spCache.getAlbums(allAlbumIds);
-    const artistMap = await spCache.getArtists(allArtistIds);
+        albumMap = await spCache.getAlbums(allAlbumIds);
+        artistMap = await spCache.getArtists(allArtistIds);
+    }
 
     const filteredList = savedTracks.filter((track) => {
         if (filterObj[RuleParam.Artist]) {

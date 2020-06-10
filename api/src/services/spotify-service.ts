@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import { PlaylistRule, RuleParam } from '../../../shared/src';
 
 import { SpotifyApi } from '../core/spotify/spotify-api';
+import { sleep } from '../core/utils/utils';
 import { getUserById, getCurrentUser } from './user-service';
 
 
@@ -175,6 +176,27 @@ export async function getAlbum(albumId: string, accessToken?: string): Promise<S
     return album;
 }
 
+async function doAndWaitForRateLimit(bodyFn: () => Promise<void>) {
+    console.log('in doAndWaitForRateLimit');
+    try {
+        return await bodyFn();
+    } catch (e) {
+        console.log('error found in doAndWaitForRateLimit');
+        if (e.statusCode === 429) {
+            // e.headers not yet passed from spotify-web-api-node
+            const retryAfterSec = e.headers && e.headers['retry-after'] ? parseInt(e.headers['retry-after']) : 3;
+            // wait x seconds
+            await sleep(retryAfterSec * 1000);
+
+            // run bodyFn again
+            return await bodyFn();
+        }
+
+        console.log(e);
+        throw e;
+    }
+}
+
 export async function getAlbums(albumIds: string[], accessToken?: string): Promise<SpotifyApi.AlbumObjectFull[]> {
     console.log('in getAlbums');
 
@@ -188,8 +210,10 @@ export async function getAlbums(albumIds: string[], accessToken?: string): Promi
 
     let albums: SpotifyApi.AlbumObjectFull[] = [];
     await Promise.all(batchedIds.map(async (batch) => {
-        const albumResponse = await spotifyApi.getAlbums(batch);
-        albums = albums.concat(albumResponse.body.albums);
+        await doAndWaitForRateLimit(async () => {
+            const albumResponse = await spotifyApi.getAlbums(batch);
+            albums = albums.concat(albumResponse.body.albums);
+        });
     }));
 
     return albums;
@@ -208,8 +232,10 @@ export async function getArtists(artistIds: string[], accessToken?: string): Pro
 
     let artists: SpotifyApi.ArtistObjectFull[] = [];
     await Promise.all(batchedIds.map(async (batch) => {
-        const artistResponse = await spotifyApi.getArtists(batch);
-        artists = artists.concat(artistResponse.body.artists);
+        await doAndWaitForRateLimit(async () => {
+            const artistResponse = await spotifyApi.getArtists(batch);
+            artists = artists.concat(artistResponse.body.artists);
+        });
     }));
 
     return artists;
