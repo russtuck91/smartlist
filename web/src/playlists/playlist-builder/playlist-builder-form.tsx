@@ -2,6 +2,7 @@ import { FormikProps } from 'formik';
 import { get } from 'lodash';
 import { Button, IconButton, Grid, ButtonGroup, Paper, Theme, WithStyles, withStyles, StyleRules, CircularProgress } from '@material-ui/core';
 import { RemoveCircleOutline } from '@material-ui/icons';
+import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 
 import { PlaylistRuleGroup, RuleGroupType, RuleParam, PlaylistRule, isPlaylistRuleGroup } from '../../../../shared';
@@ -60,20 +61,21 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         const { values, isValid } = this.props.formik;
 
         if (!isValid) {
-            this.setState({
-                listPreview: null
-            });
+            this.setState({ listPreview: null });
             return;
         }
-        this.setState({
-            listPreview: undefined
-        });
+        this.setState({ listPreview: undefined });
 
-        const list = await requests.post(`${PlaylistContainer.requestUrl}/populateList`, values.rules);
+        try {
+            const list = await requests.post(`${PlaylistContainer.requestUrl}/populateList`, values.rules);
 
-        this.setState({
-            listPreview: list
-        });
+            this.setState({
+                listPreview: list
+            });
+        } catch (e) {
+            console.log(e);
+            this.setState({ listPreview: null });
+        }
     }
 
     render() {
@@ -254,7 +256,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         }
 
         if (listPreview === null) {
-            return null;
+            return <Alert severity="error">There was a problem loading the playlist. Please try again.</Alert>;
         }
 
         return (
