@@ -289,13 +289,13 @@ export async function publishAllPlaylists() {
     console.log('in publishAllPlaylists');
 
     const playlists = await db.playlists.find();
-    playlists.forEach(async (playlist: Playlist) => {
+    await Promise.all(playlists.map(async (playlist: Playlist) => {
         const user = await getUserById(playlist.userId);
         if (user) {
             doAndRetry(async (accessToken: string) => {
                 await publishPlaylist(playlist, accessToken);
             }, user);
         }
-    });
+    }));
 }
 
