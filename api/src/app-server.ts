@@ -20,6 +20,7 @@ process.on('unhandledRejection', (error: any, promise) => {
     console.log('Unhandled Rejection at: Promise', promise);
     console.log('Error:', error);
     console.dir(error.stack);
+    throw error;
 });
 
 class AppServer extends Server {

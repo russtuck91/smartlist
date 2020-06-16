@@ -263,13 +263,13 @@ export async function publishPlaylist(playlist: Playlist, accessToken?: string) 
         await spotifyService.removeTracksFromPlaylist(playlist.spotifyPlaylistId, accessToken);
 
         // Add tracks to playlist (batches of 100)
-        spotifyService.addTracksToPlaylist(playlist.spotifyPlaylistId, list, accessToken);
+        await spotifyService.addTracksToPlaylist(playlist.spotifyPlaylistId, list, accessToken);
 
         // Save last published date
         const playlistUpdate: Partial<Playlist> = {
             lastPublished: new Date()
         };
-        updatePlaylist(playlist._id!, playlistUpdate);
+        await updatePlaylist(playlist._id!, playlistUpdate);
     } else {
         const newPlaylist = await spotifyService.createNewPlaylist(playlist.name, playlist.userId);
 
@@ -278,10 +278,10 @@ export async function publishPlaylist(playlist: Playlist, accessToken?: string) 
             spotifyPlaylistId: newPlaylist.id,
             lastPublished: new Date()
         };
-        updatePlaylist(playlist._id!, playlistUpdate);
+        await updatePlaylist(playlist._id!, playlistUpdate);
 
         // Add tracks to playlist
-        spotifyService.addTracksToPlaylist(newPlaylist.id, list, accessToken);
+        await spotifyService.addTracksToPlaylist(newPlaylist.id, list, accessToken);
     }
 }
 
@@ -289,13 +289,13 @@ export async function publishAllPlaylists() {
     console.log('in publishAllPlaylists');
 
     const playlists = await db.playlists.find();
-    await Promise.all(playlists.map(async (playlist: Playlist) => {
+    for (const playlist of playlists) {
         const user = await getUserById(playlist.userId);
         if (user) {
-            doAndRetry(async (accessToken: string) => {
+            await doAndRetry(async (accessToken: string) => {
                 await publishPlaylist(playlist, accessToken);
             }, user);
         }
-    }));
+    }
 }
 
