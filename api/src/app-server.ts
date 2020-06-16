@@ -16,6 +16,12 @@ import { BaseController } from './base-controller';
 
 const MongoStore = connectMongo(session);
 
+process.on('unhandledRejection', (error: any, promise) => {
+    console.log('Unhandled Rejection at: Promise', promise);
+    console.log('Error:', error);
+    console.dir(error.stack);
+});
+
 class AppServer extends Server {
     private readonly SERVER_STARTED = 'Example server started on port: ';
 
