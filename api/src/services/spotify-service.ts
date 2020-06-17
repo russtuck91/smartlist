@@ -209,12 +209,12 @@ export async function getAlbums(albumIds: string[], accessToken?: string): Promi
     const batchedIds = chunk(albumIds, batchSize);
 
     let albums: SpotifyApi.AlbumObjectFull[] = [];
-    await Promise.all(batchedIds.map(async (batch) => {
+    for (const batch of batchedIds) {
         await doAndWaitForRateLimit(async () => {
             const albumResponse = await spotifyApi.getAlbums(batch);
             albums = albums.concat(albumResponse.body.albums);
         });
-    }));
+    }
 
     return albums;
 }
@@ -231,12 +231,12 @@ export async function getArtists(artistIds: string[], accessToken?: string): Pro
     const batchedIds = chunk(artistIds, batchSize);
 
     let artists: SpotifyApi.ArtistObjectFull[] = [];
-    await Promise.all(batchedIds.map(async (batch) => {
+    for (const batch of batchedIds) {
         await doAndWaitForRateLimit(async () => {
             const artistResponse = await spotifyApi.getArtists(batch);
             artists = artists.concat(artistResponse.body.artists);
         });
-    }));
+    }
 
     return artists;
 }
