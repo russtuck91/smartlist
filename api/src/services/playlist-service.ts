@@ -288,13 +288,18 @@ export async function publishPlaylist(playlist: Playlist, accessToken?: string) 
 export async function publishAllPlaylists() {
     console.log('in publishAllPlaylists');
 
-    const playlists = await db.playlists.find();
+    const playlists: Playlist[] = await db.playlists.find();
     for (const playlist of playlists) {
-        const user = await getUserById(playlist.userId);
-        if (user) {
-            await doAndRetry(async (accessToken: string) => {
-                await publishPlaylist(playlist, accessToken);
-            }, user);
+        try {
+            const user = await getUserById(playlist.userId);
+            if (user) {
+                await doAndRetry(async (accessToken: string) => {
+                    await publishPlaylist(playlist, accessToken);
+                }, user);
+            }
+        } catch (e) {
+            console.log('error publishing playlist', playlist._id);
+            console.log(e);
         }
     }
 }
