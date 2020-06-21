@@ -1,5 +1,5 @@
 import { FormikProps } from 'formik';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { Button, IconButton, Grid, ButtonGroup, Paper, Theme, WithStyles, withStyles, StyleRules, CircularProgress } from '@material-ui/core';
 import { RemoveCircleOutline } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
@@ -40,7 +40,9 @@ const useStyles = (theme: Theme) => {
 type FullProps = PlaylistBuilderFormProps & WithStyles<typeof useStyles>;
 
 export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistBuilderFormState> {
-    state: PlaylistBuilderFormState = {};
+    state: PlaylistBuilderFormState = {
+        listPreview: []
+    };
 
     private DEFAULT_NEW_CONDITION: PlaylistRule = { param: RuleParam.Artist, value: '' };
 
@@ -54,6 +56,8 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     ];
 
     componentDidMount() {
+        this.props.formik.validateForm();
+
         this.getListPreview();
     }
 
@@ -61,7 +65,6 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         const { values, isValid } = this.props.formik;
 
         if (!isValid) {
-            this.setState({ listPreview: null });
             return;
         }
         this.setState({ listPreview: undefined });
@@ -99,7 +102,9 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     private renderFormArea() {
         const { formik } = this.props;
-        const { values, isValid, isSubmitting } = formik;
+        const { values, errors, dirty, isValid, isSubmitting } = formik;
+
+        const areRulesValid = isEmpty(errors.rules);
 
         return (
             <Grid container spacing={2}>
@@ -116,7 +121,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                         <Button type="submit" variant="contained" disabled={!isValid || isSubmitting}>Save</Button>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained" disabled={!isValid} onClick={this.getListPreview}>Refresh</Button>
+                        <Button variant="contained" disabled={!areRulesValid} onClick={this.getListPreview}>Refresh</Button>
                     </Grid>
                 </Grid>
                 {this.renderRulesFormArea()}
