@@ -113,11 +113,11 @@ export async function getFullSearchResults(rules: PlaylistRule[], accessToken?: 
         searchString += `${fieldFilter}:"${rule.value}"`;
     });
 
-    return getFullPagedResults(async (options) => {
+    return doAndWaitForRateLimit(async () => await getFullPagedResults(async (options) => {
         const apiResponse: SpResponse<SpotifyApi.SearchResponse> = await spotifyApi.search(searchString, [ 'track' ], options);
 
         return apiResponse.body.tracks;
-    });
+    }));
 }
 
 
@@ -176,7 +176,7 @@ export async function getAlbum(albumId: string, accessToken?: string): Promise<S
     return album;
 }
 
-async function doAndWaitForRateLimit(bodyFn: () => Promise<void>) {
+async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
     console.log('in doAndWaitForRateLimit');
     try {
         return await bodyFn();
@@ -211,6 +211,8 @@ export async function getAlbums(albumIds: string[], accessToken?: string): Promi
     let albums: SpotifyApi.AlbumObjectFull[] = [];
     for (const batch of batchedIds) {
         await doAndWaitForRateLimit(async () => {
+            console.log('access token :: ', spotifyApi.getAccessToken());
+
             const albumResponse = await spotifyApi.getAlbums(batch);
             albums = albums.concat(albumResponse.body.albums);
         });
@@ -233,6 +235,8 @@ export async function getArtists(artistIds: string[], accessToken?: string): Pro
     let artists: SpotifyApi.ArtistObjectFull[] = [];
     for (const batch of batchedIds) {
         await doAndWaitForRateLimit(async () => {
+            console.log('access token :: ', spotifyApi.getAccessToken());
+
             const artistResponse = await spotifyApi.getArtists(batch);
             artists = artists.concat(artistResponse.body.artists);
         });
