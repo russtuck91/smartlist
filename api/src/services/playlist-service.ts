@@ -294,6 +294,7 @@ export async function publishAllPlaylists() {
             const user = await getUserById(playlist.userId);
             if (user) {
                 await doAndRetry(async (accessToken: string) => {
+                    console.log('access token :: ', accessToken);
                     await publishPlaylist(playlist, accessToken);
                 }, user);
             }
