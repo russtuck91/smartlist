@@ -55,16 +55,16 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         { title: 'Album', mapsToField: 'album.name' }
     ];
 
-    componentDidMount() {
-        this.props.formik.validateForm();
+    async componentDidMount() {
+        await this.props.formik.validateForm();
 
         this.getListPreview();
     }
 
     getListPreview = async () => {
-        const { values, isValid } = this.props.formik;
+        const { values } = this.props.formik;
 
-        if (!isValid) {
+        if (!this.areRulesValid()) {
             return;
         }
         this.setState({ listPreview: undefined });
@@ -102,9 +102,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     private renderFormArea() {
         const { formik } = this.props;
-        const { values, errors, dirty, isValid, isSubmitting } = formik;
-
-        const areRulesValid = isEmpty(errors.rules);
+        const { values, isValid, isSubmitting } = formik;
 
         return (
             <Grid container spacing={2}>
@@ -121,7 +119,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                         <Button type="submit" variant="contained" disabled={!isValid || isSubmitting}>Save</Button>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained" disabled={!areRulesValid} onClick={this.getListPreview}>Refresh</Button>
+                        <Button variant="contained" disabled={!this.areRulesValid()} onClick={this.getListPreview}>Refresh</Button>
                     </Grid>
                 </Grid>
                 {this.renderRulesFormArea()}
@@ -272,6 +270,10 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 stickyHeader
             />
         );
+    }
+
+    private areRulesValid(): boolean {
+        return isEmpty(this.props.formik.errors.rules);
     }
 
     private addCondition(treeId: string) {

@@ -36,22 +36,31 @@ async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.P
 
         // while number fetched is less than total reported, send request
         while (!result || result.total > result.items.length) {
-            const options = { limit: batchSize, offset: offset };
-            const response = await fn(options);
+            try {
+                const options = { limit: batchSize, offset: offset };
+                const response = await fn(options);
 
-            if (!response) {
-                // TODO
-                throw Error();
+                if (!response) {
+                    console.log('getFullPagedResults exiting because of lack of response from callback fn. Check callback fn.');
+                    return;
+                }
+
+                if (!result) {
+                    result = response;
+                } else {
+                    // take list from response and add it to result
+                    result.items.push(...response.items);
+                }
+
+                offset += batchSize;
+            } catch (e) {
+                console.log('error in getFullPagedResults iteration');
+                if (e.statusCode === 404) {
+                    return result;
+                }
+                console.log(e);
+                throw e;
             }
-
-            if (!result) {
-                result = response;
-            } else {
-                // take list from response and add it to result
-                result.items.push(...response.items);
-            }
-
-            offset += batchSize;
         }
 
         return result;
@@ -112,10 +121,10 @@ export async function getFullSearchResults(rules: PlaylistRule[], accessToken?: 
         })(rule.param);
         searchString += `${fieldFilter}:"${rule.value}"`;
     });
+    // console.log('searchString :: ', searchString);
 
     return doAndWaitForRateLimit(async () => await getFullPagedResults(async (options) => {
-        console.log('access token :: ', spotifyApi.getAccessToken());
-        
+        // maximum offset is 2000 - handled as 404 error
         const apiResponse: SpResponse<SpotifyApi.SearchResponse> = await spotifyApi.search(searchString, [ 'track' ], options);
 
         return apiResponse.body.tracks;
@@ -215,7 +224,7 @@ export async function getAlbums(albumIds: string[], accessToken?: string): Promi
     let albums: SpotifyApi.AlbumObjectFull[] = [];
     for (const batch of batchedIds) {
         await doAndWaitForRateLimit(async () => {
-            console.log('access token :: ', spotifyApi.getAccessToken());
+            // console.log('access token :: ', spotifyApi.getAccessToken());
 
             const albumResponse = await spotifyApi.getAlbums(batch);
             albums = albums.concat(albumResponse.body.albums);
@@ -239,7 +248,7 @@ export async function getArtists(artistIds: string[], accessToken?: string): Pro
     let artists: SpotifyApi.ArtistObjectFull[] = [];
     for (const batch of batchedIds) {
         await doAndWaitForRateLimit(async () => {
-            console.log('access token :: ', spotifyApi.getAccessToken());
+            // console.log('access token :: ', spotifyApi.getAccessToken());
 
             const artistResponse = await spotifyApi.getArtists(batch);
             artists = artists.concat(artistResponse.body.artists);
