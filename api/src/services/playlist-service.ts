@@ -192,8 +192,8 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken?: 
             });
         });
 
-        albumMap = await spCache.getAlbums(allAlbumIds);
-        artistMap = await spCache.getArtists(allArtistIds);
+        albumMap = await spCache.getAlbums(allAlbumIds, accessToken);
+        artistMap = await spCache.getArtists(allArtistIds, accessToken);
     }
 
     const filteredList = savedTracks.filter((track) => {

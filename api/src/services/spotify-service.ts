@@ -114,6 +114,8 @@ export async function getFullSearchResults(rules: PlaylistRule[], accessToken?: 
     });
 
     return doAndWaitForRateLimit(async () => await getFullPagedResults(async (options) => {
+        console.log('access token :: ', spotifyApi.getAccessToken());
+        
         const apiResponse: SpResponse<SpotifyApi.SearchResponse> = await spotifyApi.search(searchString, [ 'track' ], options);
 
         return apiResponse.body.tracks;
@@ -128,8 +130,10 @@ export async function createNewPlaylist(playlistName: string, userId: ObjectId) 
     const spotifyApi = new SpotifyApi();
     spotifyApi.setAccessToken(user.accessToken);
 
+    const description = 'Created by SmartList' + (process.env.NODE_ENV === 'development' ? ' [DEV]' : '');
+
     const playlist = await spotifyApi.createPlaylist(user.username, playlistName, {
-        description: 'Created by SmartList'
+        description: description
     });
 
     return playlist.body;
