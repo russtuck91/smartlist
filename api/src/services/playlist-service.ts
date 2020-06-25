@@ -35,6 +35,7 @@ export async function getPlaylistById(id: string) {
 
 export async function updatePlaylist(id: string, playlist: Partial<Playlist>) {
     delete playlist._id;
+    delete playlist.userId;
 
     await db.playlists.update(
         { _id: new ObjectId(id) },
