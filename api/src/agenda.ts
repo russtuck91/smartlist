@@ -22,7 +22,7 @@ if (jobTypes.length) {
         // await agenda.every('24 hours', 'playlistPublishing');
         await agenda.every('3 hours', 'playlistPublishing');
 
-        await agenda.now('playlistPublishing');
+        // await agenda.now('playlistPublishing');
     })();
 }
 
