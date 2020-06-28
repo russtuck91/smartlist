@@ -6,7 +6,7 @@ export class SpotifyServiceCache {
     private artistMap: Record<string, SpotifyApi.ArtistObjectFull> = {};
 
 
-    public async getAlbums(albumIds: string[], accessToken?: string) {
+    public async getAlbums(albumIds: string[], accessToken: string|undefined) {
         console.log('in cached getAlbums');
 
         const albumsToBeFetched: string[] = albumIds.filter((albumId) => !this.albumMap[albumId]);
@@ -29,7 +29,7 @@ export class SpotifyServiceCache {
         return returnAlbumMap;
     }
 
-    public async getArtists(artistIds: string[], accessToken?: string) {
+    public async getArtists(artistIds: string[], accessToken: string|undefined) {
         // For each artist ID, add to array if not in artistMap cache
         const artistsToBeFetched: string[] = artistIds.filter((artistId) => !this.artistMap[artistId]);
         console.log('# artists requested:', artistIds.length);

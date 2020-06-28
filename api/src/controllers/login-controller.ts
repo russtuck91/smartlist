@@ -18,7 +18,15 @@ interface SessionRequest extends Request {
 export class LoginController {
     private STATE_KEY = 'spotify_auth_state';
     // your application requests authorization
-    private scopes = ['user-read-private', 'user-read-email', 'user-library-read', 'playlist-modify-public', 'playlist-modify-private'];
+    private scopes = [
+        'user-read-private',
+        'user-read-email',
+        'user-library-read',
+        'playlist-read-private',
+        'playlist-read-collaborative',
+        'playlist-modify-public',
+        'playlist-modify-private'
+    ];
 
     /** Generates a random string containing numbers and letters of N characters */
     private generateRandomString = (N: number) => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2);

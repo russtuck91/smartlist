@@ -61,7 +61,7 @@ export async function deletePlaylist(id: string) {
 
 
 
-export async function populateListByRules(rules: PlaylistRuleGroup[], accessToken?: string): Promise<SpotifyApi.TrackObjectFull[]> {
+export async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
     console.log('in populateListByRules');
 
     const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
@@ -77,7 +77,7 @@ export async function populateListByRules(rules: PlaylistRuleGroup[], accessToke
     return unionResult;
 }
 
-async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken?: string): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
     if (ruleGroup.type === RuleGroupType.Or) {
         // Send each individual rule to getListForRules
         const listOfTrackResults = await Promise.all(
@@ -145,7 +145,7 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken?: s
     }
 }
 
-async function getListForRules(rules: PlaylistRule[], accessToken?: string): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRules(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
     console.log('IN getListForRules');
     
     // Bundle Saved rule with regular search rules (all but playlist)
@@ -168,7 +168,7 @@ async function getListForRules(rules: PlaylistRule[], accessToken?: string): Pro
     return results;
 }
 
-async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken?: string) {
+async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: string|undefined) {
     const savedTrackObjects = await spotifyService.getFullMySavedTracks(accessToken);
 
     if (!savedTrackObjects) { return []; }
@@ -253,37 +253,53 @@ export async function publishPlaylistById(id: string) {
     await publishPlaylist(playlist);
 }
 
+export async function preValidatePublishPlaylist(playlist: Playlist, accessToken: string|undefined) {
+    console.log('in preValidatePublishPlaylist');
+
+    // User has deleted playlist. Do not publish on intervals, require user to re-publish manually
+    if (playlist.deleted) {
+        return;
+    }
+
+    // Has been published before
+    if (playlist.spotifyPlaylistId) {
+        const userHasPlaylist = await spotifyService.userHasPlaylist(playlist.userId.toString(), playlist.spotifyPlaylistId, accessToken);
+
+        // User has deleted playlist since last publish
+        if (!userHasPlaylist) {
+            await updatePlaylist(playlist._id!, { deleted: true });
+            return;
+        }
+    }
+
+    return publishPlaylist(playlist, accessToken);
+}
+
 export async function publishPlaylist(playlist: Playlist, accessToken?: string) {
     console.log('in publishPlaylist. ID :: ', playlist._id);
     
     const list = await populateListByRules(playlist.rules, accessToken);
     console.log('publishing playlist will have ', list.length, ' songs');
 
-    if (playlist.spotifyPlaylistId) {
+    let spotifyPlaylistId = playlist.spotifyPlaylistId;
+    if (spotifyPlaylistId && !playlist.deleted) {
         // Remove all tracks from playlist
-        await spotifyService.removeTracksFromPlaylist(playlist.spotifyPlaylistId, accessToken);
-
-        // Add tracks to playlist (batches of 100)
-        await spotifyService.addTracksToPlaylist(playlist.spotifyPlaylistId, list, accessToken);
-
-        // Save last published date
-        const playlistUpdate: Partial<Playlist> = {
-            lastPublished: new Date()
-        };
-        await updatePlaylist(playlist._id!, playlistUpdate);
+        await spotifyService.removeTracksFromPlaylist(spotifyPlaylistId, accessToken);
     } else {
         const newPlaylist = await spotifyService.createNewPlaylist(playlist.name, playlist.userId);
-
-        // Save new playlist id to DB as spotifyPlaylistId
-        const playlistUpdate: Partial<Playlist> = {
-            spotifyPlaylistId: newPlaylist.id,
-            lastPublished: new Date()
-        };
-        await updatePlaylist(playlist._id!, playlistUpdate);
-
-        // Add tracks to playlist
-        await spotifyService.addTracksToPlaylist(newPlaylist.id, list, accessToken);
+        spotifyPlaylistId = newPlaylist.id;
     }
+
+    // Add tracks to playlist
+    await spotifyService.addTracksToPlaylist(spotifyPlaylistId, list, accessToken);
+
+    // Save last published date, spotifyPlaylistId (in case it changed)
+    const playlistUpdate: Partial<Playlist> = {
+        spotifyPlaylistId: spotifyPlaylistId,
+        lastPublished: new Date(),
+        deleted: false
+    };
+    await updatePlaylist(playlist._id!, playlistUpdate);
 }
 
 export async function publishAllPlaylists() {
@@ -295,8 +311,8 @@ export async function publishAllPlaylists() {
             const user = await getUserById(playlist.userId);
             if (user) {
                 await doAndRetry(async (accessToken: string) => {
-                    console.log('access token :: ', accessToken);
-                    await publishPlaylist(playlist, accessToken);
+                    // console.log('access token :: ', accessToken);
+                    await preValidatePublishPlaylist(playlist, accessToken);
                 }, user);
             }
         } catch (e) {

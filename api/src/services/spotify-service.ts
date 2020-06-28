@@ -56,6 +56,7 @@ async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.P
             } catch (e) {
                 console.log('error in getFullPagedResults iteration');
                 if (e.statusCode === 404) {
+                    console.log('404 error, exiting');
                     return result;
                 }
                 console.log(e);
@@ -80,7 +81,7 @@ async function setAccessTokenFromCurrentUser(spotifyApi: SpotifyApi) {
     }
 }
 
-export async function getFullMySavedTracks(accessToken?: string): Promise<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined> {
+export async function getFullMySavedTracks(accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined> {
     console.log('in getFullMySavedTracks');
 
     const spotifyApi = new SpotifyApi();
@@ -94,7 +95,7 @@ export async function getFullMySavedTracks(accessToken?: string): Promise<Spotif
     });
 }
 
-export async function getFullSearchResults(rules: PlaylistRule[], accessToken?: string): Promise<SpotifyApi.PagingObject<any>|undefined> {
+export async function getFullSearchResults(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.PagingObject<any>|undefined> {
     console.log('in getFullSearchResults');
 
     const spotifyApi = new SpotifyApi();
@@ -132,7 +133,31 @@ export async function getFullSearchResults(rules: PlaylistRule[], accessToken?: 
 }
 
 
+export async function getUsersPlaylists(id: string, accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.PlaylistObjectSimplified>|undefined> {
+    console.log('getUsersPlaylists');
+
+    const spotifyApi = new SpotifyApi();
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    await setAccessTokenFromCurrentUser(spotifyApi);
+
+    const result = await getFullPagedResults(async (options) => {
+        const response = await spotifyApi.getUserPlaylists(options);
+        return response.body;
+    });
+
+    return result;
+}
+
+export async function userHasPlaylist(userId: string, playlistId: string, accessToken: string|undefined): Promise<boolean> {
+    const usersPlaylists = await getUsersPlaylists(userId, accessToken);
+
+    if (!usersPlaylists) { return false; }
+
+    return !!(usersPlaylists.items.find(item => item.id === playlistId));
+}
+
 export async function createNewPlaylist(playlistName: string, userId: ObjectId) {
+    // TODO: accessToken param?
     console.log('in createNewPlaylist');
 
     const user = await getUserById(userId);
@@ -148,7 +173,7 @@ export async function createNewPlaylist(playlistName: string, userId: ObjectId) 
     return playlist.body;
 }
 
-export async function removeTracksFromPlaylist(playlistId: string, accessToken?: string) {
+export async function removeTracksFromPlaylist(playlistId: string, accessToken: string|undefined) {
     console.log('in removeTracksFromPlaylist');
 
     const spotifyApi = new SpotifyApi();
@@ -158,7 +183,7 @@ export async function removeTracksFromPlaylist(playlistId: string, accessToken?:
     await spotifyApi.replaceTracksInPlaylist(playlistId, []);
 }
 
-export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi.TrackObjectFull[], accessToken?: string) {
+export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi.TrackObjectFull[], accessToken: string|undefined) {
     console.log('in addTracksToPlaylist');
     const trackUris = tracks.map((track) => track.uri);
 
@@ -176,7 +201,7 @@ export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi
 }
 
 
-export async function getAlbum(albumId: string, accessToken?: string): Promise<SpotifyApi.SingleAlbumResponse> {
+export async function getAlbum(albumId: string, accessToken: string|undefined): Promise<SpotifyApi.SingleAlbumResponse> {
     console.log('in getAlbum');
 
     const spotifyApi = new SpotifyApi();
@@ -210,7 +235,7 @@ async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
     }
 }
 
-export async function getAlbums(albumIds: string[], accessToken?: string): Promise<SpotifyApi.AlbumObjectFull[]> {
+export async function getAlbums(albumIds: string[], accessToken: string|undefined): Promise<SpotifyApi.AlbumObjectFull[]> {
     console.log('in getAlbums');
 
     const spotifyApi = new SpotifyApi();
@@ -234,7 +259,7 @@ export async function getAlbums(albumIds: string[], accessToken?: string): Promi
     return albums;
 }
 
-export async function getArtists(artistIds: string[], accessToken?: string): Promise<SpotifyApi.ArtistObjectFull[]> {
+export async function getArtists(artistIds: string[], accessToken: string|undefined): Promise<SpotifyApi.ArtistObjectFull[]> {
     console.log('in getArtists');
 
     const spotifyApi = new SpotifyApi();

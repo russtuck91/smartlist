@@ -1,5 +1,6 @@
-import { Button, CircularProgress, IconButton, Link, Paper, TableContainer, Grid, Box } from '@material-ui/core';
+import { Button, CircularProgress, IconButton, Link, Paper, TableContainer, Grid, Box, Tooltip } from '@material-ui/core';
 import { Edit, Delete, Publish } from '@material-ui/icons';
+import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
 
@@ -104,6 +105,23 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
             const isPublishInProgress: boolean = !!rowData._id && this.state.publishInProgress[rowData._id];
             if (isPublishInProgress) {
                 return <CircularProgress size={20} />;
+            }
+            
+            if (rowData.deleted) {
+                const title = (
+                    <div style={{ textAlign: 'center' }}>
+                        Playlist was deleted from Spotify.
+                        <br />
+                        Re-publish to resume automatic updates.
+                    </div>
+                );
+                return (
+                    <Tooltip title={title}>
+                        <Alert severity="error" style={{ display: 'inline-flex' }}>
+                            Deleted
+                        </Alert>
+                    </Tooltip>
+                );
             }
         } else if (column.type === ColumnFormatType.Actions) {
             return this.renderActionsCell(rowData);
