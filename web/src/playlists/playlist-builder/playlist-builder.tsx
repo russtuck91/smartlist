@@ -11,6 +11,7 @@ import { RouteLookup } from '../../core/routes/route-lookup';
 
 import { PlaylistContainer } from '../playlist-container';
 import { PlaylistBuilderFormValues } from './models';
+import { PlaylistBrowserLocationState } from '../playlist-browser/playlist-browser';
 import { PlaylistBuilderForm } from './playlist-builder-form';
 import './playlist-builder.scss';
 
@@ -91,13 +92,14 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
 
         const playlist = this.mapPlaylistBuilderFormValuesToPlaylist(values);
 
+        let result: Playlist;
         if (id) {
-            await requests.put(`${PlaylistContainer.requestUrl}/${id}`, playlist);
+            result = await requests.put(`${PlaylistContainer.requestUrl}/${id}`, playlist);
         } else {
-            await requests.post(`${PlaylistContainer.requestUrl}`, playlist);
+            result = await requests.post(`${PlaylistContainer.requestUrl}`, playlist);
         }
 
-        this.transitionToBrowse();
+        this.transitionToBrowse(result);
     }
 
     private mapPlaylistBuilderFormValuesToPlaylist(values: PlaylistBuilderFormValues): Partial<Playlist> {
@@ -106,7 +108,11 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
         };
     }
 
-    private transitionToBrowse() {
-        history.push(RouteLookup.playlists.base);
+    private transitionToBrowse(playlist: Playlist) {
+        const locState: PlaylistBrowserLocationState = {
+            activeItem: playlist,
+            showJustCreatedDialog: !this.isEditMode()
+        };
+        history.push(RouteLookup.playlists.base, locState);
     }
 }

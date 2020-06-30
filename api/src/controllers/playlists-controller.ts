@@ -30,18 +30,18 @@ export class PlaylistsController {
     @Wrapper(expressAsyncHandler)
     private async updatePlaylist(req: Request, res: Response) {
         const playlist: Playlist = req.body;
-        await updatePlaylist(req.params.id, playlist);
+        const result = await updatePlaylist(req.params.id, playlist);
 
-        res.send();
+        res.send(result);
     }
 
     @Post('')
     @Wrapper(expressAsyncHandler)
     private async createPlaylist(req: Request, res: Response) {
         const playlist: Playlist = req.body;
-        await createPlaylist(playlist);
+        const result = await createPlaylist(playlist);
 
-        res.send();
+        res.send(result);
     }
 
     @Delete(':id')

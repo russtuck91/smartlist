@@ -2,7 +2,7 @@ import { Button, CircularProgress, IconButton, Link, Paper, TableContainer, Grid
 import { Edit, Delete, Publish } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
-import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { Link as RouterLink, generatePath, RouteComponentProps } from 'react-router-dom';
 
 import { Playlist } from '../../../../shared';
 
@@ -24,8 +24,12 @@ interface PlaylistBrowserState {
     showPublishDialog: boolean;
     publishInProgress: { [id: string]: boolean };
 }
+export interface PlaylistBrowserLocationState {
+    activeItem?: Playlist;
+    showJustCreatedDialog?: boolean;
+}
 
-export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> {
+export class PlaylistBrowser extends React.Component<RouteComponentProps<any, any, PlaylistBrowserLocationState>, PlaylistBrowserState> {
     state: PlaylistBrowserState = {
         showDeleteDialog: false,
         showPublishDialog: false,
@@ -73,6 +77,7 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
                 {this.renderPlaylistList()}
                 {this.renderDeleteDialog()}
                 {this.renderPublishDialog()}
+                {this.renderJustCreatedDialog()}
             </div>
         );
     }
@@ -178,6 +183,20 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
         );
     }
 
+    private renderJustCreatedDialog() {
+        const { showJustCreatedDialog } = this.props.location.state || {};
+
+        return (
+            <DialogControl
+                open={!!showJustCreatedDialog}
+                onClose={this.closeJustCreatedDialog}
+                onConfirm={this.onConfirmPublishJustCreated}
+                title="Playlist successfully created!"
+                body={<p>Would you like to publish it to Spotify now? If not, it will be published at the next regular update.</p>}
+            />
+        );
+    }
+
     private transitionToEdit(item: Playlist) {
         history.push(generatePath(RouteLookup.playlists.edit, { id: item._id }));
     }
@@ -248,5 +267,23 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
                 [id]: value
             }
         }));
+    }
+
+    private closeJustCreatedDialog = () => {
+        this.props.history.replace({
+            state: {
+                activeItem: undefined,
+                showJustCreatedDialog: false
+            }
+        });
+    }
+
+    private onConfirmPublishJustCreated = () => {
+        const { activeItem } = this.props.location.state || {};
+        if (!activeItem) { return; }
+
+        this.publishPlaylist(activeItem);
+
+        this.closeJustCreatedDialog();
     }
 }

@@ -39,10 +39,12 @@ export async function updatePlaylist(id: string, playlist: Partial<Playlist>) {
 
     playlist.updatedAt = new Date();
 
-    await db.playlists.update(
+    const result = await db.playlists.update(
         { _id: new ObjectId(id) },
         { $set: playlist }
     );
+
+    return result;
 }
 
 export async function createPlaylist(playlist: Playlist) {
@@ -55,7 +57,9 @@ export async function createPlaylist(playlist: Playlist) {
         createdAt: now,
         updatedAt: now
     };
-    db.playlists.insertOne(newPlaylist);
+    const result = await db.playlists.insertOne(newPlaylist);
+
+    return result;
 }
 
 export async function deletePlaylist(id: string) {

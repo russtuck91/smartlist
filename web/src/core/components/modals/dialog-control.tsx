@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogActions, Button } from '@material-ui/core';
+import { Dialog, DialogContent, DialogActions, Button, DialogTitle } from '@material-ui/core';
 import * as React from 'react';
 
 interface DialogControlProps {
@@ -6,17 +6,23 @@ interface DialogControlProps {
     onClose: () => void;
     onConfirm: () => void;
     body: React.ReactElement;
+    title?: React.ReactNode;
 }
 
 export class DialogControl extends React.Component<DialogControlProps> {
     render() {
-        const { open, onClose, onConfirm, body } = this.props;
+        const { open, onClose, onConfirm, body, title } = this.props;
 
         return (
             <Dialog
                 open={open}
                 onClose={onClose}
             >
+                {title ? (
+                    <DialogTitle>
+                        {title}
+                    </DialogTitle>
+                ) : null}
                 <DialogContent>
                     {body}
                 </DialogContent>
