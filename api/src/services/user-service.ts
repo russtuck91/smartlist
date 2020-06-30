@@ -24,10 +24,14 @@ export async function getUserById(id: ObjectId|string) {
 }
 
 export async function updateUser(username: string, user: Partial<User>, sessionToken: string) {
+    const now = new Date();
+    user.updatedAt = now;
+
     await db.users.update(
         { username: username },
         {
             $set: user,
+            $setOnInsert: { createdAt: now },
             $push: { sessionToken: sessionToken }
         },
         {
@@ -42,6 +46,7 @@ export async function removeSessionTokenFromCurrentUser() {
     await db.users.update(
         { sessionToken: sessionToken },
         {
+            $set: { updatedAt: new Date() },
             $pull: { sessionToken: sessionToken }
         }
     );

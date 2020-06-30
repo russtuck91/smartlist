@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import { SimpleDBObject } from './db';
 
-export interface Playlist extends Partial<SimpleDBObject> {
+export interface Playlist extends SimpleDBObject {
     name: string;
 
     rules: PlaylistRuleGroup[];

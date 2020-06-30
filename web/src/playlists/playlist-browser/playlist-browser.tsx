@@ -102,11 +102,11 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
 
     private cellFormatter = (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: Playlist, rowIndex: number) => {
         if (column.type === ColumnFormatType.DateTime) {
-            const isPublishInProgress: boolean = !!rowData._id && this.state.publishInProgress[rowData._id];
+            const isPublishInProgress: boolean = this.state.publishInProgress[rowData._id];
             if (isPublishInProgress) {
                 return <CircularProgress size={20} />;
             }
-            
+
             if (rowData.deleted) {
                 const title = (
                     <div style={{ textAlign: 'center' }}>
@@ -233,8 +233,6 @@ export class PlaylistBrowser extends React.Component<any, PlaylistBrowserState> 
     }
 
     private async publishPlaylist(playlist: Playlist) {
-        if (!playlist._id) { return; }
-
         this.setPublishInProgress(playlist._id, true);
 
         await requests.post(`${PlaylistContainer.requestUrl}/publish/${playlist._id}`);

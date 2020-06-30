@@ -37,6 +37,8 @@ export async function updatePlaylist(id: string, playlist: Partial<Playlist>) {
     delete playlist._id;
     delete playlist.userId;
 
+    playlist.updatedAt = new Date();
+
     await db.playlists.update(
         { _id: new ObjectId(id) },
         { $set: playlist }
@@ -46,7 +48,13 @@ export async function updatePlaylist(id: string, playlist: Partial<Playlist>) {
 export async function createPlaylist(playlist: Playlist) {
     const currentUser: User = await getCurrentUser();
 
-    const newPlaylist: Playlist = { ...playlist, userId: currentUser._id };
+    const now = new Date();
+    const newPlaylist: Playlist = {
+        ...playlist,
+        userId: currentUser._id,
+        createdAt: now,
+        updatedAt: now
+    };
     db.playlists.insertOne(newPlaylist);
 }
 
@@ -267,7 +275,7 @@ export async function preValidatePublishPlaylist(playlist: Playlist, accessToken
 
         // User has deleted playlist since last publish
         if (!userHasPlaylist) {
-            await updatePlaylist(playlist._id!, { deleted: true });
+            await updatePlaylist(playlist._id, { deleted: true });
             return;
         }
     }
@@ -299,7 +307,7 @@ export async function publishPlaylist(playlist: Playlist, accessToken?: string) 
         lastPublished: new Date(),
         deleted: false
     };
-    await updatePlaylist(playlist._id!, playlistUpdate);
+    await updatePlaylist(playlist._id, playlistUpdate);
 }
 
 export async function publishAllPlaylists() {
