@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/spotify-api": "0.0.2",
     "express": "^4.16.4",
     "express-generator": "^4.16.0",
     "npm-run-all": "^4.0.2",

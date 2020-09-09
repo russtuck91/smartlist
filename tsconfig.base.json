@@ -8,5 +8,8 @@
             "es6"
         ],
         "skipLibCheck": true,
+        "types": [
+            "spotify-api"
+        ]
     }
 }

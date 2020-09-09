@@ -14,8 +14,7 @@
         "importHelpers": true,
         "noImplicitAny": false,
         "types": [
-            "node",
-            "spotify-api"
+            "node"
         ],
         "typeRoots": [
             "node_modules/@types"
