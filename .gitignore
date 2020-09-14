@@ -97,3 +97,6 @@ typings/
 # IntelliJ Idea
 .idea/dictionaries/*
 .idea/workspace.xml
+
+# DB build upgrades
+api/dbdump

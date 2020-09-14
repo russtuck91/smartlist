@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node build/api/src/start.js",
     "dev": "nodemon",
-    "build": "rm -rf ./build/ && tsc"
+    "build": "rm -rf ./build/ && npm run dbupgrade && tsc",
+    "dbupgrade": "ts-node ./scripts/dbupgrade-wrapper.ts"
   },
   "dependencies": {
     "@overnightjs/core": "^1.6.12",
@@ -33,6 +34,7 @@
     "spotify-web-api-node": "^4.0.0"
   },
   "devDependencies": {
+    "@seiren/mongoutils": "^1.0.2",
     "@types/agenda": "^2.0.6",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.6",
@@ -40,11 +42,13 @@
     "@types/http-errors": "^1.6.3",
     "@types/lodash": "^4.14.149",
     "@types/mongodb": "^3.3.16",
+    "@types/rimraf": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^2.19.0",
     "@typescript-eslint/parser": "^2.19.0",
     "dotenv": "^8.2.0",
     "eslint": "5.6.0",
     "nodemon": "^2.0.2",
+    "rimraf": "^3.0.2",
     "ts-node": "^8.6.1",
     "tslint": "^5.20.1",
     "typescript": "^3.7.4"

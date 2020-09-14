@@ -30,6 +30,7 @@
     "build": "run-p build:api build:web",
     "build:api": "cd api && npm run build",
     "build:web": "cd web && npm run build",
+    "dbupgrade": "cd api && npm run dbupgrade",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
