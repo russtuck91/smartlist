@@ -2,7 +2,7 @@ import { NotFound } from 'http-errors';
 import { intersectionWith, union } from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleGroupType, RuleParam } from '../../../shared';
+import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleGroupType, RuleParam, RuleComparator } from '../../../shared';
 
 import { User } from '../core/session/models';
 import { doAndRetry } from '../core/session/session-util';
@@ -73,10 +73,10 @@ export async function deletePlaylist(id: string) {
 
 
 
-export async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
+export async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
     console.log('in populateListByRules');
 
-    const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
+    const results: (SpotifyApi.TrackObjectSimplified[])[] = await Promise.all(
         rules.map((rule) => {
             return getListForRuleGroup(rule, accessToken);
         })
@@ -89,7 +89,7 @@ export async function populateListByRules(rules: PlaylistRuleGroup[], accessToke
     return unionResult;
 }
 
-async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
     if (ruleGroup.type === RuleGroupType.Or) {
         // Send each individual rule to getListForRules
         const listOfTrackResults = await Promise.all(
@@ -122,7 +122,7 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: st
             }
         });
 
-        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
+        const listsOfTrackResults: (SpotifyApi.TrackObjectSimplified[])[] = await Promise.all(
             nestedRuleGroups.map((rule) => {
                 return getListForRuleGroup(rule, accessToken);
             })
@@ -143,12 +143,12 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: st
 
         // Get "AND" intersection
         const listOne = listsOfTrackResults[0];
-        const results = intersectionWith<SpotifyApi.TrackObjectFull, SpotifyApi.TrackObjectFull, SpotifyApi.TrackObjectFull, SpotifyApi.TrackObjectFull>(
+        const results = intersectionWith<SpotifyApi.TrackObjectSimplified, SpotifyApi.TrackObjectSimplified, SpotifyApi.TrackObjectSimplified, SpotifyApi.TrackObjectSimplified>(
             listOne,
             listOne,
             listOne,
             ...listsOfTrackResults,
-            (a: SpotifyApi.TrackObjectFull, b: SpotifyApi.TrackObjectFull) => {
+            (a: SpotifyApi.TrackObjectSimplified, b: SpotifyApi.TrackObjectSimplified) => {
                 return a.id === b.id;
             }
         );
@@ -157,7 +157,7 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: st
     }
 }
 
-async function getListForRules(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRules(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
     console.log('IN getListForRules');
     
     // Bundle Saved rule with regular search rules (all but playlist)
@@ -166,15 +166,32 @@ async function getListForRules(rules: PlaylistRule[], accessToken: string|undefi
 
     const hasSavedRule: boolean = !!(rules.find(rule => rule.param === RuleParam.Saved));
     
-    let results: SpotifyApi.TrackObjectFull[]|undefined;
+    let results: SpotifyApi.TrackObjectSimplified[] = [];
     if (hasSavedRule) {
         results = await getFilteredListOfSavedSongs(rules, accessToken);
     } else {
-        const searchResults = await spotifyService.getFullSearchResults(rules, accessToken);
-        results = searchResults && searchResults.items;
-    }
+        // Send special "is" rules through specific APIs, others through getFullSearchResults
+        for (let i = rules.length - 1; i >= 0; i--) {
+            const rule = rules[i];
+            if (rule.comparator === RuleComparator.Is) {
+                if (rule.param === RuleParam.Artist && typeof rule.value === 'object') {
+                    const ruleResults = await spotifyService.getTracksForArtists([ rule.value.id ], accessToken);
+                    results = results.concat(ruleResults);
+                    rules.splice(i, 1);
+                }
+                if (rule.param === RuleParam.Album && typeof rule.value === 'object') {
+                    const ruleResults = await spotifyService.getTracksForAlbums([ rule.value.id ], accessToken);
+                    results = results.concat(ruleResults);
+                    rules.splice(i, 1);
+                }
+            }
+        }
 
-    if (!results) { return []; }
+        const searchResults = await spotifyService.getFullSearchResults(rules, accessToken);
+        if (searchResults) {
+            results = results.concat(searchResults.items);
+        }
+    }
 
     // console.log(results);
     return results;
@@ -187,15 +204,15 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: s
 
     const savedTracks: SpotifyApi.TrackObjectFull[] = savedTrackObjects.items.map(item => item.track);
 
-    const filterObj = rules.reduce((obj, item) => {
-        obj[item.param] = item.value;
+    const filtersByParam: { [s: string]: PlaylistRule } = rules.reduce((obj, item) => {
+        obj[item.param] = item;
         return obj;
     }, {});
 
     let albumMap = {};
     let artistMap = {};
     // Resources only needed if Genre filter is set
-    if (filterObj[RuleParam.Genre]) {
+    if (filtersByParam[RuleParam.Genre]) {
         const allAlbumIds: string[] = [];
         const allArtistIds: string[] = [];
         savedTracks.map((track) => {
@@ -210,26 +227,48 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: s
     }
 
     const filteredList = savedTracks.filter((track) => {
-        if (filterObj[RuleParam.Artist]) {
-            const thisFilter = track.artists.some((artist) => {
-                return artist.name.toLowerCase() === filterObj[RuleParam.Artist].toLowerCase();
-                // contains logic:
-                // return artist.name.toLowerCase().indexOf(filterObj[RuleParam.Artist].toLowerCase()) > -1;
+        if (filtersByParam[RuleParam.Artist]) {
+            const thisFilter = filtersByParam[RuleParam.Artist];
+            const shouldPass = track.artists.some((artist) => {
+                // Is logic:
+                if (thisFilter.comparator === RuleComparator.Is && typeof thisFilter.value === 'object') {
+                    return artist.id === thisFilter.value.id;
+                }
+                // Contains logic:
+                if (thisFilter.comparator === RuleComparator.Contains && typeof thisFilter.value === 'string') {
+                    return artist.name.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
+                }
+                console.warn('Did not find matching filter logic for stored filter value');
+                console.log(thisFilter);
             });
-            if (!thisFilter) { return false; }
+            if (shouldPass === false) { return false; }
         }
 
-        if (filterObj[RuleParam.Album]) {
-            const thisFilter = track.album.name.toLowerCase() === filterObj[RuleParam.Album].toLowerCase();
-            if (!thisFilter) { return false; }
+        if (filtersByParam[RuleParam.Album]) {
+            const thisFilter = filtersByParam[RuleParam.Album];
+            let shouldPass;
+            if (thisFilter.comparator === RuleComparator.Is && typeof thisFilter.value === 'object') {
+                shouldPass = track.album.id === thisFilter.value.id;
+            }
+            if (thisFilter.comparator === RuleComparator.Contains && typeof thisFilter.value === 'string') {
+                shouldPass = track.album.name.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
+            }
+            if (shouldPass === false) { return false; }
         }
 
-        if (filterObj[RuleParam.Track]) {
-            const thisFilter = track.name.toLowerCase() === filterObj[RuleParam.Track].toLowerCase();
-            if (!thisFilter) { return false; }
+        if (filtersByParam[RuleParam.Track]) {
+            const thisFilter = filtersByParam[RuleParam.Track];
+            let shouldPass;
+            if (thisFilter.comparator === RuleComparator.Is && typeof thisFilter.value === 'object') {
+                shouldPass = track.id === thisFilter.value.id;
+            }
+            if (thisFilter.comparator === RuleComparator.Contains && typeof thisFilter.value === 'string') {
+                shouldPass = track.name.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
+            }
+            if (shouldPass === false) { return false; }
         }
 
-        if (filterObj[RuleParam.Genre]) {
+        if (filtersByParam[RuleParam.Genre]) {
             const fullAlbum = albumMap[track.album.id];
             const fullArtists = track.artists.map((artist) => artistMap[artist.id]);
 
@@ -242,12 +281,22 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: s
             });
             // console.log('all genres ::', allGenres);
 
-            const thisFilter = allGenres.some((genre) => genre.toLowerCase() === filterObj[RuleParam.Genre].toLowerCase());
-            if (!thisFilter) { return false; }
+            const thisFilter = filtersByParam[RuleParam.Genre];
+            const shouldPass = allGenres.some((genre) => {
+                if (thisFilter.comparator === RuleComparator.Is && typeof thisFilter.value === 'string') {
+                    return genre.toLowerCase() === thisFilter.value.toLowerCase();
+                }
+                if (thisFilter.comparator === RuleComparator.Contains && typeof thisFilter.value === 'string') {
+                    return genre.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
+                }
+                console.warn('Did not find matching filter logic for stored filter value');
+                console.log(thisFilter);
+            });
+            if (shouldPass === false) { return false; }
         }
 
         // TODO
-        if (filterObj[RuleParam.Year]) {
+        if (filtersByParam[RuleParam.Year]) {
 
         }
 

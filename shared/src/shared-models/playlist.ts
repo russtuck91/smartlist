@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 import { SimpleDBObject } from './db';
+import { convertEnumToArray } from '../util/object-util';
 
 export interface Playlist extends SimpleDBObject {
     name: string;
@@ -29,8 +30,8 @@ export enum RuleGroupType {
 
 export interface PlaylistRule {
     param: RuleParam;
-    // comparator? equals, contains, gt, lt
-    value: string|boolean;
+    comparator?: RuleComparator;
+    value: string|boolean|SearchItem;
 }
 
 export enum RuleParam {
@@ -41,4 +42,26 @@ export enum RuleParam {
     Genre = 'Genre',
     Year = 'Year',
     Playlist = 'Playlist'
+}
+
+export enum RuleComparator {
+    Is = 'Is',
+    Contains = 'Contains'
+}
+
+export function getComparatorsForParam(param: RuleParam): RuleComparator[] {
+    if (
+        param === RuleParam.Genre ||
+        param === RuleParam.Year ||
+        param === RuleParam.Playlist
+    ) {
+        return [ RuleComparator.Is ];
+    }
+
+    return convertEnumToArray(RuleComparator);
+}
+
+export type SearchItemBase = SpotifyApi.ArtistObjectFull | SpotifyApi.AlbumObjectSimplified | SpotifyApi.TrackObjectFull | SpotifyApi.PlaylistObjectSimplified;
+export type SearchItem = SearchItemBase & {
+    images?: SpotifyApi.ImageObject[];
 }
