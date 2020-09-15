@@ -1,4 +1,4 @@
-import { Field } from 'formik';
+import { Field, FormikProps } from 'formik';
 import * as React from 'react';
 
 export interface FormFieldProps {
@@ -7,6 +7,11 @@ export interface FormFieldProps {
     error?: React.ReactNode;
 
     required?: boolean;
+    disabled?: boolean;
+
+    onChange?: FormikProps<any>['handleChange'];
+    onBlur?: FormikProps<any>['handleBlur'];
+    setFieldValue?: FormikProps<any>['setFieldValue'];
 }
 
 export function asFormField<T extends FormFieldProps>(
@@ -26,6 +31,7 @@ export function asFormField<T extends FormFieldProps>(
                             return (
                                 <WrappedComponent
                                     {...field}
+                                    setFieldValue={form.setFieldValue}
                                     {...this.props}
                                 />
                             );

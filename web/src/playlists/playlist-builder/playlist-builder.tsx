@@ -10,7 +10,7 @@ import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
 
 import { PlaylistContainer } from '../playlist-container';
-import { PlaylistBuilderFormValues } from './models';
+import { PlaylistBuilderFormValues, DEFAULT_NEW_CONDITION } from './models';
 import { PlaylistBrowserLocationState } from '../playlist-browser/playlist-browser';
 import { PlaylistBuilderForm } from './playlist-builder-form';
 import './playlist-builder.scss';
@@ -80,7 +80,7 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
                     type: RuleGroupType.And,
                     rules: [
                         { param: RuleParam.Saved, value: true },
-                        { param: RuleParam.Artist, value: '' }
+                        DEFAULT_NEW_CONDITION
                     ]
                 }
             ]

@@ -1,21 +1,23 @@
-import { FormikProps } from 'formik';
-import { get, isEmpty } from 'lodash';
-import { Button, IconButton, Grid, ButtonGroup, Paper, Theme, WithStyles, withStyles, StyleRules, CircularProgress } from '@material-ui/core';
+import { Button, ButtonGroup, CircularProgress, Grid, IconButton, Paper, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { RemoveCircleOutline } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
+import { FormikProps } from 'formik';
+import { get, isEmpty } from 'lodash';
 import * as React from 'react';
 
-import { PlaylistRuleGroup, RuleGroupType, RuleParam, PlaylistRule, isPlaylistRuleGroup } from '../../../../shared';
-import { objectUtil } from '../../../../shared/src/util/object-util';
+import { getComparatorsForParam, isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup, RuleComparator, RuleGroupType, RuleParam } from '../../../../shared';
+import * as objectUtil from '../../../../shared/src/util/object-util';
 
-import { DropdownField, TextField, CheckboxField } from '../../core/forms/fields';
+import { ColumnSet } from '../../core/components/tables/models';
+import { TableRenderer } from '../../core/components/tables/table-renderer';
+import { CheckboxField, DropdownField, TextField } from '../../core/forms/fields';
+import { AutocompleteField } from '../../core/forms/fields/autocomplete-field';
 import { requests } from '../../core/requests/requests';
+import { Nullable } from '../../core/shared-models/types';
 
 import { PlaylistContainer } from '../playlist-container';
-import { PlaylistBuilderFormValues } from './models';
-import { TableRenderer } from '../../core/components/tables/table-renderer';
-import { ColumnSet } from '../../core/components/tables/models';
-import { Nullable } from '../../core/shared-models/types';
+import { DEFAULT_NEW_CONDITION, getNewConditionByParam, PlaylistBuilderFormValues } from './models';
+
 
 export interface PlaylistBuilderFormProps {
     formik: FormikProps<PlaylistBuilderFormValues>;
@@ -43,8 +45,6 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     state: PlaylistBuilderFormState = {
         listPreview: []
     };
-
-    private DEFAULT_NEW_CONDITION: PlaylistRule = { param: RuleParam.Artist, value: '' };
 
     private ruleGroupTypes = objectUtil.convertEnumToArray<RuleGroupType>(RuleGroupType);
     private ruleParams = objectUtil.convertEnumToArray(RuleParam);
@@ -197,10 +197,13 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     }
 
     private renderRuleField(rule: PlaylistRule, index: number, treeIdPrefix: string) {
-        const { values, handleChange } = this.props.formik;
+        const { values } = this.props.formik;
         
         const thisItemTreeId = `${treeIdPrefix}.rules[${index}]`;
-        const thisItemValue = get(values, thisItemTreeId);
+        const thisItemValue: PlaylistRule = get(values, thisItemTreeId);
+
+        const comparators = getComparatorsForParam(thisItemValue.param);
+
         return (
             <Grid item xs={12} key={index}>
                 <Grid
@@ -215,23 +218,49 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                             id={`${thisItemTreeId}.param`}
                             value={thisItemValue.param}
                             options={this.ruleParams}
-                            onChange={handleChange}
+                            onChange={(e) => this.onChangeRuleType(e, thisItemTreeId)}
                         />
                     </Grid>
-                    <Grid item xs={6}>
-                        {thisItemValue.param === RuleParam.Saved ? (
+                    {thisItemValue.param === RuleParam.Saved ? (
+                        <Grid item xs={6}>
                             <CheckboxField
                                 id={`${thisItemTreeId}.value`}
-                                value={thisItemValue.value}
+                                value={Boolean(thisItemValue.value)}
                             />
-                        ) : (
-                            <TextField
-                                id={`${thisItemTreeId}.value`}
-                                value={thisItemValue.value}
-                                required
-                            />
-                        )}
-                    </Grid>
+                        </Grid>
+                    ) : (
+                            <>
+                                <Grid item xs={6}>
+                                    <DropdownField
+                                        id={`${thisItemTreeId}.comparator`}
+                                        value={thisItemValue.comparator}
+                                        options={comparators}
+                                        disabled={comparators.length <= 1}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    {(
+                                        thisItemValue.comparator === RuleComparator.Is &&
+                                        thisItemValue.param !== RuleParam.Genre && 
+                                        thisItemValue.param !== RuleParam.Year
+                                    ) ?
+                                        (
+                                            <AutocompleteField
+                                                id={`${thisItemTreeId}.value`}
+                                                value={thisItemValue.value}
+                                                type={thisItemValue.param}
+                                                required
+                                            />
+                                        ) : (
+                                            <TextField
+                                                id={`${thisItemTreeId}.value`}
+                                                value={thisItemValue.value}
+                                                required
+                                            />
+                                        )}
+                                </Grid>
+                            </>
+                    )}
                     <Grid item xs>
                         <IconButton onClick={() => this.removeCondition(treeIdPrefix, index)}>
                             <RemoveCircleOutline color="error" fontSize="small" />
@@ -280,7 +309,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         const { values, setFieldValue } = this.props.formik;
         
         const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
-        atTreeLoc.rules.push(this.DEFAULT_NEW_CONDITION);
+        atTreeLoc.rules.push(DEFAULT_NEW_CONDITION);
         setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
     }
 
@@ -288,13 +317,11 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         const { values, setFieldValue } = this.props.formik;
         
         const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
-        atTreeLoc.rules.push({ type: RuleGroupType.And, rules: [ this.DEFAULT_NEW_CONDITION ] });
+        atTreeLoc.rules.push({ type: RuleGroupType.And, rules: [ DEFAULT_NEW_CONDITION ] });
         setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
     }
 
     private removeCondition(treeId: string, indexToRemove: number) {
-        console.log('in removeCondition');
-        console.log('treeId:', treeId);
         const { values, setFieldValue } = this.props.formik;
 
         const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
@@ -314,6 +341,13 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         } else {
             setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
         }
+    }
+
+    private onChangeRuleType = (e: React.ChangeEvent<any>, treeId: string) => {
+        const value: RuleParam = e.target.value;
+        const newCondition = getNewConditionByParam(value);
+
+        this.props.formik.setFieldValue(treeId, newCondition);
     }
 }
 

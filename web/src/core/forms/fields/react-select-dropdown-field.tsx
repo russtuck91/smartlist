@@ -16,11 +16,10 @@ function createDefaultSelectShape(option: string): ReactSelectDefaultShape {
 }
 
 
-interface DropdownInputProps {
+interface DropdownInputProps extends Partial<FormFieldProps> {
     id: string;
     value: any;
     options: any[];
-    onChange?: FormikProps<any>['setFieldValue'];
 }
 
 export class ReactSelectDropdownInput extends React.Component<DropdownInputProps> {
@@ -57,9 +56,9 @@ export class ReactSelectDropdownInput extends React.Component<DropdownInputProps
     }
 
     private _onChange = (option: any) => {
-        const { id, onChange } = this.props;
+        const { id, setFieldValue } = this.props;
 
-        if (!onChange) {
+        if (!setFieldValue) {
             return;
         }
 
@@ -67,7 +66,7 @@ export class ReactSelectDropdownInput extends React.Component<DropdownInputProps
         if (option.transformBack) {
             valueToSend = option.value;
         }
-        onChange(id, valueToSend);
+        setFieldValue(id, valueToSend);
     }
 
     private isOptionSelected = (option: any) => {
