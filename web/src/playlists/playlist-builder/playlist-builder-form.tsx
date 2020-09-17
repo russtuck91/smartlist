@@ -1,22 +1,20 @@
-import { Button, ButtonGroup, CircularProgress, Grid, IconButton, Paper, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
-import { RemoveCircleOutline } from '@material-ui/icons';
+import { Button, CircularProgress, Grid, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { FormikProps } from 'formik';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import * as React from 'react';
 
-import { getComparatorsForParam, isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup, RuleComparator, RuleGroupType, RuleParam } from '../../../../shared';
-import * as objectUtil from '../../../../shared/src/util/object-util';
+import { PlaylistRuleGroup } from '../../../../shared';
 
 import { ColumnSet } from '../../core/components/tables/models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';
-import { CheckboxField, DropdownField, TextField } from '../../core/forms/fields';
-import { AutocompleteField } from '../../core/forms/fields/autocomplete-field';
+import { TextField } from '../../core/forms/fields';
 import { requests } from '../../core/requests/requests';
 import { Nullable } from '../../core/shared-models/types';
 
 import { PlaylistContainer } from '../playlist-container';
-import { DEFAULT_NEW_CONDITION, getNewConditionByParam, PlaylistBuilderFormValues } from './models';
+import { PlaylistBuilderFormValues } from './models';
+import { RuleGroup } from './rule-group';
 
 
 export interface PlaylistBuilderFormProps {
@@ -45,9 +43,6 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     state: PlaylistBuilderFormState = {
         listPreview: []
     };
-
-    private ruleGroupTypes = objectUtil.convertEnumToArray<RuleGroupType>(RuleGroupType);
-    private ruleParams = objectUtil.convertEnumToArray(RuleParam);
 
     private listPreviewColumnSet: ColumnSet<SpotifyApi.TrackObjectFull> = [
         { title: 'Name', mapsToField: 'name' },
@@ -137,137 +132,14 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     }
 
     private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number, treeIdPrefix = '') => {
-        const { setFieldValue } = this.props.formik;
-
         const thisItemTreeId = `${treeIdPrefix ? treeIdPrefix + '.' : ''}rules[${groupIndex}]`;
-
         return (
-            <Grid key={groupIndex} item>
-                <Paper className="rule-group">
-                    <Grid container spacing={1}>
-                        <Grid item xs={12}>
-                            <Grid container justify="space-between">
-                                <Grid item>
-                                    Type:
-                                    {' '}
-                                    <ButtonGroup>
-                                        {this.ruleGroupTypes.map((type, index) => (
-                                            <Button
-                                                key={index}
-                                                onClick={() => setFieldValue(`${thisItemTreeId}.type`, type)}
-                                                size="small"
-                                                variant={ruleGroup.type === type ? 'contained' : undefined}
-                                            >
-                                                {type}
-                                            </Button>
-                                        ))}
-                                    </ButtonGroup>
-                                </Grid>
-                                <Grid item>
-                                    <ButtonGroup>
-                                        <Button
-                                            variant="contained"
-                                            onClick={() => this.addCondition(thisItemTreeId)}
-                                            size="small"
-                                        >
-                                            Add condition
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            onClick={() => this.addGroup(thisItemTreeId)}
-                                            size="small"
-                                        >
-                                            Add group
-                                        </Button>
-                                    </ButtonGroup>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        {ruleGroup.rules.map((rule, index) => {
-                            if (isPlaylistRuleGroup(rule)) {
-                                return this.renderRuleGroup(rule, index, thisItemTreeId);
-                            } else {
-                                return this.renderRuleField(rule, index, thisItemTreeId);
-                            }
-                        })}
-                    </Grid>
-                </Paper>
-            </Grid>
-        );
-    }
-
-    private renderRuleField(rule: PlaylistRule, index: number, treeIdPrefix: string) {
-        const { values } = this.props.formik;
-        
-        const thisItemTreeId = `${treeIdPrefix}.rules[${index}]`;
-        const thisItemValue: PlaylistRule = get(values, thisItemTreeId);
-
-        const comparators = getComparatorsForParam(thisItemValue.param);
-
-        return (
-            <Grid item xs={12} key={index}>
-                <Grid
-                    container
-                    wrap="nowrap"
-                    alignItems="center"
-                    spacing={2}
-                    className="rule"
-                >
-                    <Grid item xs={6}>
-                        <DropdownField
-                            id={`${thisItemTreeId}.param`}
-                            value={thisItemValue.param}
-                            options={this.ruleParams}
-                            onChange={(e) => this.onChangeRuleType(e, thisItemTreeId)}
-                        />
-                    </Grid>
-                    {thisItemValue.param === RuleParam.Saved ? (
-                        <Grid item xs={6}>
-                            <CheckboxField
-                                id={`${thisItemTreeId}.value`}
-                                value={Boolean(thisItemValue.value)}
-                            />
-                        </Grid>
-                    ) : (
-                            <>
-                                <Grid item xs={6}>
-                                    <DropdownField
-                                        id={`${thisItemTreeId}.comparator`}
-                                        value={thisItemValue.comparator}
-                                        options={comparators}
-                                        disabled={comparators.length <= 1}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    {(
-                                        thisItemValue.comparator === RuleComparator.Is &&
-                                        thisItemValue.param !== RuleParam.Genre && 
-                                        thisItemValue.param !== RuleParam.Year
-                                    ) ?
-                                        (
-                                            <AutocompleteField
-                                                id={`${thisItemTreeId}.value`}
-                                                value={thisItemValue.value}
-                                                type={thisItemValue.param}
-                                                required
-                                            />
-                                        ) : (
-                                            <TextField
-                                                id={`${thisItemTreeId}.value`}
-                                                value={thisItemValue.value}
-                                                required
-                                            />
-                                        )}
-                                </Grid>
-                            </>
-                    )}
-                    <Grid item xs>
-                        <IconButton onClick={() => this.removeCondition(treeIdPrefix, index)}>
-                            <RemoveCircleOutline color="error" fontSize="small" />
-                        </IconButton>
-                    </Grid>
-                </Grid>
-            </Grid>
+            <RuleGroup
+                key={groupIndex}
+                formik={this.props.formik}
+                ruleGroup={ruleGroup}
+                treeId={thisItemTreeId}
+            />
         );
     }
 
@@ -303,51 +175,6 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     private areRulesValid(): boolean {
         return isEmpty(this.props.formik.errors.rules);
-    }
-
-    private addCondition(treeId: string) {
-        const { values, setFieldValue } = this.props.formik;
-        
-        const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
-        atTreeLoc.rules.push(DEFAULT_NEW_CONDITION);
-        setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
-    }
-
-    private addGroup(treeId: string) {
-        const { values, setFieldValue } = this.props.formik;
-        
-        const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
-        atTreeLoc.rules.push({ type: RuleGroupType.And, rules: [ DEFAULT_NEW_CONDITION ] });
-        setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
-    }
-
-    private removeCondition(treeId: string, indexToRemove: number) {
-        const { values, setFieldValue } = this.props.formik;
-
-        const atTreeLoc: PlaylistRuleGroup = get(values, treeId);
-        atTreeLoc.rules.splice(indexToRemove, 1);
-
-        // if condition is now empty, remove it
-        if (atTreeLoc.rules.length === 0) {
-            const treeIdParts = treeId.split(/\[(\d+)\]$/);
-            console.log(treeIdParts);
-
-            const containingListId = treeIdParts[0];
-            const ruleGroupIndex = parseInt(treeIdParts[1]);
-
-            const newContainingListVal = get(values, containingListId);
-            newContainingListVal.splice(ruleGroupIndex, 1);
-            setFieldValue(containingListId, newContainingListVal);
-        } else {
-            setFieldValue(`${treeId}.rules`, atTreeLoc.rules);
-        }
-    }
-
-    private onChangeRuleType = (e: React.ChangeEvent<any>, treeId: string) => {
-        const value: RuleParam = e.target.value;
-        const newCondition = getNewConditionByParam(value);
-
-        this.props.formik.setFieldValue(treeId, newCondition);
     }
 }
 
