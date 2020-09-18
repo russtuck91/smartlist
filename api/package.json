@@ -12,6 +12,7 @@
   "dependencies": {
     "@overnightjs/core": "^1.6.12",
     "@overnightjs/logger": "^1.1.10",
+    "@seiren/mongoutils": "^1.0.2",
     "@types/node": "^13.1.6",
     "@types/spotify-api": "0.0.2",
     "@types/spotify-web-api-node": "^4.0.1",
@@ -30,11 +31,11 @@
     "mongodb": "^3.5.3",
     "mongoist": "^2.4.0",
     "morgan": "~1.9.0",
+    "rimraf": "^3.0.2",
     "spotify-web-api-node": "^4.0.0",
     "ts-node": "^8.6.1"
   },
   "devDependencies": {
-    "@seiren/mongoutils": "^1.0.2",
     "@types/agenda": "^2.0.6",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.6",
@@ -48,7 +49,6 @@
     "dotenv": "^8.2.0",
     "eslint": "5.6.0",
     "nodemon": "^2.0.4",
-    "rimraf": "^3.0.2",
     "tslint": "^5.20.1",
     "typescript": "^3.7.4"
   }
