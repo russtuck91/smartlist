@@ -22,6 +22,7 @@
     "react-app-rewired": "^2.1.5",
     "react-bootstrap": "^0.32.4",
     "react-dom": "^16.7.0",
+    "react-lazyload": "^3.0.0",
     "react-redux": "^7.2.0",
     "react-router": "^4.3.1",
     "react-router-bootstrap": "^0.24.4",
@@ -50,6 +51,7 @@
   ],
   "devDependencies": {
     "@types/lodash": "^4.14.149",
+    "@types/react-lazyload": "^2.6.0",
     "@types/react-redux": "^7.1.7",
     "@types/react-select": "^3.0.10",
     "@typescript-eslint/eslint-plugin": "^2.19.0",
