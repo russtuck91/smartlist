@@ -92,9 +92,7 @@ async function dbUpgradeWrapper() {
         }
     }
 
-    if (!process.env.NODE_ENV) {
-        process.exit();
-    }
+    process.exit();
 }
 
 dbUpgradeWrapper();
