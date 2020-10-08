@@ -1,4 +1,4 @@
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Container } from '@material-ui/core';
 import * as React from 'react';
 
 import { requests, baseRequestUrl } from '../core/requests/requests';
@@ -18,7 +18,7 @@ export class Account extends React.Component<any, AccountState> {
         const { userInfo } = this.state;
 
         return (
-            <div>
+            <Container>
                 <div>
                     {!userInfo ? (<CircularProgress />) : (
                         <>
@@ -48,7 +48,7 @@ export class Account extends React.Component<any, AccountState> {
                         </>
                     )}
                 </div>
-            </div>
+            </Container>
         );
     }
 

@@ -1,17 +1,17 @@
-import { Button, CircularProgress, IconButton, Link, Paper, TableContainer, Grid, Box, Tooltip } from '@material-ui/core';
-import { Edit, Delete, Publish } from '@material-ui/icons';
+import { Box, Button, CircularProgress, Container, Grid, IconButton, Link, Paper, TableContainer, Tooltip } from '@material-ui/core';
+import { Delete, Edit, Publish } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
-import { Link as RouterLink, generatePath, RouteComponentProps } from 'react-router-dom';
+import { generatePath, Link as RouterLink, RouteComponentProps } from 'react-router-dom';
 
 import { Playlist } from '../../../../shared';
 
+import { DialogControl } from '../../core/components/modals/dialog-control';
 import { ColumnConfig, ColumnFormatType, ColumnSet } from '../../core/components/tables/models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';
 import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
-import { DialogControl } from '../../core/components/modals/dialog-control';
 
 import { PlaylistContainer } from '../playlist-container';
 
@@ -61,7 +61,7 @@ export class PlaylistBrowser extends React.Component<RouteComponentProps<any, an
 
     render() {
         return (
-            <div>
+            <Container>
                 <Box my={3}>
                     <Grid container alignItems="flex-end">
                         <Grid item xs>
@@ -78,7 +78,7 @@ export class PlaylistBrowser extends React.Component<RouteComponentProps<any, an
                 {this.renderDeleteDialog()}
                 {this.renderPublishDialog()}
                 {this.renderJustCreatedDialog()}
-            </div>
+            </Container>
         );
     }
     

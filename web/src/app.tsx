@@ -1,4 +1,4 @@
-import { Container, createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { teal } from '@material-ui/core/colors';
 import React, { Component } from 'react';
 import { Route, Router, Switch } from 'react-router';
@@ -45,18 +45,16 @@ export class App extends Component {
                     <Router history={history}>
                     <>
                         <Navigation />
-                        <Container>
-                            <Switch>
-                                <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
+                        <Switch>
+                            <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
 
-                                <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
-                                <Route path={RouteLookup.login.login} component={Login} />
-                                <Route exact path={RouteLookup.logout} component={Logout} />
+                            <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
+                            <Route path={RouteLookup.login.login} component={Login} />
+                            <Route exact path={RouteLookup.logout} component={Logout} />
 
-                                <Route exact path={RouteLookup.account} component={Account} />
-                                <Route exact path={RouteLookup.home} component={Home} />
-                            </Switch>
-                        </Container>
+                            <Route exact path={RouteLookup.account} component={Account} />
+                            <Route exact path={RouteLookup.home} component={Home} />
+                        </Switch>
                     </>
                     </Router>
                 </ThemeProvider>

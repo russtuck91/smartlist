@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Grid, Paper } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Grid, Paper } from '@material-ui/core';
 import { FormikProps } from 'formik';
 import { get } from 'lodash';
 import * as React from 'react';
@@ -25,53 +25,55 @@ export class RuleGroup extends React.Component<RuleGroupProps> {
         return (
             <Grid item>
                 <Paper className="rule-group">
-                    <Grid container spacing={1}>
-                        <Grid item xs={12}>
-                            <Grid container justify="space-between">
-                                <Grid item>
+                    <Box p={1}>
+                        <Grid container spacing={1}>
+                            <Grid item xs={12}>
+                                <Grid container justify="space-between">
+                                    <Grid item>
                                     Type:
-                                    {' '}
-                                    <ButtonGroup>
-                                        {ruleGroupTypes.map((type, index) => (
+                                        {' '}
+                                        <ButtonGroup>
+                                            {ruleGroupTypes.map((type, index) => (
+                                                <Button
+                                                    key={index}
+                                                    onClick={() => setFieldValue(`${treeId}.type`, type)}
+                                                    size="small"
+                                                    variant={ruleGroup.type === type ? 'contained' : undefined}
+                                                >
+                                                    {type}
+                                                </Button>
+                                            ))}
+                                        </ButtonGroup>
+                                    </Grid>
+                                    <Grid item>
+                                        <ButtonGroup>
                                             <Button
-                                                key={index}
-                                                onClick={() => setFieldValue(`${treeId}.type`, type)}
+                                                variant="contained"
+                                                onClick={this.addCondition}
                                                 size="small"
-                                                variant={ruleGroup.type === type ? 'contained' : undefined}
                                             >
-                                                {type}
-                                            </Button>
-                                        ))}
-                                    </ButtonGroup>
-                                </Grid>
-                                <Grid item>
-                                    <ButtonGroup>
-                                        <Button
-                                            variant="contained"
-                                            onClick={this.addCondition}
-                                            size="small"
-                                        >
                                             Add condition
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            onClick={this.addGroup}
-                                            size="small"
-                                        >
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                onClick={this.addGroup}
+                                                size="small"
+                                            >
                                             Add group
-                                        </Button>
-                                    </ButtonGroup>
+                                            </Button>
+                                        </ButtonGroup>
+                                    </Grid>
                                 </Grid>
                             </Grid>
+                            {ruleGroup.rules.map((rule, index) => {
+                                if (isPlaylistRuleGroup(rule)) {
+                                    return this.renderRuleGroup(rule, index);
+                                } else {
+                                    return this.renderRuleField(rule, index);
+                                }
+                            })}
                         </Grid>
-                        {ruleGroup.rules.map((rule, index) => {
-                            if (isPlaylistRuleGroup(rule)) {
-                                return this.renderRuleGroup(rule, index);
-                            } else {
-                                return this.renderRuleField(rule, index);
-                            }
-                        })}
-                    </Grid>
+                    </Box>
                 </Paper>
             </Grid>
         );

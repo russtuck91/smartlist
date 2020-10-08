@@ -1,4 +1,4 @@
-import { CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress } from '@material-ui/core';
 import { Formik, FormikProps } from 'formik';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
@@ -13,7 +13,6 @@ import { PlaylistContainer } from '../playlist-container';
 import { PlaylistBuilderFormValues, DEFAULT_NEW_CONDITION } from './models';
 import { PlaylistBrowserLocationState } from '../playlist-browser/playlist-browser';
 import { PlaylistBuilderForm } from './playlist-builder-form';
-import './playlist-builder.scss';
 
 
 interface MatchParams {
@@ -46,7 +45,11 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
 
     render() {
         if (this.isEditMode() && !this.state.existingPlaylist) {
-            return <CircularProgress />;
+            return (
+                <Box flex="1 1 auto" display="flex" alignItems="center" justifyContent="center">
+                    <CircularProgress />
+                </Box>
+            );
         }
 
         return (
