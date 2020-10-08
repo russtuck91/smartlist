@@ -50,6 +50,7 @@ const useStyles = (theme: Theme) => {
             '& > .MuiGrid-container > .MuiGrid-item': {
                 overflowY: 'auto',
                 height: '100%',
+                display: 'flex',
                 '&:not(:first-child)': {
                     marginLeft: theme.spacing(1)
                 },
@@ -205,9 +206,9 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     private renderPreviewArea() {
         return (
-            <div>
+            <Box flex="1 1 auto" display="flex" justifyContent="center">
                 {this.renderPreviewContent()}
-            </div>
+            </Box>
         );
     }
 
