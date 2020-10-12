@@ -1,4 +1,5 @@
-import { Box, Button, ButtonGroup, Grid, Paper } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Grid, Paper, withStyles, Theme, WithStyles } from '@material-ui/core';
+import { AddCircle } from '@material-ui/icons';
 import { FormikProps } from 'formik';
 import { get } from 'lodash';
 import * as React from 'react';
@@ -18,64 +19,101 @@ interface RuleGroupProps {
     treeId: string;
 }
 
-export class RuleGroup extends React.Component<RuleGroupProps> {
+const useStyles = (theme: Theme) => (console.log(theme.palette), {
+    paper: {
+        overflow: 'hidden',
+    },
+    header: {
+        backgroundColor: theme.palette.primary['900'],
+        '& .MuiButton-sizeSmall': {
+            [theme.breakpoints.down('xs')]: {
+                paddingLeft: theme.spacing(0.75),
+                paddingRight: theme.spacing(0.75),
+            },
+            '& .MuiSvgIcon-root': {
+                fontSize: '1rem',
+                marginRight: theme.spacing(0.5),
+                marginTop: -2,
+            }
+        },
+    },
+});
+
+type FullProps = RuleGroupProps & WithStyles<typeof useStyles>;
+
+export class RawRuleGroup extends React.Component<FullProps> {
     render() {
-        const { ruleGroup, treeId, formik: { setFieldValue } } = this.props;
+        const { ruleGroup } = this.props;
 
         return (
             <Grid item>
-                <Paper className="rule-group">
-                    <Box p={1}>
-                        <Grid container spacing={1}>
-                            <Grid item xs={12}>
-                                <Grid container justify="space-between">
-                                    <Grid item>
-                                    Type:
-                                        {' '}
-                                        <ButtonGroup>
-                                            {ruleGroupTypes.map((type, index) => (
-                                                <Button
-                                                    key={index}
-                                                    onClick={() => setFieldValue(`${treeId}.type`, type)}
-                                                    size="small"
-                                                    variant={ruleGroup.type === type ? 'contained' : undefined}
-                                                >
-                                                    {type}
-                                                </Button>
-                                            ))}
-                                        </ButtonGroup>
-                                    </Grid>
-                                    <Grid item>
-                                        <ButtonGroup>
-                                            <Button
-                                                variant="contained"
-                                                onClick={this.addCondition}
-                                                size="small"
-                                            >
-                                            Add condition
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                onClick={this.addGroup}
-                                                size="small"
-                                            >
-                                            Add group
-                                            </Button>
-                                        </ButtonGroup>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            {ruleGroup.rules.map((rule, index) => {
-                                if (isPlaylistRuleGroup(rule)) {
-                                    return this.renderRuleGroup(rule, index);
-                                } else {
-                                    return this.renderRuleField(rule, index);
-                                }
-                            })}
+                <Paper className={this.props.classes.paper} elevation={5}>
+                    <Grid container spacing={0}>
+                        <Grid item xs={12}>
+                            {this.renderHeader()}
                         </Grid>
-                    </Box>
+                        <Box p={1} flex="1 1 auto">
+                            <Grid container spacing={1}>
+                                {ruleGroup.rules.map((rule, index) => {
+                                    if (isPlaylistRuleGroup(rule)) {
+                                        return this.renderRuleGroup(rule, index);
+                                    } else {
+                                        return this.renderRuleField(rule, index);
+                                    }
+                                })}
+                            </Grid>
+                        </Box>
+                    </Grid>
                 </Paper>
             </Grid>
+        );
+    }
+
+    private renderHeader() {
+        const { ruleGroup, treeId, formik: { setFieldValue } } = this.props;
+        return (
+            <Box className={this.props.classes.header} p={0.75}>
+                <Grid container justify="space-between" wrap="nowrap">
+                    <Grid item>
+                        Type:
+                        {' '}
+                        <ButtonGroup>
+                            {ruleGroupTypes.map((type, index) => (
+                                <Button
+                                    key={index}
+                                    onClick={() => setFieldValue(`${treeId}.type`, type)}
+                                    size="small"
+                                    variant={ruleGroup.type === type ? 'contained' : undefined}
+                                >
+                                    {type}
+                                </Button>
+                            ))}
+                        </ButtonGroup>
+                    </Grid>
+                    <Grid item>
+                        <ButtonGroup>
+                            <Button
+                                variant="contained"
+                                onClick={this.addCondition}
+                                size="small"
+                            >
+                                <AddCircle />
+                                {' '}
+                                condition
+                            </Button>
+                            <Button
+                                variant="contained"
+                                onClick={this.addGroup}
+                                size="small"
+                            >
+                                <AddCircle />
+                                {' '}
+                                group
+                            </Button>
+                        </ButtonGroup>
+                    </Grid>
+                </Grid>
+            </Box>
         );
     }
 
@@ -140,3 +178,5 @@ export class RuleGroup extends React.Component<RuleGroupProps> {
         }
     }
 }
+
+export const RuleGroup = withStyles(useStyles)(RawRuleGroup);

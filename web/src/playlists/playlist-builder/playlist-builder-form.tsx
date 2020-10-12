@@ -110,7 +110,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
             <Container className={classes.container}>
                 <form className={classes.form} onSubmit={handleSubmit}>
                     <h5>Playlist Builder</h5>
-                    <Box my={1}>
+                    <Box my={1} overflow="hidden" flexShrink={0}>
                         <Grid container spacing={2} alignItems="flex-end">
                             <Grid item xs>
                                 <TextField
@@ -158,7 +158,9 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                     <Tab label="Songs" />
                 </Tabs>
                 <TabPanel value={selectedTab} index={0}>
-                    {this.renderFormArea()}
+                    <Box py={1}>
+                        {this.renderFormArea()}
+                    </Box>
                 </TabPanel>
                 <TabPanel value={selectedTab} index={1}>
                     {this.renderPreviewArea()}

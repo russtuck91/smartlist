@@ -14,7 +14,7 @@ export default function TabPanel(props: TabPanelProps) {
         <div
             role="tabpanel"
             hidden={value !== index}
-            style={{ overflow: 'scroll' }}
+            style={{ overflow: 'auto' }}
         >
             {value === index && (
                 <Box>
