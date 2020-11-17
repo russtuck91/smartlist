@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Container, Grid, IconButton, Link, Paper, TableContainer, Tooltip } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, Grid, IconButton, Link, Paper, TableContainer, Tooltip, Theme, withStyles, WithStyles, StyleRules } from '@material-ui/core';
 import { Delete, Edit, Publish } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
@@ -16,6 +16,9 @@ import { RouteLookup } from '../../core/routes/route-lookup';
 import { PlaylistContainer } from '../playlist-container';
 
 
+interface PlaylistBrowserProps extends RouteComponentProps<any, any, PlaylistBrowserLocationState> {
+}
+
 interface PlaylistBrowserState {
     playlists?: Playlist[];
     
@@ -29,7 +32,21 @@ export interface PlaylistBrowserLocationState {
     showJustCreatedDialog?: boolean;
 }
 
-export class PlaylistBrowser extends React.Component<RouteComponentProps<any, any, PlaylistBrowserLocationState>, PlaylistBrowserState> {
+const useStyles = (theme: Theme) => {
+    const rules: StyleRules = {
+        container: {
+            display: 'flex',
+            flexDirection: 'column',
+            flex: '1 1 auto',
+            overflowY: 'auto',
+        }
+    };
+    return rules;
+};
+
+type FullProps = PlaylistBrowserProps & WithStyles<typeof useStyles>;
+
+export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrowserState> {
     state: PlaylistBrowserState = {
         showDeleteDialog: false,
         showPublishDialog: false,
@@ -61,7 +78,7 @@ export class PlaylistBrowser extends React.Component<RouteComponentProps<any, an
 
     render() {
         return (
-            <Container>
+            <Container className={this.props.classes.container}>
                 <Box my={3}>
                     <Grid container alignItems="flex-end">
                         <Grid item xs>
@@ -100,6 +117,7 @@ export class PlaylistBrowser extends React.Component<RouteComponentProps<any, an
                     columns={this.columnSet}
 
                     customCellFormatter={this.cellFormatter}
+                    stickyHeader
                 />
             </TableContainer>
         );
@@ -287,3 +305,5 @@ export class PlaylistBrowser extends React.Component<RouteComponentProps<any, an
         this.closeJustCreatedDialog();
     }
 }
+
+export const PlaylistBrowser = withStyles(useStyles)(RawPlaylistBrowser);
