@@ -39,6 +39,24 @@ const useStyles = (theme: Theme) => {
             flexDirection: 'column',
             flex: '1 1 auto',
             overflowY: 'auto',
+
+            '& .MuiTableCell-root': {
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.8em',
+                    paddingLeft: theme.spacing(1.25),
+                    paddingRight: theme.spacing(1.25),
+
+                    '& .MuiAlert-root': {
+                        fontSize: 'inherit',
+                        paddingLeft: theme.spacing(1),
+                        paddingRight: theme.spacing(1),
+                    },
+
+                    '& .MuiIconButton-root': {
+                        padding: theme.spacing(1),
+                    }
+                },
+            },
         }
     };
     return rules;
