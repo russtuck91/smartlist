@@ -154,15 +154,21 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     private renderActionsCell(item: Playlist) {
         return (
             <div>
-                <IconButton onClick={() => this.transitionToEdit(item)}>
-                    <Edit fontSize="small" />
-                </IconButton>
-                <IconButton onClick={() => this.openDeleteDialog(item)}>
-                    <Delete fontSize="small" />
-                </IconButton>
-                <IconButton onClick={() => this.openPublishDialog(item)}>
-                    <Publish fontSize="small" />
-                </IconButton>
+                <Tooltip title="Edit">
+                    <IconButton onClick={() => this.transitionToEdit(item)}>
+                        <Edit fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                    <IconButton onClick={() => this.openDeleteDialog(item)}>
+                        <Delete fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Publish">
+                    <IconButton onClick={() => this.openPublishDialog(item)}>
+                        <Publish fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             </div>
         );
     }
