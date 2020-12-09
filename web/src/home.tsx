@@ -1,4 +1,4 @@
-import { Button, Container, Link, StyleRules, Theme, withStyles, WithStyles } from '@material-ui/core';
+import { Button, Container, Grid, Link, StyleRules, Theme, withStyles, WithStyles } from '@material-ui/core';
 import * as React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -36,9 +36,23 @@ const useStyles = (theme: Theme) => {
             textTransform: 'uppercase',
             letterSpacing: 5
         },
-        separator: {
-            marginLeft: '1.4em',
-            marginRight: '1.4em'
+        featureRow: {
+            '& > .MuiGrid-item': {
+                padding: theme.spacing(2),
+
+                [theme.breakpoints.up('sm')]: {
+                    padding: `${theme.spacing(3)}px ${theme.spacing(4)}px`,
+                    '&:first-child': {
+                        textAlign: 'right',
+                        border: 0,
+                        borderRightWidth: 1,
+                        borderStyle: 'solid',
+                    },
+                    '&:last-child': {
+                        textAlign: 'left',
+                    }
+                }
+            }
         }
     };
     return rules;
@@ -59,16 +73,23 @@ export class RawHome extends React.Component<FullProps> {
                 
                 <h3 className={classes.subtitle}>Automatic Spotify playlists by rules</h3>
 
-                <p>
-                    <strong>SET IT</strong>
-                    <span className={classes.separator}>|</span>
-                    <span>Set up playlists based on simple rules</span>
-                </p>
-                <p>
-                    <strong>FORGET IT</strong>
-                    <span className={classes.separator}>|</span>
-                    <span>Playlists are automatically updated at regular intervals</span>
-                </p>
+                <Grid container className={classes.featureRow}>
+                    <Grid item xs={12} sm={4} md={5}>
+                        <strong>SET IT</strong>
+                    </Grid>
+                    <Grid item xs={12} sm>
+                        <span>Set up playlists based on simple rules</span>
+                    </Grid>
+                </Grid>
+
+                <Grid container className={classes.featureRow}>
+                    <Grid item xs={12} sm={4} md={5}>
+                        <strong>FORGET IT</strong>
+                    </Grid>
+                    <Grid item xs={12} sm>
+                        <span>Playlists are automatically updated at regular intervals</span>
+                    </Grid>
+                </Grid>
                 
                 {/* TODO: change button based on logged in status, existing playlists */}
                 <Link component={RouterLink} underline="none" to={RouteLookup.login.base}>
