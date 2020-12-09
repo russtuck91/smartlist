@@ -1,4 +1,4 @@
-import { Button, Link } from '@material-ui/core';
+import { Button, Container, Link } from '@material-ui/core';
 import * as React from 'react';
 import { Route } from 'react-router';
 
@@ -11,12 +11,13 @@ import { LoginError } from './login-error';
 export class Login extends React.Component {
     render() {
         return (
-            <div>
+            <Container>
+                <h2>Login with Spotify to get started</h2>
                 <Link href={`${baseRequestUrl}/login`} underline="none">
                     <Button variant="contained" color="primary">Login with Spotify</Button>
                 </Link>
                 <Route path={RouteLookup.login.error} component={LoginError} />
-            </div>
+            </Container>
         );
     }
 }
