@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 
 import { PlaylistRule, RuleParam } from '../../../shared/src';
 
+import logger from '../core/logger/logger';
 import { SpotifyApi } from '../core/spotify/spotify-api';
 import { sleep } from '../core/utils/utils';
 import { getUserById, getCurrentUser } from './user-service';
@@ -28,46 +29,42 @@ export async function getMe(accessToken?: string): Promise<SpotifyApi.CurrentUse
 
 
 async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.PagingObject<any>|undefined>) {
-    try {
-        console.log('in getFullPagedResults');
-        let result: SpotifyApi.PagingObject<any>|undefined;
-        let offset = 0;
-        const batchSize = 50;
+    logger.debug('>>>> Entering getFullPagedResults()');
+    let result: SpotifyApi.PagingObject<any>|undefined;
+    let offset = 0;
+    const batchSize = 50;
 
-        // while number fetched is less than total reported, send request
-        while (!result || result.total > result.items.length) {
-            try {
-                const options = { limit: batchSize, offset: offset };
-                const response = await fn(options);
+    // while number fetched is less than total reported, send request
+    while (!result || result.total > result.items.length) {
+        try {
+            const options = { limit: batchSize, offset: offset };
+            const response = await fn(options);
 
-                if (!response) {
-                    console.log('getFullPagedResults exiting because of lack of response from callback fn. Check callback fn.');
-                    return;
-                }
-
-                if (!result) {
-                    result = response;
-                } else {
-                    // take list from response and add it to result
-                    result.items.push(...response.items);
-                }
-
-                offset += batchSize;
-            } catch (e) {
-                console.log('error in getFullPagedResults iteration');
-                if (e.statusCode === 404) {
-                    console.log('404 error, exiting');
-                    return result;
-                }
-                console.log(e);
-                throw e;
+            if (!response) {
+                logger.debug('getFullPagedResults exiting because of lack of response from callback fn. Check callback fn.');
+                return;
             }
-        }
 
-        return result;
-    } catch (e) {
-        throw e;
+            if (!result) {
+                result = response;
+            } else {
+                // take list from response and add it to result
+                result.items.push(...response.items);
+            }
+
+            offset += batchSize;
+        } catch (e) {
+            logger.debug('error in getFullPagedResults iteration', e.statusCode);
+            if (e.statusCode === 404) {
+                logger.debug('404 error, exiting');
+                return result;
+            }
+            logger.debug(e);
+            throw e;
+        }
     }
+
+    return result;
 }
 
 async function setAccessTokenFromCurrentUser(spotifyApi: SpotifyApi) {
@@ -82,7 +79,7 @@ async function setAccessTokenFromCurrentUser(spotifyApi: SpotifyApi) {
 }
 
 export async function getFullMySavedTracks(accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined> {
-    console.log('in getFullMySavedTracks');
+    logger.debug('>>>> Entering getFullMySavedTracks()');
 
     const spotifyApi = new SpotifyApi();
     await setAccessTokenFromCurrentUser(spotifyApi);
@@ -96,7 +93,7 @@ export async function getFullMySavedTracks(accessToken: string|undefined): Promi
 }
 
 export async function getFullSearchResults(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.PagingObject<any>|undefined> {
-    console.log('in getFullSearchResults');
+    logger.debug('>>>> Entering getFullSearchResults()');
     if (rules.length === 0) { return; }
 
     const spotifyApi = new SpotifyApi();
@@ -123,7 +120,7 @@ export async function getFullSearchResults(rules: PlaylistRule[], accessToken: s
         })(rule.param);
         searchString += `${fieldFilter}:"${rule.value}"`;
     });
-    // console.log('searchString :: ', searchString);
+    logger.debug('searchString :: ', searchString);
 
     return await doAndWaitForRateLimit(async () => await getFullPagedResults(async (options) => {
         // maximum offset is 2000 - handled as 404 error
@@ -134,7 +131,7 @@ export async function getFullSearchResults(rules: PlaylistRule[], accessToken: s
 }
 
 export async function searchForItem(type: 'album'|'artist'|'playlist'|'track', item: string, accessToken: string|undefined) {
-    console.log('in searchForItem');
+    logger.debug('>>>> Entering searchForItem()');
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -151,7 +148,7 @@ export async function searchForItem(type: 'album'|'artist'|'playlist'|'track', i
 
 
 export async function getUsersPlaylists(id: string, accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.PlaylistObjectSimplified>|undefined> {
-    console.log('getUsersPlaylists');
+    logger.debug('>>>> Entering getUsersPlaylists()');
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -175,7 +172,7 @@ export async function userHasPlaylist(userId: string, playlistId: string, access
 
 export async function createNewPlaylist(playlistName: string, userId: ObjectId) {
     // TODO: accessToken param?
-    console.log('in createNewPlaylist');
+    logger.debug('>>>> Entering createNewPlaylist()');
 
     const user = await getUserById(userId);
     const spotifyApi = new SpotifyApi();
@@ -191,7 +188,7 @@ export async function createNewPlaylist(playlistName: string, userId: ObjectId) 
 }
 
 export async function removeTracksFromPlaylist(playlistId: string, accessToken: string|undefined) {
-    console.log('in removeTracksFromPlaylist');
+    logger.debug(`>>>> Entering removeTracksFromPlaylist(playlistId = ${playlistId}`);
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -201,7 +198,7 @@ export async function removeTracksFromPlaylist(playlistId: string, accessToken: 
 }
 
 export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi.TrackObjectSimplified[], accessToken: string|undefined) {
-    console.log('in addTracksToPlaylist');
+    logger.debug(`>>>> Entering addTracksToPlaylist(playlistId = ${playlistId}`);
     const trackUris = tracks.map((track) => track.uri);
 
     // Spotify API requires batches of 100 max
@@ -219,7 +216,7 @@ export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi
 
 
 export async function getAlbum(albumId: string, accessToken: string|undefined): Promise<SpotifyApi.SingleAlbumResponse> {
-    console.log('in getAlbum');
+    logger.debug(`>>>> Entering getAlbum(albumId = ${albumId}`);
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -232,12 +229,13 @@ export async function getAlbum(albumId: string, accessToken: string|undefined): 
 }
 
 async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
-    console.log('in doAndWaitForRateLimit');
+    logger.debug('>>>> Entering doAndWaitForRateLimit()');
     try {
         return await bodyFn();
     } catch (e) {
-        console.log('error found in doAndWaitForRateLimit');
+        logger.debug('error found in doAndWaitForRateLimit', e.statusCode);
         if (e.statusCode === 429) {
+            logger.debug('Rate limit error occurred, will wait and try again');
             // e.headers not yet passed from spotify-web-api-node
             const retryAfterSec = e.headers && e.headers['retry-after'] ? parseInt(e.headers['retry-after']) : 3;
             // wait x seconds
@@ -247,13 +245,13 @@ async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
             return await bodyFn();
         }
 
-        console.log(e);
+        logger.debug(e);
         throw e;
     }
 }
 
 export async function getAlbums(albumIds: string[], accessToken: string|undefined): Promise<SpotifyApi.AlbumObjectFull[]> {
-    console.log('in getAlbums');
+    logger.debug(`>>>> Entering getAlbums(albumIds = ${albumIds}`);
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -266,8 +264,6 @@ export async function getAlbums(albumIds: string[], accessToken: string|undefine
     let albums: SpotifyApi.AlbumObjectFull[] = [];
     for (const batch of batchedIds) {
         await doAndWaitForRateLimit(async () => {
-            // console.log('access token :: ', spotifyApi.getAccessToken());
-
             const albumResponse = await spotifyApi.getAlbums(batch);
             albums = albums.concat(albumResponse.body.albums);
         });
@@ -277,7 +273,7 @@ export async function getAlbums(albumIds: string[], accessToken: string|undefine
 }
 
 export async function getArtists(artistIds: string[], accessToken: string|undefined): Promise<SpotifyApi.ArtistObjectFull[]> {
-    console.log('in getArtists');
+    logger.debug(`>>>> Entering getArtists(artistIds = ${artistIds}`);
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -290,8 +286,6 @@ export async function getArtists(artistIds: string[], accessToken: string|undefi
     let artists: SpotifyApi.ArtistObjectFull[] = [];
     for (const batch of batchedIds) {
         await doAndWaitForRateLimit(async () => {
-            // console.log('access token :: ', spotifyApi.getAccessToken());
-
             const artistResponse = await spotifyApi.getArtists(batch);
             artists = artists.concat(artistResponse.body.artists);
         });
@@ -301,7 +295,7 @@ export async function getArtists(artistIds: string[], accessToken: string|undefi
 }
 
 export async function getTracksForAlbums(albumIds: string[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
-    console.log('in getTracksForAlbums');
+    logger.debug(`>>>> Entering getTracksForAlbums(albumIds = ${albumIds}`);
 
     const albums = await getAlbums(albumIds, accessToken);
     let tracks: SpotifyApi.TrackObjectSimplified[] = [];
@@ -313,7 +307,7 @@ export async function getTracksForAlbums(albumIds: string[], accessToken: string
 }
 
 export async function getAlbumsForArtists(artistIds: string[], accessToken: string|undefined) {
-    console.log('in getAlbumsForArtists');
+    logger.debug(`>>>> Entering getAlbumsForArtists(artistIds = ${artistIds}`);
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -333,7 +327,7 @@ export async function getAlbumsForArtists(artistIds: string[], accessToken: stri
 }
 
 export async function getTracksForArtists(artistIds: string[], accessToken: string|undefined) {
-    console.log('in getTracksForArtists');
+    logger.debug(`>>>> Entering getTracksForArtists(artistIds = ${artistIds}`);
 
     const albums = await getAlbumsForArtists(artistIds, accessToken);
     const tracks = await getTracksForAlbums(albums.map(album => album.id), accessToken);

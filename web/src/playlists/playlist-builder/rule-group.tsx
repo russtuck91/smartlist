@@ -19,7 +19,7 @@ interface RuleGroupProps {
     treeId: string;
 }
 
-const useStyles = (theme: Theme) => (console.log(theme.palette), {
+const useStyles = (theme: Theme) => ({
     paper: {
         overflow: 'hidden',
     },

@@ -11,6 +11,7 @@ import * as spotifyService from './spotify-service';
 import { getCurrentUser, getUserById } from './user-service';
 import { spCache } from './spotify-service-cache';
 import { db } from '../core/db/db';
+import logger from '../core/logger/logger';
 
 
 export async function getPlaylists() {
@@ -74,7 +75,7 @@ export async function deletePlaylist(id: string) {
 
 
 export async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
-    console.log('in populateListByRules');
+    logger.debug('>>>> Entering populateListByRules()');
 
     const results: (SpotifyApi.TrackObjectSimplified[])[] = await Promise.all(
         rules.map((rule) => {
@@ -82,7 +83,7 @@ export async function populateListByRules(rules: PlaylistRuleGroup[], accessToke
         })
     );
 
-    // console.log('Results, #1, ', results);
+    // logger.debug('Results, #1, ', results);
 
     const unionResult = union(...results);
 
@@ -102,8 +103,8 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: st
             })
         );
 
-        console.log('Query Results, OR path, ');
-        // console.log(listOfTrackResults);
+        logger.debug('Query Results, OR path, ');
+        // logger.debug(listOfTrackResults);
 
         // Get "OR" union
         const results = union(...listOfTrackResults);
@@ -133,9 +134,9 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: st
             listsOfTrackResults.push(straightRuleResults);
         }
 
-        console.log('Query Results, AND path...');
-        // console.log(listsOfTrackResults[0][0]);
-        // console.log(listsOfTrackResults[1][0]);
+        logger.debug('Query Results, AND path...');
+        // logger.debug(listsOfTrackResults[0][0]);
+        // logger.debug(listsOfTrackResults[1][0]);
 
         if (listsOfTrackResults.length <= 1) {
             return listsOfTrackResults[0];
@@ -158,7 +159,7 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: st
 }
 
 async function getListForRules(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
-    console.log('IN getListForRules');
+    logger.debug('>>>> Entering getListForRules()');
     
     // Bundle Saved rule with regular search rules (all but playlist)
     // if no Saved rule, do regular search
@@ -193,7 +194,7 @@ async function getListForRules(rules: PlaylistRule[], accessToken: string|undefi
         }
     }
 
-    // console.log(results);
+    // logger.debug(results);
     return results;
 }
 
@@ -238,8 +239,8 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: s
                 if (thisFilter.comparator === RuleComparator.Contains && typeof thisFilter.value === 'string') {
                     return artist.name.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
                 }
-                console.warn('Did not find matching filter logic for stored filter value');
-                console.log(thisFilter);
+                logger.warn('Did not find matching filter logic for stored filter value');
+                logger.debug(thisFilter);
             });
             if (shouldPass === false) { return false; }
         }
@@ -279,7 +280,7 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: s
             fullArtists.map((artist) => {
                 allGenres = allGenres.concat(artist.genres);
             });
-            // console.log('all genres ::', allGenres);
+            // logger.debug('all genres ::', allGenres);
 
             const thisFilter = filtersByParam[RuleParam.Genre];
             const shouldPass = allGenres.some((genre) => {
@@ -289,8 +290,8 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: s
                 if (thisFilter.comparator === RuleComparator.Contains && typeof thisFilter.value === 'string') {
                     return genre.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
                 }
-                console.warn('Did not find matching filter logic for stored filter value');
-                console.log(thisFilter);
+                logger.warn('Did not find matching filter logic for stored filter value');
+                logger.debug(thisFilter);
             });
             if (shouldPass === false) { return false; }
         }
@@ -315,7 +316,7 @@ export async function publishPlaylistById(id: string) {
 }
 
 export async function preValidatePublishPlaylist(playlist: Playlist, accessToken: string|undefined) {
-    console.log('in preValidatePublishPlaylist');
+    logger.debug('>>>> Entering preValidatePublishPlaylist()');
 
     // User has deleted playlist. Do not publish on intervals, require user to re-publish manually
     if (playlist.deleted) {
@@ -337,10 +338,10 @@ export async function preValidatePublishPlaylist(playlist: Playlist, accessToken
 }
 
 export async function publishPlaylist(playlist: Playlist, accessToken?: string) {
-    console.log('in publishPlaylist. ID :: ', playlist._id);
+    logger.info(`>>>> Entering publishPlaylist(playlist._id = ${playlist._id}`);
     
     const list = await populateListByRules(playlist.rules, accessToken);
-    console.log('publishing playlist will have ', list.length, ' songs');
+    logger.debug('publishing playlist will have ', list.length, ' songs');
 
     let spotifyPlaylistId = playlist.spotifyPlaylistId;
     if (spotifyPlaylistId && !playlist.deleted) {
@@ -364,7 +365,7 @@ export async function publishPlaylist(playlist: Playlist, accessToken?: string) 
 }
 
 export async function publishAllPlaylists() {
-    console.log('in publishAllPlaylists');
+    logger.info('>>>> Entering publishAllPlaylists()');
 
     const playlists: Playlist[] = await db.playlists.find();
     for (const playlist of playlists) {
@@ -372,13 +373,12 @@ export async function publishAllPlaylists() {
             const user = await getUserById(playlist.userId);
             if (user) {
                 await doAndRetry(async (accessToken: string) => {
-                    // console.log('access token :: ', accessToken);
                     await preValidatePublishPlaylist(playlist, accessToken);
                 }, user);
             }
         } catch (e) {
-            console.log('error publishing playlist', playlist._id);
-            console.log(e);
+            logger.info('error publishing playlist', playlist._id);
+            logger.error(e);
         }
     }
 }

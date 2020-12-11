@@ -1,6 +1,7 @@
 import { Controller, Get } from '@overnightjs/core';
 import { Request, Response } from 'express';
 
+import logger from '../core/logger/logger';
 import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
 import { SpotifyApi } from '../core/spotify/spotify-api';
@@ -74,7 +75,7 @@ export class LoginController {
                 // pass the token to the frontend
                 res.redirect(`${baseUiUrl}/login/callback/${sessionID}`);
             } catch (err) {
-                console.error(err);
+                logger.error(err);
                 // TODO: error handling
                 res.redirect(`${baseUiUrl}/login/error/invalid token`);
             }

@@ -1,3 +1,4 @@
+import logger from '../core/logger/logger';
 import * as spotifyService from './spotify-service';
 
 
@@ -7,11 +8,11 @@ export class SpotifyServiceCache {
 
 
     public async getAlbums(albumIds: string[], accessToken: string|undefined) {
-        console.log('in cached getAlbums');
+        logger.debug('>>>> Entering SpotifyServiceCache.getAlbums()');
 
         const albumsToBeFetched: string[] = albumIds.filter((albumId) => !this.albumMap[albumId]);
-        console.log('# albums requested:', albumIds.length);
-        console.log('# albums not cached, will be fetched:', albumsToBeFetched.length);
+        logger.debug('# albums requested:', albumIds.length);
+        logger.debug('# albums not cached, will be fetched:', albumsToBeFetched.length);
 
         const fetchedAlbums = await spotifyService.getAlbums(albumsToBeFetched, accessToken);
 
@@ -30,10 +31,11 @@ export class SpotifyServiceCache {
     }
 
     public async getArtists(artistIds: string[], accessToken: string|undefined) {
+        logger.debug('>>>> Entering SpotifyServiceCache.getArtists()');
         // For each artist ID, add to array if not in artistMap cache
         const artistsToBeFetched: string[] = artistIds.filter((artistId) => !this.artistMap[artistId]);
-        console.log('# artists requested:', artistIds.length);
-        console.log('# artists not cached, will be fetched:', artistsToBeFetched.length);
+        logger.debug('# artists requested:', artistIds.length);
+        logger.debug('# artists not cached, will be fetched:', artistsToBeFetched.length);
 
         // Send artistsIds for fetching to spotifyService
         const fetchedArtists = await spotifyService.getArtists(artistsToBeFetched, accessToken);
