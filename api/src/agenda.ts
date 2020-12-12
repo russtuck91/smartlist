@@ -2,6 +2,7 @@ import Agenda from 'agenda';
 import { kebabCase } from 'lodash';
 
 import { MONGODB_URI } from './core/db/db';
+import logger from './core/logger/logger';
 
 const connectionOpts = { db: { address: MONGODB_URI, collection: 'jobs' } };
 
@@ -16,8 +17,9 @@ jobTypes.forEach((type) => {
 
 if (jobTypes.length) {
     (async () => {
+        logger.info('Starting agenda');
         await agenda.start();
-        console.log('started agenda');
+        logger.info('Started agenda');
 
         // await agenda.every('24 hours', 'playlistPublishing');
         await agenda.every('6 hours', 'playlistPublishing');
@@ -27,7 +29,7 @@ if (jobTypes.length) {
 }
 
 async function graceful() {
-    console.log('in graceful shutdown');
+    logger.info('in graceful shutdown');
     await agenda.stop();
     process.exit(0);
 }

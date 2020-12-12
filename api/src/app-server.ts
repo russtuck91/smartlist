@@ -11,14 +11,15 @@ import { Server } from '@overnightjs/core';
 import { Logger } from '@overnightjs/logger';
 
 import { MONGODB_URI } from './core/db/db';
+import logger from './core/logger/logger';
 import { setSessionTokenContext } from './core/session/session-util';
 import { BaseController } from './base-controller';
 
 const MongoStore = connectMongo(session);
 
 process.on('unhandledRejection', (error: any, promise) => {
-    console.log('Unhandled Rejection at: Promise', promise);
-    console.log('Error:', error);
+    logger.info('Unhandled Rejection at: Promise', promise);
+    logger.error('Error:', error);
     console.dir(error.stack);
     // throw error;
 });
@@ -49,8 +50,8 @@ class AppServer extends Server {
     }
 
     private errorHandler(error: any, req: Request, res: Response, next: NextFunction) {
-        console.log('in errorHandler');
-        console.log(error);
+        logger.debug('>>>> Entering errorHandler()');
+        logger.error(error);
 
         res.sendStatus(error.statusCode);
     }
@@ -61,7 +62,7 @@ class AppServer extends Server {
 
 
     public start(port: number|string): void {
-        console.log('NODE_ENV', process.env.NODE_ENV);
+        logger.info(`Starting application, environment: ${process.env.NODE_ENV}`);
         if (process.env.NODE_ENV === 'production') {
             this.app.use(serveStatic('../web/build/'));
             this.app.get('*', (req, res) => {
