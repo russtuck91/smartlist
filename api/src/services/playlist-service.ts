@@ -377,7 +377,7 @@ export async function publishAllPlaylists() {
                 }, user);
             }
         } catch (e) {
-            logger.info('error publishing playlist', playlist._id);
+            logger.info('error publishing playlist', playlist._id.toString());
             logger.error(e);
         }
     }
