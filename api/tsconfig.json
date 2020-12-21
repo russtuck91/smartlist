@@ -6,7 +6,6 @@
         "baseUrl": "./",
         "outDir": "build",
         "removeComments": true,
-        "esModuleInterop": true,
         "experimentalDecorators": true,
         "target": "es6",
         "emitDecoratorMetadata": true,

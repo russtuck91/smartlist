@@ -8,6 +8,7 @@
             "es6"
         ],
         "skipLibCheck": true,
+        "esModuleInterop": true,
         "types": [
             "spotify-api"
         ]
