@@ -9,6 +9,7 @@ import { PlaylistRuleGroup } from '../../../../shared';
 import { ColumnSet } from '../../core/components/tables/models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';
 import { TextField } from '../../core/forms/fields';
+import logger from '../../core/logger/logger';
 import { requests } from '../../core/requests/requests';
 import { Nullable } from '../../core/shared-models/types';
 
@@ -98,7 +99,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 listPreview: list
             });
         } catch (e) {
-            console.log(e);
+            logger.error('Problem populating list for playlist', e);
             this.setState({ listPreview: null });
         }
     }

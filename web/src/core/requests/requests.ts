@@ -1,3 +1,4 @@
+import logger from '../logger/logger';
 import { clearSessionToken } from '../redux/actions';
 import { store } from '../redux/stores';
 
@@ -41,11 +42,12 @@ function makeDirectRequest(method: string, url: string, body?: any) {
             if (!response.ok) {
                 switch (response.status) {
                     case 401:
-                        console.log('unauthorized');
+                        logger.info('Received 401 status code, users token expired');
                         store.dispatch(clearSessionToken());
                         break;
                     default:
-                        break;
+                        logger.error(response.statusText, response.status, response.url);
+                        throw new Error(response.statusText);
                 }
                 return;
             }
@@ -53,7 +55,7 @@ function makeDirectRequest(method: string, url: string, body?: any) {
             try {
                 return await response.json();
             } catch (e) {
-                // console.log(e);
+                logger.debug('Error getting JSON response from HTTP request', method, url, response.status);
                 // return;
             }
         });
