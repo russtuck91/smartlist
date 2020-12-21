@@ -5,6 +5,7 @@ import { Route, Router, Switch } from 'react-router';
 
 import { Account } from './account/account';
 import './app.scss';
+import { ErrorBoundary } from './core/errors/error-boundary';
 import { history } from './core/history/history';
 import { RouteLookup } from './core/routes/route-lookup';
 import { Home } from './home';
@@ -41,23 +42,25 @@ export class App extends Component {
 
         return (
             <div className="app">
-                <ThemeProvider theme={theme}>
-                    <Router history={history}>
-                    <>
-                        <Navigation />
-                        <Switch>
-                            <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
+                <ErrorBoundary>
+                    <ThemeProvider theme={theme}>
+                        <Router history={history}>
+                        <>
+                            <Navigation />
+                            <Switch>
+                                <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
 
-                            <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
-                            <Route path={RouteLookup.login.login} component={Login} />
-                            <Route exact path={RouteLookup.logout} component={Logout} />
+                                <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
+                                <Route path={RouteLookup.login.login} component={Login} />
+                                <Route exact path={RouteLookup.logout} component={Logout} />
 
-                            <Route exact path={RouteLookup.account} component={Account} />
-                            <Route exact path={RouteLookup.home} component={Home} />
-                        </Switch>
-                    </>
-                    </Router>
-                </ThemeProvider>
+                                <Route exact path={RouteLookup.account} component={Account} />
+                                <Route exact path={RouteLookup.home} component={Home} />
+                            </Switch>
+                        </>
+                        </Router>
+                    </ThemeProvider>
+                </ErrorBoundary>
             </div>
         );
     }
