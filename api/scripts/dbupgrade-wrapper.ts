@@ -3,6 +3,7 @@ import fs from 'fs';
 import rimraf from 'rimraf';
 
 import { db, MONGODB_URI } from '../src/core/db/db';
+import logger from '../src/core/logger/logger';
 
 
 const BACKUP_DIRECTORY = 'dbdump';
@@ -52,13 +53,13 @@ async function dbUpgradeWrapper() {
     while (checkForUpgrades) {
         // Check current DB version from DB
         const currentVersion = await getCurrentVersion();
-        console.log('DB is at version: ', currentVersion);
+        logger.info('DB is at version: ', currentVersion);
 
         // Find upgrade script targeting this current version
         const currentUpgradeScript: string|undefined = files.find(f => f.match(new RegExp(`^upgrade-${currentVersion}-\\d+\\.\\d+\\.\\d+-.*\\.ts$`)));
 
         if (!currentUpgradeScript) {
-            console.log('No DB upgrades to make');
+            logger.info('No DB upgrades to make');
             checkForUpgrades = false;
             break;
         }
@@ -73,7 +74,7 @@ async function dbUpgradeWrapper() {
             await script.default();
 
             // Success!
-            console.log('Successfully completed upgrade script to version: ', newVersion);
+            logger.info('Successfully completed upgrade script to version: ', newVersion);
 
             // Update db version info
             await setNewVersion(newVersion, currentUpgradeScript);
@@ -82,8 +83,8 @@ async function dbUpgradeWrapper() {
 
         } catch (e) {
             // Error handling
-            console.log('Error running upgrade script');
-            console.log(e);
+            logger.info('Error running upgrade script');
+            logger.error(e);
 
             // Restore backup
             await restoreDatabase();

@@ -1,5 +1,6 @@
 import { isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup, RuleComparator, RuleParam } from '../../../shared';
 import { db } from '../../src/core/db/db';
+import logger from '../../src/core/logger/logger';
 
 
 function addComparatorToRuleGroups(rules: PlaylistRuleGroup[]): PlaylistRuleGroup[] {
@@ -50,8 +51,8 @@ async function addRuleComparators() {
             );
         }
     } catch (e) {
-        console.log('Error in addRuleComparators');
-        console.log(e);
+        logger.info('Error in addRuleComparators');
+        logger.error(e);
         throw e;
     }
 }
