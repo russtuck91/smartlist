@@ -45,7 +45,7 @@ export async function refreshAccessToken(user: User) {
         const refreshResponse = await spotifyApi.refreshAccessToken();
         const newAccessToken = refreshResponse.body.access_token;
 
-        db.users.update(
+        await db.users.update(
             { _id: user._id },
             { $set: { accessToken: newAccessToken } }
         );
