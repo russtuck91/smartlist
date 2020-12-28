@@ -7,7 +7,8 @@
     "start": "node build/api/src/start.js",
     "dev": "nodemon",
     "build": "rm -rf ./build/ && npm run dbupgrade && tsc",
-    "dbupgrade": "ts-node ./scripts/dbupgrade-wrapper.ts"
+    "dbupgrade": "ts-node ./scripts/dbupgrade-wrapper.ts",
+    "restoredb": "ts-node ./scripts/restore-database-wrapper.ts"
   },
   "dependencies": {
     "@overnightjs/core": "^1.6.12",
@@ -28,6 +29,7 @@
     "express-session": "^1.17.0",
     "http-errors": "^1.6.3",
     "lodash": "^4.17.19",
+    "moment": "^2.24.0",
     "mongodb": "^3.5.3",
     "mongoist": "^2.4.0",
     "morgan": "~1.9.0",

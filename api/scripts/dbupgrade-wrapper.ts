@@ -4,9 +4,9 @@ import rimraf from 'rimraf';
 
 import { db, MONGODB_URI } from '../src/core/db/db';
 import logger from '../src/core/logger/logger';
+import restoreDatabase from './restore-database';
+import { BACKUP_DIRECTORY } from './constants';
 
-
-const BACKUP_DIRECTORY = 'dbdump';
 
 async function getCurrentVersion(): Promise<string> {
     const dbversion = await db.dbversion.findOne();
@@ -33,13 +33,6 @@ async function backupDatabase() {
     await mongoutils.executeCommand(command);
 }
 
-async function restoreDatabase() {
-    const info = mongoutils.parseMongoUrl(MONGODB_URI);
-    const command = mongoutils.createRestoreCommand(info, BACKUP_DIRECTORY + '/smartlist');
-    const enhCommand = command + ' --drop --preserveUUID';
-    await mongoutils.executeCommand(enhCommand);
-}
-
 function deleteBackup() {
     rimraf.sync(BACKUP_DIRECTORY);
 }
@@ -53,7 +46,7 @@ async function dbUpgradeWrapper() {
     while (checkForUpgrades) {
         // Check current DB version from DB
         const currentVersion = await getCurrentVersion();
-        logger.info('DB is at version: ', currentVersion);
+        logger.info(`DB is at version: ${currentVersion}`);
 
         // Find upgrade script targeting this current version
         const currentUpgradeScript: string|undefined = files.find(f => f.match(new RegExp(`^upgrade-${currentVersion}-\\d+\\.\\d+\\.\\d+-.*\\.ts$`)));
@@ -74,7 +67,7 @@ async function dbUpgradeWrapper() {
             await script.default();
 
             // Success!
-            logger.info('Successfully completed upgrade script to version: ', newVersion);
+            logger.info(`Successfully completed upgrade script to version: ${newVersion}`);
 
             // Update db version info
             await setNewVersion(newVersion, currentUpgradeScript);
