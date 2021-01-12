@@ -147,7 +147,10 @@ export class RawRuleGroup extends React.Component<FullProps> {
     private addCondition = () => {
         const { treeId, ruleGroup, formik: { setFieldValue } } = this.props;
         
-        ruleGroup.rules.push(DEFAULT_NEW_CONDITION);
+        const insertAtIndex = ruleGroup.rules.reduce((agg, curr, index) => (
+            !isPlaylistRuleGroup(curr) ? index : agg
+        ), -1) + 1;
+        ruleGroup.rules.splice(insertAtIndex, 0, DEFAULT_NEW_CONDITION);
         setFieldValue(`${treeId}.rules`, ruleGroup.rules);
     }
 
