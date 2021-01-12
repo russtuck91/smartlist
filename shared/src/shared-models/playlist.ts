@@ -51,6 +51,7 @@ export enum RuleComparator {
 
 export function getComparatorsForParam(param: RuleParam): RuleComparator[] {
     if (
+        param === RuleParam.Saved ||
         param === RuleParam.Genre ||
         param === RuleParam.Year ||
         param === RuleParam.Playlist

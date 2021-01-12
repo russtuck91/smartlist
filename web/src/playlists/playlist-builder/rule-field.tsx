@@ -44,46 +44,17 @@ export class RuleField extends React.Component<RuleFieldProps> {
                             onChange={this.onChangeRuleType}
                         />
                     </Grid>
-                    {rule.param === RuleParam.Saved ? (
-                        <Grid item xs={6}>
-                            <CheckboxField
-                                id={`${treeId}.value`}
-                                value={Boolean(rule.value)}
-                            />
-                        </Grid>
-                    ) : (
-                            <>
-                                <Grid item xs={6}>
-                                    <DropdownField
-                                        id={`${treeId}.comparator`}
-                                        value={rule.comparator}
-                                        options={comparators}
-                                        disabled={comparators.length <= 1}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    {(
-                                        rule.comparator === RuleComparator.Is &&
-                                        rule.param !== RuleParam.Genre && 
-                                        rule.param !== RuleParam.Year
-                                    ) ?
-                                        (
-                                            <AutocompleteField
-                                                id={`${treeId}.value`}
-                                                value={rule.value}
-                                                type={rule.param}
-                                                required
-                                            />
-                                        ) : (
-                                            <TextField
-                                                id={`${treeId}.value`}
-                                                value={rule.value}
-                                                required
-                                            />
-                                        )}
-                                </Grid>
-                            </>
-                    )}
+                    <Grid item xs={6}>
+                        <DropdownField
+                            id={`${treeId}.comparator`}
+                            value={rule.comparator || (comparators.length === 1 ? comparators[0] : rule.comparator)}
+                            options={comparators}
+                            disabled={comparators.length <= 1}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        {this.renderRuleValueField()}
+                    </Grid>
                     <Grid item xs>
                         <IconButton onClick={this.props.removeCondition}>
                             <RemoveCircleOutline color="error" fontSize="small" />
@@ -91,6 +62,42 @@ export class RuleField extends React.Component<RuleFieldProps> {
                     </Grid>
                 </Grid>
             </Grid>
+        );
+    }
+
+    private renderRuleValueField() {
+        const { rule, treeId } = this.props;
+
+        if (rule.param === RuleParam.Saved) {
+            return (
+                <CheckboxField
+                    id={`${treeId}.value`}
+                    value={Boolean(rule.value)}
+                />
+            );
+        }
+
+        if (
+            rule.comparator === RuleComparator.Is &&
+            rule.param !== RuleParam.Genre && 
+            rule.param !== RuleParam.Year
+        ) {
+            return (
+                <AutocompleteField
+                    id={`${treeId}.value`}
+                    value={rule.value}
+                    type={rule.param}
+                    required
+                />
+            );
+        }
+
+        return (
+            <TextField
+                id={`${treeId}.value`}
+                value={rule.value}
+                required
+            />
         );
     }
 
