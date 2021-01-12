@@ -7,6 +7,7 @@ import logger from '../core/logger/logger';
 import { SpotifyApi } from '../core/spotify/spotify-api';
 import { sleep } from '../core/utils/utils';
 import { getUserById, getCurrentUser } from './user-service';
+import createFullTrackObjectsFromAlbums from './spotify/create-full-track-objects-from-albums';
 
 
 interface SpResponse<T> {
@@ -78,21 +79,24 @@ async function setAccessTokenFromCurrentUser(spotifyApi: SpotifyApi) {
     }
 }
 
-export async function getFullMySavedTracks(accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined> {
+export async function getFullMySavedTracks(accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug('>>>> Entering getFullMySavedTracks()');
 
     const spotifyApi = new SpotifyApi();
     await setAccessTokenFromCurrentUser(spotifyApi);
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
 
-    return getFullPagedResults(async (options) => {
+    const result: SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined = await getFullPagedResults(async (options) => {
         const apiResponse: SpResponse<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>> = await spotifyApi.getMySavedTracks(options);
 
         return apiResponse.body;
     });
+    if (!result) return [];
+    const savedTracks: SpotifyApi.TrackObjectFull[] = result.items.map(item => item.track);
+    return savedTracks;
 }
 
-export async function getFullSearchResults(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.PagingObject<any>|undefined> {
+export async function getFullSearchResults(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.TrackObjectFull>|undefined> {
     logger.debug('>>>> Entering getFullSearchResults()');
     if (rules.length === 0) { return; }
 
@@ -197,7 +201,7 @@ export async function removeTracksFromPlaylist(playlistId: string, accessToken: 
     await spotifyApi.replaceTracksInPlaylist(playlistId, []);
 }
 
-export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi.TrackObjectSimplified[], accessToken: string|undefined) {
+export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi.TrackObjectFull[], accessToken: string|undefined) {
     logger.debug(`>>>> Entering addTracksToPlaylist(playlistId = ${playlistId}`);
     const trackUris = tracks.map((track) => track.uri);
 
@@ -294,14 +298,11 @@ export async function getArtists(artistIds: string[], accessToken: string|undefi
     return artists;
 }
 
-export async function getTracksForAlbums(albumIds: string[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
+export async function getTracksForAlbums(albumIds: string[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug(`>>>> Entering getTracksForAlbums(albumIds = ${albumIds}`);
 
     const albums = await getAlbums(albumIds, accessToken);
-    let tracks: SpotifyApi.TrackObjectSimplified[] = [];
-    tracks = albums.reduce((agg, curr) => {
-        return agg.concat(curr.tracks.items);
-    }, tracks);
+    const tracks = createFullTrackObjectsFromAlbums(albums);
 
     return tracks;
 }
@@ -333,5 +334,20 @@ export async function getTracksForArtists(artistIds: string[], accessToken: stri
     const tracks = await getTracksForAlbums(albums.map(album => album.id), accessToken);
 
     return tracks;
+}
+
+export async function getTracksForPlaylist(playlistId: string, accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
+    logger.debug(`>>>> Entering getTracksForPlaylist(playlistId = ${playlistId})`);
+
+    const spotifyApi = new SpotifyApi();
+    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
+    await setAccessTokenFromCurrentUser(spotifyApi);
+
+    const result: SpotifyApi.PagingObject<SpotifyApi.PlaylistTrackObject>|undefined = await getFullPagedResults(async (options) => {
+        const response: SpResponse<SpotifyApi.PlaylistTrackResponse> = await spotifyApi.getPlaylistTracks(playlistId, options);
+        return response.body;
+    });
+    if (!result) return [];
+    return result.items.map(item => item.track);
 }
 

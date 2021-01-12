@@ -74,10 +74,10 @@ export async function deletePlaylist(id: string) {
 
 
 
-export async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
+export async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug('>>>> Entering populateListByRules()');
 
-    const results: (SpotifyApi.TrackObjectSimplified[])[] = await Promise.all(
+    const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
         rules.map((rule) => {
             return getListForRuleGroup(rule, accessToken);
         })
@@ -90,7 +90,7 @@ export async function populateListByRules(rules: PlaylistRuleGroup[], accessToke
     return unionResult;
 }
 
-async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
+async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
     if (ruleGroup.type === RuleGroupType.Or) {
         // Send each individual rule to getListForRules
         const listOfTrackResults = await Promise.all(
@@ -123,7 +123,7 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: st
             }
         });
 
-        const listsOfTrackResults: (SpotifyApi.TrackObjectSimplified[])[] = await Promise.all(
+        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
             nestedRuleGroups.map((rule) => {
                 return getListForRuleGroup(rule, accessToken);
             })
@@ -143,46 +143,55 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: st
         }
 
         // Get "AND" intersection
-        const listOne = listsOfTrackResults[0];
-        const results = intersectionWith<SpotifyApi.TrackObjectSimplified, SpotifyApi.TrackObjectSimplified, SpotifyApi.TrackObjectSimplified, SpotifyApi.TrackObjectSimplified>(
-            listOne,
-            listOne,
-            listOne,
-            ...listsOfTrackResults,
-            (a: SpotifyApi.TrackObjectSimplified, b: SpotifyApi.TrackObjectSimplified) => {
-                return a.id === b.id;
-            }
-        );
-
+        const results = getIntersectionOfTrackLists(listsOfTrackResults);
         return results;
     }
 }
 
-async function getListForRules(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectSimplified[]> {
-    logger.debug('>>>> Entering getListForRules()');
-    
-    // Bundle Saved rule with regular search rules (all but playlist)
-    // if no Saved rule, do regular search
-    // TODO: what about playlist rule
+function getIntersectionOfTrackLists<T extends SpotifyApi.TrackObjectFull | SpotifyApi.TrackObjectSimplified>(listsOfTrackResults: (T[])[]): T[] {
+    const listOne = listsOfTrackResults[0];
+    const results = intersectionWith<T, T, T, T>(
+        listOne,
+        listOne,
+        listOne,
+        ...listsOfTrackResults,
+        (a: T, b: T) => {
+            return a.id === b.id;
+        }
+    );
 
-    const hasSavedRule: boolean = !!(rules.find(rule => rule.param === RuleParam.Saved));
-    
-    let results: SpotifyApi.TrackObjectSimplified[] = [];
-    if (hasSavedRule) {
-        results = await getFilteredListOfSavedSongs(rules, accessToken);
-    } else {
+    return results;
+}
+
+async function getListForRules(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
+    logger.debug('>>>> Entering getListForRules()');
+
+    // Separate rules by those that can optionally be filtered from a list (Artist, Album, Genre, etc)
+    // vs those that require their own fetch (My Saved, a Playlist)
+    const canBeFilteredFromABatch: PlaylistRule[] = [];
+    const requiresOwnFetch: PlaylistRule[] = [];
+    rules.map((rule) => {
+        if ([RuleParam.Artist, RuleParam.Album, RuleParam.Track, RuleParam.Genre, RuleParam.Year].includes(rule.param)) {
+            canBeFilteredFromABatch.push(rule);
+        } else {
+            requiresOwnFetch.push(rule);
+        }
+    });
+
+    // If there are none that require a fetch - AND we're not working from a batch already - send through getFullSearchResults
+    // TODO: working from a batch
+    if (requiresOwnFetch.length === 0) {
+        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = [];
         // Send special "is" rules through specific APIs, others through getFullSearchResults
         for (let i = rules.length - 1; i >= 0; i--) {
             const rule = rules[i];
             if (rule.comparator === RuleComparator.Is) {
-                if (rule.param === RuleParam.Artist && typeof rule.value === 'object') {
-                    const ruleResults = await spotifyService.getTracksForArtists([ rule.value.id ], accessToken);
-                    results = results.concat(ruleResults);
-                    rules.splice(i, 1);
-                }
-                if (rule.param === RuleParam.Album && typeof rule.value === 'object') {
-                    const ruleResults = await spotifyService.getTracksForAlbums([ rule.value.id ], accessToken);
-                    results = results.concat(ruleResults);
+                if (
+                    (rule.param === RuleParam.Artist && typeof rule.value === 'object') ||
+                    (rule.param === RuleParam.Album && typeof rule.value === 'object')
+                ) {
+                    const ruleResults = await getTracksForRule(rule, accessToken);
+                    listsOfTrackResults.push(ruleResults);
                     rules.splice(i, 1);
                 }
             }
@@ -190,21 +199,49 @@ async function getListForRules(rules: PlaylistRule[], accessToken: string|undefi
 
         const searchResults = await spotifyService.getFullSearchResults(rules, accessToken);
         if (searchResults) {
-            results = results.concat(searchResults.items);
+            listsOfTrackResults.push(searchResults.items);
         }
-    }
 
-    // logger.debug(results);
-    return results;
+        // Union the results
+        return getIntersectionOfTrackLists(listsOfTrackResults);
+
+    } else {
+        // Else, do fetch for each fetch-required rule
+        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
+            requiresOwnFetch.map((rule) => getTracksForRule(rule, accessToken))
+        );
+        // Union the results
+        const unionOfTrackResults = getIntersectionOfTrackLists(listsOfTrackResults);
+        // And filter by the filter-able rules
+        const filteredUnion = await filterListOfSongs(unionOfTrackResults, canBeFilteredFromABatch, accessToken);
+        return filteredUnion;
+    }
 }
 
-async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: string|undefined) {
-    const savedTrackObjects = await spotifyService.getFullMySavedTracks(accessToken);
+async function getTracksForRule(rule: PlaylistRule, accessToken: string|undefined): Promise<(SpotifyApi.TrackObjectFull)[]> {
+    switch (rule.param) {
+        case RuleParam.Saved:
+            return await spotifyService.getFullMySavedTracks(accessToken);
+        case RuleParam.Playlist:
+            if (typeof rule.value === 'object') {
+                return await spotifyService.getTracksForPlaylist(rule.value.id, accessToken);
+            }
+            break;
+        case RuleParam.Artist:
+            if (typeof rule.value === 'object') {
+                return await spotifyService.getTracksForArtists([ rule.value.id ], accessToken);
+            }
+            break;
+        case RuleParam.Album:
+            if (typeof rule.value === 'object') {
+                return await spotifyService.getTracksForAlbums([ rule.value.id ], accessToken);
+            }
+            break;
+    }
+    return [];
+}
 
-    if (!savedTrackObjects) { return []; }
-
-    const savedTracks: SpotifyApi.TrackObjectFull[] = savedTrackObjects.items.map(item => item.track);
-
+async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules: PlaylistRule[], accessToken: string|undefined) {
     const filtersByParam: { [s: string]: PlaylistRule } = rules.reduce((obj, item) => {
         obj[item.param] = item;
         return obj;
@@ -216,7 +253,7 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: s
     if (filtersByParam[RuleParam.Genre]) {
         const allAlbumIds: string[] = [];
         const allArtistIds: string[] = [];
-        savedTracks.map((track) => {
+        trackList.map((track) => {
             allAlbumIds.push(track.album.id);
             track.artists.map((artist) => {
                 allArtistIds.push(artist.id);
@@ -227,7 +264,7 @@ async function getFilteredListOfSavedSongs(rules: PlaylistRule[], accessToken: s
         artistMap = await spCache.getArtists(allArtistIds, accessToken);
     }
 
-    const filteredList = savedTracks.filter((track) => {
+    const filteredList = trackList.filter((track) => {
         if (filtersByParam[RuleParam.Artist]) {
             const thisFilter = filtersByParam[RuleParam.Artist];
             const shouldPass = track.artists.some((artist) => {
