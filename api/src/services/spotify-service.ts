@@ -332,8 +332,10 @@ export async function getTracksForArtists(artistIds: string[], accessToken: stri
 
     const albums = await getAlbumsForArtists(artistIds, accessToken);
     const tracks = await getTracksForAlbums(albums.map(album => album.id), accessToken);
+    // Filter out for compilation albums with different artists
+    const filteredTracks = tracks.filter(track => track.artists.some(artist => artistIds.includes(artist.id)));
 
-    return tracks;
+    return filteredTracks;
 }
 
 export async function getTracksForPlaylist(playlistId: string, accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
