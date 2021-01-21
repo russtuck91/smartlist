@@ -1,4 +1,4 @@
-import { chunk } from 'lodash';
+import { chunk, truncate } from 'lodash';
 import { ObjectId } from 'mongodb';
 
 import { PlaylistRule, RuleParam } from '../../../shared/src';
@@ -124,7 +124,7 @@ export async function getFullSearchResults(rules: PlaylistRule[], accessToken: s
         })(rule.param);
         searchString += `${fieldFilter}:"${rule.value}"`;
     });
-    logger.debug('searchString :: ', searchString);
+    logger.debug(`searchString :: ${searchString}`);
 
     return await doAndWaitForRateLimit(async () => await getFullPagedResults(async (options) => {
         // maximum offset is 2000 - handled as 404 error
@@ -255,7 +255,7 @@ async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
 }
 
 export async function getAlbums(albumIds: string[], accessToken: string|undefined): Promise<SpotifyApi.AlbumObjectFull[]> {
-    logger.debug(`>>>> Entering getAlbums(albumIds = ${albumIds}`);
+    logger.debug(`>>>> Entering getAlbums(albumIds = ${truncate(albumIds.join(','))}`);
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -277,7 +277,7 @@ export async function getAlbums(albumIds: string[], accessToken: string|undefine
 }
 
 export async function getArtists(artistIds: string[], accessToken: string|undefined): Promise<SpotifyApi.ArtistObjectFull[]> {
-    logger.debug(`>>>> Entering getArtists(artistIds = ${artistIds}`);
+    logger.debug(`>>>> Entering getArtists(artistIds = ${truncate(artistIds.join(','))}`);
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -299,7 +299,7 @@ export async function getArtists(artistIds: string[], accessToken: string|undefi
 }
 
 export async function getTracksForAlbums(albumIds: string[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
-    logger.debug(`>>>> Entering getTracksForAlbums(albumIds = ${albumIds}`);
+    logger.debug(`>>>> Entering getTracksForAlbums(albumIds = ${truncate(albumIds.join(','))}`);
 
     const albums = await getAlbums(albumIds, accessToken);
     const tracks = createFullTrackObjectsFromAlbums(albums);
@@ -308,7 +308,7 @@ export async function getTracksForAlbums(albumIds: string[], accessToken: string
 }
 
 export async function getAlbumsForArtists(artistIds: string[], accessToken: string|undefined) {
-    logger.debug(`>>>> Entering getAlbumsForArtists(artistIds = ${artistIds}`);
+    logger.debug(`>>>> Entering getAlbumsForArtists(artistIds = ${truncate(artistIds.join(','))}`);
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -328,7 +328,7 @@ export async function getAlbumsForArtists(artistIds: string[], accessToken: stri
 }
 
 export async function getTracksForArtists(artistIds: string[], accessToken: string|undefined) {
-    logger.debug(`>>>> Entering getTracksForArtists(artistIds = ${artistIds}`);
+    logger.debug(`>>>> Entering getTracksForArtists(artistIds = ${truncate(artistIds.join(','))}`);
 
     const albums = await getAlbumsForArtists(artistIds, accessToken);
     const tracks = await getTracksForAlbums(albums.map(album => album.id), accessToken);
