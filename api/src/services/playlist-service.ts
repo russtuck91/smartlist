@@ -79,7 +79,7 @@ export async function populateListByRules(rules: PlaylistRuleGroup[], accessToke
 
     const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
         rules.map((rule) => {
-            return getListForRuleGroup(rule, accessToken);
+            return getListForRuleGroup(rule, accessToken, undefined);
         })
     );
 
@@ -90,15 +90,21 @@ export async function populateListByRules(rules: PlaylistRuleGroup[], accessToke
     return unionResult;
 }
 
-async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRuleGroup(
+    ruleGroup: PlaylistRuleGroup,
+    accessToken: string|undefined,
+    currentBatchOfSongs: SpotifyApi.TrackObjectFull[]|undefined,
+): Promise<SpotifyApi.TrackObjectFull[]> {
+    logger.debug('>>>> Entering getListForRuleGroup()');
+
     if (ruleGroup.type === RuleGroupType.Or) {
         // Send each individual rule to getListForRules
         const listOfTrackResults = await Promise.all(
             ruleGroup.rules.map((rule) => {
                 if (isPlaylistRuleGroup(rule)) {
-                    return getListForRuleGroup(rule, accessToken);
+                    return getListForRuleGroup(rule, accessToken, currentBatchOfSongs);
                 } else {
-                    return getListForRules([ rule ], accessToken);
+                    return getListForRules([ rule ], accessToken, currentBatchOfSongs);
                 }
             })
         );
@@ -123,16 +129,20 @@ async function getListForRuleGroup(ruleGroup: PlaylistRuleGroup, accessToken: st
             }
         });
 
-        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
-            nestedRuleGroups.map((rule) => {
-                return getListForRuleGroup(rule, accessToken);
-            })
-        );
+        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = [];
 
+        // Do straight rules before nestedRuleGroups, then send results into call for nestedRuleGroups
         if (straightRules.length > 0) {
-            const straightRuleResults = await getListForRules(straightRules, accessToken);
+            const straightRuleResults = await getListForRules(straightRules, accessToken, currentBatchOfSongs);
             listsOfTrackResults.push(straightRuleResults);
         }
+
+        const nestedRuleGroupResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
+            nestedRuleGroups.map((rule) => {
+                return getListForRuleGroup(rule, accessToken, listsOfTrackResults[0]);
+            })
+        );
+        listsOfTrackResults.push(...nestedRuleGroupResults);
 
         logger.debug('Query Results, AND path...');
         // logger.debug(listsOfTrackResults[0][0]);
@@ -163,7 +173,11 @@ function getIntersectionOfTrackLists<T extends SpotifyApi.TrackObjectFull | Spot
     return results;
 }
 
-async function getListForRules(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getListForRules(
+    rules: PlaylistRule[],
+    accessToken: string|undefined,
+    currentBatchOfSongs: SpotifyApi.TrackObjectFull[]|undefined
+): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug('>>>> Entering getListForRules()');
 
     // Separate rules by those that can optionally be filtered from a list (Artist, Album, Genre, etc)
@@ -178,10 +192,18 @@ async function getListForRules(rules: PlaylistRule[], accessToken: string|undefi
         }
     });
 
-    // If there are none that require a fetch - AND we're not working from a batch already - send through getFullSearchResults
-    // TODO: working from a batch
+    // If there are none that require a fetch 
     if (requiresOwnFetch.length === 0) {
+        // If working from a batch of songs
+        if (currentBatchOfSongs) {
+            // Filter list of songs by filterable rules
+            const filteredBatch = await filterListOfSongs(currentBatchOfSongs, canBeFilteredFromABatch, accessToken);
+            return filteredBatch;
+        }
+
+        // Else, we are NOT working from a batch, then fetch tracks
         const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = [];
+
         // Send special "is" rules through specific APIs, others through getFullSearchResults
         for (let i = rules.length - 1; i >= 0; i--) {
             const rule = rules[i];
