@@ -83,7 +83,12 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
                     type: RuleGroupType.And,
                     rules: [
                         getNewConditionByParam(RuleParam.Saved),
-                        DEFAULT_NEW_CONDITION
+                        {
+                            type: RuleGroupType.Or,
+                            rules: [
+                                DEFAULT_NEW_CONDITION
+                            ]
+                        },
                     ]
                 }
             ]
