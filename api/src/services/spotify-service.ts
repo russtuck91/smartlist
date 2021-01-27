@@ -175,7 +175,6 @@ export async function userHasPlaylist(userId: string, playlistId: string, access
 }
 
 export async function createNewPlaylist(playlistName: string, userId: ObjectId) {
-    // TODO: accessToken param?
     logger.debug('>>>> Entering createNewPlaylist()');
 
     const user = await getUserById(userId);
