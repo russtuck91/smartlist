@@ -5,6 +5,7 @@ import { Route, Router, Switch } from 'react-router';
 
 import { Account } from './account/account';
 import './app.scss';
+import { } from './core/analytics/google-analytics';
 import { ErrorBoundary } from './core/errors/error-boundary';
 import { history } from './core/history/history';
 import { RouteLookup } from './core/routes/route-lookup';
