@@ -7,7 +7,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { FullStore } from '../core/redux/stores';
 import { RouteLookup } from '../core/routes/route-lookup';
 
-import './navigation.scss';
 import isUserLoggedIn from '../core/session/is-user-logged-in';
 
 interface NavigationProps {
