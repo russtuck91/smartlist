@@ -1,4 +1,8 @@
-import { Box, Table, TableHead, TableRow, TableBody, TableCell, Typography } from '@material-ui/core';
+import {
+    Box, LabelDisplayedRowsArgs, 
+    Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, 
+    Theme, Typography, withStyles, WithStyles
+} from '@material-ui/core';
 import { get } from 'lodash';
 import * as React from 'react';
 
@@ -11,9 +15,32 @@ export interface TableRendererProps {
 
     customCellFormatter?: (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: any, rowIndex: number) => any;
     stickyHeader?: boolean;
+    footerLabel?: React.ReactNode;
 }
 
-export class TableRenderer extends React.Component<TableRendererProps> {
+const useStyles = (theme: Theme) => ({
+    footer: {
+        '& .MuiTablePagination-toolbar': {
+            paddingRight: theme.spacing(3),
+            paddingTop: theme.spacing(0.75),
+            paddingBottom: theme.spacing(0.75),
+            minHeight: 0,
+        },
+        '& .MuiTableCell-footer': {
+            position: 'sticky',
+            bottom: 0,
+            backgroundColor: theme.palette.background.default,
+
+            '& .MuiTablePagination-actions': {
+                display: 'none',
+            }
+        }
+    }
+});
+
+type FullProps = TableRendererProps & WithStyles<typeof useStyles>;
+
+export class RawTableRenderer extends React.Component<FullProps> {
     render() {
         return (
             <Table
@@ -22,6 +49,7 @@ export class TableRenderer extends React.Component<TableRendererProps> {
             >
                 {this.renderHead()}
                 {this.renderBody()}
+                {this.renderFooter()}
             </Table>
         );
     }
@@ -102,4 +130,25 @@ export class TableRenderer extends React.Component<TableRendererProps> {
 
         return cellValue;
     }
+
+    private renderFooter() {
+        const { classes, data, footerLabel } = this.props;
+
+        return (
+            <TableFooter className={classes.footer}>
+                <TableRow>
+                    <TablePagination
+                        count={data.length}
+                        rowsPerPage={-1}
+                        rowsPerPageOptions={[]}
+                        page={0}
+                        onChangePage={() => {}}
+                        labelDisplayedRows={(paginationInfo: LabelDisplayedRowsArgs) => <>{paginationInfo.count} {footerLabel}</>}
+                    />
+                </TableRow>
+            </TableFooter>
+        );
+    }
 }
+
+export const TableRenderer = withStyles(useStyles)(RawTableRenderer);

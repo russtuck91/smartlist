@@ -136,6 +136,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
 
                     customCellFormatter={this.cellFormatter}
                     stickyHeader
+                    footerLabel="playlists"
                 />
             </TableContainer>
         );

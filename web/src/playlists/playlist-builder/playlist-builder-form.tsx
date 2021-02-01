@@ -232,6 +232,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 columns={this.listPreviewColumnSet}
 
                 stickyHeader
+                footerLabel="tracks"
             />
         );
     }
