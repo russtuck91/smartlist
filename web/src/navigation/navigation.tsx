@@ -8,6 +8,7 @@ import { FullStore } from '../core/redux/stores';
 import { RouteLookup } from '../core/routes/route-lookup';
 
 import './navigation.scss';
+import isUserLoggedIn from '../core/session/is-user-logged-in';
 
 interface NavigationProps {
 }
@@ -42,9 +43,9 @@ export class RawNavigation extends React.Component<FullProps, NavigationState> {
     };
 
     render() {
-        const { classes, sessionToken } = this.props;
+        const { classes } = this.props;
         const { menuAnchor } = this.state;
-        const isLoggedIn = !!sessionToken;
+        const isLoggedIn = !!isUserLoggedIn();
 
         return (
             <AppBar position="sticky" className={classes.root}>

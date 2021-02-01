@@ -13,7 +13,7 @@ const initialState: SessionState = {
     sessionToken: localSession.getSessionToken()
 };
 
-export function sessionReducer(state = initialState, action: ActionCall) {
+export function sessionReducer(state = initialState, action: ActionCall): SessionState {
     switch (action.type) {
         case ActionTypes.SET_SESSION_TOKEN:
             return {

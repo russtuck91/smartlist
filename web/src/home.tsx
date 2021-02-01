@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { RouteLookup } from './core/routes/route-lookup';
+import isUserLoggedIn from './core/session/is-user-logged-in';
 
 interface HomeProps {}
 
@@ -91,8 +92,7 @@ export class RawHome extends React.Component<FullProps> {
                     </Grid>
                 </Grid>
                 
-                {/* TODO: change button based on logged in status, existing playlists */}
-                <Link component={RouterLink} underline="none" to={RouteLookup.login.base}>
+                <Link component={RouterLink} underline="none" to={isUserLoggedIn() ? RouteLookup.playlists.base : RouteLookup.login.base}>
                     <Button variant="contained" color="primary">Get started</Button>
                 </Link>
             </Container>
