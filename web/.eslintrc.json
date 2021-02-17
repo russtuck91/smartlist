@@ -20,7 +20,7 @@
         "react/jsx-closing-bracket-location": 1,
         "react/jsx-closing-tag-location": 1,
         "react/jsx-curly-brace-presence": 1,
-        "react/jsx-curly-newline": "consistent",
+        "react/jsx-curly-newline": [ 1, "consistent" ],
         "react/jsx-curly-spacing": 1,
         "react/jsx-equals-spacing": 2,
         "react/jsx-first-prop-new-line": [ 2, "multiline" ],
