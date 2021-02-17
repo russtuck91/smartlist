@@ -12,8 +12,8 @@ interface DropdownInputProps extends FormFieldProps {
 
 const useStyles = (theme: Theme) => ({
     select: {
-        padding: '8px'
-    }
+        padding: '8px',
+    },
 });
 
 type FullProps = DropdownInputProps & WithStyles<typeof useStyles>;

@@ -11,8 +11,8 @@ const useStyles = (theme: Theme) => ({
     modal: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
-    }
+        justifyContent: 'center',
+    },
 });
 
 type FullProps = ModalControlProps & WithStyles<typeof useStyles>;

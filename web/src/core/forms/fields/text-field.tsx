@@ -1,9 +1,10 @@
-import * as React from 'react';
 import { TextField as MUITextField } from '@material-ui/core';
+import { FormikProps } from 'formik';
+import * as React from 'react';
 
 import { FormFieldProps, asFormField } from '../as-form-field';
+
 import { onChangeHandler } from './models';
-import { FormikProps } from 'formik';
 
 interface TextInputProps {
     id: string;

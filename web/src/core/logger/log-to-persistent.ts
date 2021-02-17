@@ -1,4 +1,5 @@
 import winston from 'winston';
+
 import { baseRequestUrl, requests } from '../requests/requests';
 
 export default async function(info: winston.LogEntry) {

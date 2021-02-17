@@ -1,13 +1,14 @@
 import {
-    Box, LabelDisplayedRowsArgs, 
-    Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, 
-    Theme, Typography, withStyles, WithStyles
+    Box, LabelDisplayedRowsArgs,
+    Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow,
+    Theme, Typography, withStyles, WithStyles,
 } from '@material-ui/core';
 import { get } from 'lodash';
 import * as React from 'react';
 
-import { ColumnSet, ColumnConfig, ColumnFormatType } from './models';
 import { toDateTimeFormat } from '../../utils/date-util';
+
+import { ColumnSet, ColumnConfig, ColumnFormatType } from './models';
 
 export interface TableRendererProps {
     data: any[];
@@ -33,9 +34,9 @@ const useStyles = (theme: Theme) => ({
 
             '& .MuiTablePagination-actions': {
                 display: 'none',
-            }
-        }
-    }
+            },
+        },
+    },
 });
 
 type FullProps = TableRendererProps & WithStyles<typeof useStyles>;
@@ -88,8 +89,7 @@ export class RawTableRenderer extends React.Component<FullProps> {
                         </td>
                     </tr>
                 ) :
-                    data.map(this.renderRow)
-                }
+                    data.map(this.renderRow)}
             </TableBody>
         );
     }
@@ -143,7 +143,13 @@ export class RawTableRenderer extends React.Component<FullProps> {
                         rowsPerPageOptions={[]}
                         page={0}
                         onChangePage={() => {}}
-                        labelDisplayedRows={(paginationInfo: LabelDisplayedRowsArgs) => <>{paginationInfo.count} {footerLabel}</>}
+                        labelDisplayedRows={(paginationInfo: LabelDisplayedRowsArgs) => (
+                            <>
+                                {paginationInfo.count}
+                                {' '}
+                                {footerLabel}
+                            </>
+                        )}
                     />
                 </TableRow>
             </TableFooter>

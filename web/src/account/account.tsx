@@ -57,7 +57,7 @@ export class Account extends React.Component<any, AccountState> {
         const userInfo = await requests.get(url);
 
         this.setState({
-            userInfo: userInfo
+            userInfo: userInfo,
         });
     }
 }

@@ -12,7 +12,7 @@ const logger = winston.createLogger({
             format: prettyLogFormat,
         }),
         new LogApiTransport(),
-    ]
+    ],
 });
 
 export default logger;

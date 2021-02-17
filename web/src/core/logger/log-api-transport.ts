@@ -1,4 +1,5 @@
 import Transport from 'winston-transport';
+
 import logToPersistent from './log-to-persistent';
 
 export class LogApiTransport extends Transport {
