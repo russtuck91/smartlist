@@ -14,13 +14,13 @@ const useStyles = (theme: Theme) => {
 
             '& p': {
                 '& strong': {
-                    letterSpacing: 1
-                }
+                    letterSpacing: 1,
+                },
             },
 
             '& .MuiButton-root': {
-                marginTop: '4em'
-            }
+                marginTop: '4em',
+            },
         },
         title: {
             fontSize: '2.4em',
@@ -28,14 +28,14 @@ const useStyles = (theme: Theme) => {
             fontWeight: 200,
 
             '& span:first-child': {
-                fontWeight: 'bold'
-            }
+                fontWeight: 'bold',
+            },
         },
         subtitle: {
             fontSize: '1.3em',
             marginBottom: '3em',
             textTransform: 'uppercase',
-            letterSpacing: 5
+            letterSpacing: 5,
         },
         featureRow: {
             '& > .MuiGrid-item': {
@@ -51,10 +51,10 @@ const useStyles = (theme: Theme) => {
                     },
                     '&:last-child': {
                         textAlign: 'left',
-                    }
-                }
-            }
-        }
+                    },
+                },
+            },
+        },
     };
     return rules;
 };
@@ -71,7 +71,7 @@ export class RawHome extends React.Component<FullProps> {
                     <span>smart</span>
                     <span>list</span>
                 </h1>
-                
+
                 <h3 className={classes.subtitle}>Automatic Spotify playlists by rules</h3>
 
                 <Grid container className={classes.featureRow}>
@@ -91,7 +91,7 @@ export class RawHome extends React.Component<FullProps> {
                         <span>Playlists are automatically updated at regular intervals</span>
                     </Grid>
                 </Grid>
-                
+
                 <Link component={RouterLink} underline="none" to={isUserLoggedIn() ? RouteLookup.playlists.base : RouteLookup.login.base}>
                     <Button variant="contained" color="primary">Get started</Button>
                 </Link>

@@ -34,7 +34,7 @@ const useStyles = (theme: Theme) => ({
                 fontSize: '1rem',
                 marginRight: theme.spacing(0.5),
                 marginTop: -2,
-            }
+            },
         },
     },
 });
@@ -146,7 +146,7 @@ export class RawRuleGroup extends React.Component<FullProps> {
 
     private addCondition = () => {
         const { treeId, ruleGroup, formik: { setFieldValue } } = this.props;
-        
+
         const insertAtIndex = ruleGroup.rules.reduce((agg, curr, index) => (
             !isPlaylistRuleGroup(curr) ? index : agg
         ), -1) + 1;
@@ -156,7 +156,7 @@ export class RawRuleGroup extends React.Component<FullProps> {
 
     private addGroup = () => {
         const { treeId, ruleGroup, formik: { setFieldValue } } = this.props;
-        
+
         ruleGroup.rules.push({ type: RuleGroupType.And, rules: [ DEFAULT_NEW_CONDITION ] });
         setFieldValue(`${treeId}.rules`, ruleGroup.rules);
     }

@@ -21,24 +21,24 @@ export class App extends Component {
         const theme = createMuiTheme({
             palette: {
                 type: 'dark',
-                primary: teal
+                primary: teal,
             },
             overrides: {
                 MuiInputBase: {
                     root: {
-                        width: '100%'
-                    }
+                        width: '100%',
+                    },
                 },
                 MuiTableCell: {
                     head: {
-                        fontWeight: 'bold'
-                    }
-                }
-            }
+                        fontWeight: 'bold',
+                    },
+                },
+            },
         });
         theme.overrides!.MuiTableCell!.head = {
             ...theme.overrides!.MuiTableCell!.head,
-            backgroundColor: theme.palette.background.default
+            backgroundColor: theme.palette.background.default,
         };
 
         return (
@@ -46,19 +46,19 @@ export class App extends Component {
                 <ErrorBoundary>
                     <ThemeProvider theme={theme}>
                         <Router history={history}>
-                        <>
-                            <Navigation />
-                            <Switch>
-                                <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
+                            <>
+                                <Navigation />
+                                <Switch>
+                                    <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
 
-                                <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
-                                <Route path={RouteLookup.login.login} component={Login} />
-                                <Route exact path={RouteLookup.logout} component={Logout} />
+                                    <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
+                                    <Route path={RouteLookup.login.login} component={Login} />
+                                    <Route exact path={RouteLookup.logout} component={Logout} />
 
-                                <Route exact path={RouteLookup.account} component={Account} />
-                                <Route exact path={RouteLookup.home} component={Home} />
-                            </Switch>
-                        </>
+                                    <Route exact path={RouteLookup.account} component={Account} />
+                                    <Route exact path={RouteLookup.home} component={Home} />
+                                </Switch>
+                            </>
                         </Router>
                     </ThemeProvider>
                 </ErrorBoundary>

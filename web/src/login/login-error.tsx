@@ -1,6 +1,6 @@
-import * as React from 'react';
 import { Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
+import * as React from 'react';
 
 
 interface LoginErrorState {
@@ -9,7 +9,7 @@ interface LoginErrorState {
 
 export class LoginError extends React.Component<any, LoginErrorState> {
     state = {
-        open: true
+        open: true,
     };
 
     render() {
@@ -28,7 +28,7 @@ export class LoginError extends React.Component<any, LoginErrorState> {
 
     private handleClose = () => {
         this.setState({
-            open: false
+            open: false,
         });
     }
 }

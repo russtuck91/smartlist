@@ -6,7 +6,6 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import { FullStore } from '../core/redux/stores';
 import { RouteLookup } from '../core/routes/route-lookup';
-
 import isUserLoggedIn from '../core/session/is-user-logged-in';
 
 interface NavigationProps {
@@ -20,18 +19,18 @@ const useStyles = (theme: Theme) => ({
     root: {
         '& .MuiLink-root': {
             '&:hover': {
-                color: 'inherit'
+                color: 'inherit',
             },
             '&:not(:last-child)': {
-                marginRight: theme.spacing(2)
-            }
-        }
-    }
+                marginRight: theme.spacing(2),
+            },
+        },
+    },
 });
 
 const connector = connect((state: FullStore) => {
     return {
-        sessionToken: state.session.sessionToken
+        sessionToken: state.session.sessionToken,
     };
 });
 
@@ -86,13 +85,13 @@ export class RawNavigation extends React.Component<FullProps, NavigationState> {
 
     private handleMenuButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         this.setState({
-            menuAnchor: event.currentTarget
+            menuAnchor: event.currentTarget,
         });
     }
 
     private handleMenuClose = () => {
         this.setState({
-            menuAnchor: undefined
+            menuAnchor: undefined,
         });
     }
 }
