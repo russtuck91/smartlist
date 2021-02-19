@@ -20,10 +20,12 @@
         "sourceType": "module"
     },
     "plugins": [
-        "import"
+        "import",
+        "simple-import-sort"
     ],
     "rules": {
         "arrow-parens": 2,
+        "comma-spacing": 2,
         "eol-last": 2,
         "indent": [
             "error",
@@ -55,13 +57,30 @@
         
         "import/no-cycle": 2,
         "import/no-extraneous-dependencies": 2,
-        "import/order": [ 2, {
-            "newlines-between": "always",
-            "alphabetize": {
-                "order": "asc",
-                "caseInsensitive": true
-            }
-        } ],
+
+        "simple-import-sort/imports": [2, {
+            "groups": [
+                // Side effect imports.
+                ["^\\u0000"],
+                // Packages.
+                // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
+                ["^@?\\w"],
+                // `shared` directory
+                ["^(?:\\.\\./)+shared(?:/|$)"],
+                // `core` directory
+                ["^(?:\\.\\./)+core"],
+                // Relative imports at least 2 directories up
+                ["^\\.\\./\\.\\./"],
+                // Relative imports from the parent directory
+                ["^\\.\\./"],
+                // Absolute imports and other imports such as Vue-style `@/foo`.
+                // Anything not matched in another group.
+                ["^"],
+                // Relative imports.
+                // Anything that starts with a dot.
+                ["^\\."]
+            ]
+        }],
 
         "@typescript-eslint/comma-dangle": [ "error", "always-multiline" ],
         "@typescript-eslint/explicit-function-return-type": 0,
