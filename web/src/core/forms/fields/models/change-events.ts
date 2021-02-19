@@ -1,4 +1,4 @@
 import * as React from 'react';
 
-export type onChangeHandler = (e: React.ChangeEvent) => any;
+export type OnChangeHandler = (e: React.ChangeEvent) => any;
 

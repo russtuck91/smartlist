@@ -1,4 +1,3 @@
-import { FormikProps } from 'formik';
 import { isEqual } from 'lodash';
 import * as React from 'react';
 import Select from 'react-select';

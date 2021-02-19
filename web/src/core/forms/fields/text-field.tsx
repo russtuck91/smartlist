@@ -4,12 +4,12 @@ import * as React from 'react';
 
 import { asFormField, FormFieldProps } from '../as-form-field';
 
-import { onChangeHandler } from './models';
+import { OnChangeHandler } from './models';
 
 interface TextInputProps {
     id: string;
     value: any;
-    onChange?: onChangeHandler;
+    onChange?: OnChangeHandler;
     onBlur?: FormikProps<any>['handleBlur'];
 }
 

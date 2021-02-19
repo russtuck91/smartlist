@@ -84,6 +84,7 @@
 
         "@typescript-eslint/comma-dangle": [ "error", "always-multiline" ],
         "@typescript-eslint/explicit-function-return-type": 0,
+        "@typescript-eslint/explicit-module-boundary-types": 0,
         "@typescript-eslint/indent": [2, 4],
         "@typescript-eslint/naming-convention": [
             1,
