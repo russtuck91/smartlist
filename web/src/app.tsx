@@ -1,14 +1,16 @@
+import './app.scss';
+
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { teal } from '@material-ui/core/colors';
 import React, { Component } from 'react';
 import { Route, Router, Switch } from 'react-router';
 
-import { Account } from './account/account';
-import './app.scss';
 import { } from './core/analytics/google-analytics';
 import { ErrorBoundary } from './core/errors/error-boundary';
 import { history } from './core/history/history';
 import { RouteLookup } from './core/routes/route-lookup';
+
+import { Account } from './account/account';
 import { Home } from './home';
 import { Login } from './login/login';
 import { LoginCallback } from './login/login-callback';

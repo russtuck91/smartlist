@@ -2,7 +2,11 @@ import * as React from 'react';
 
 import logger from '../logger/logger';
 
-export class ErrorBoundary extends React.Component {
+interface ErrorBoundaryProps {
+    children?: React.ReactNode;
+}
+
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
     componentDidCatch(error) {
         console.log('in ErrorBoundary.componentDidCatch');
         console.error(error);

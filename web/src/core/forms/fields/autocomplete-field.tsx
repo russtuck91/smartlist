@@ -1,5 +1,5 @@
 import { Avatar, ListItem, ListItemAvatar, ListItemText, TextField as MUITextField, Theme, WithStyles, withStyles } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete, RenderOptionState } from '@material-ui/lab';
 import { debounce } from 'lodash';
 import * as React from 'react';
 import LazyLoad from 'react-lazyload';
@@ -73,7 +73,7 @@ export class RawAutocompleteInput extends React.Component<FullProps, Autocomplet
         );
     }
 
-    private renderOption = (option: SearchItem, state: object) => {
+    private renderOption = (option: SearchItem, state: RenderOptionState) => {
         return (
             <ListItem>
                 {option.images && option.images[0] ? (
