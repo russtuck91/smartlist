@@ -1,6 +1,7 @@
 import { createStore } from 'redux';
 
 import { session } from '../session/session';
+
 import { ActionTypes } from './actions';
 import { reducers } from './reducers';
 import { SessionState } from './reducers/session';

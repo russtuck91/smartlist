@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Redirect } from 'react-router';
 
 import { clearSessionToken } from '../core/redux/actions';
-import { requests, baseRequestUrl } from '../core/requests/requests';
+import { baseRequestUrl, requests } from '../core/requests/requests';
 import { RouteLookup } from '../core/routes/route-lookup';
 
 

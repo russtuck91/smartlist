@@ -1,7 +1,7 @@
 import { CircularProgress, Container } from '@material-ui/core';
 import * as React from 'react';
 
-import { requests, baseRequestUrl } from '../core/requests/requests';
+import { baseRequestUrl, requests } from '../core/requests/requests';
 
 interface AccountState {
     userInfo?: SpotifyApi.CurrentUsersProfileResponse;

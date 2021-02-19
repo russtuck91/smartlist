@@ -8,7 +8,7 @@ export const RouteLookup = (() => {
                 base: base,
                 login: base,
                 callback: `${base}/callback/:sessionToken/`,
-                error: `${base}/error/:message/`
+                error: `${base}/error/:message/`,
             };
         })(),
         logout: '/logout',
@@ -17,8 +17,8 @@ export const RouteLookup = (() => {
             return {
                 base: base,
                 create: `${base}/create`,
-                edit: `${base}/edit/:id`
+                edit: `${base}/edit/:id`,
             };
-        })()
+        })(),
     };
 })();

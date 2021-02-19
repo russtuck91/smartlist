@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogActions, Button, DialogTitle } from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import * as React from 'react';
 
 interface DialogControlProps {

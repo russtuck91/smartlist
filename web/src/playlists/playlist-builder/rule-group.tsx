@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Grid, Paper, withStyles, Theme, WithStyles } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Grid, Paper, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import { FormikProps } from 'formik';
 import { get } from 'lodash';

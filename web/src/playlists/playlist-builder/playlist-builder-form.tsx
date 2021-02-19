@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Grid, StyleRules, Tab, Tabs, Theme, WithStyles, withStyles, withWidth, WithWidth, Container } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, Grid, StyleRules, Tab, Tabs, Theme, WithStyles, withStyles, WithWidth, withWidth } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { FormikProps } from 'formik';
 import { isEmpty } from 'lodash';
@@ -14,6 +14,7 @@ import { requests } from '../../core/requests/requests';
 import { Nullable } from '../../core/shared-models/types';
 
 import { PlaylistContainer } from '../playlist-container';
+
 import { PlaylistBuilderFormValues } from './models';
 import { RuleGroup } from './rule-group';
 import TabPanel from './tab-panel';
@@ -42,7 +43,7 @@ const useStyles = (theme: Theme) => {
             flexDirection: 'column',
         },
         tabBar: {
-            backgroundColor: theme.palette.background.default
+            backgroundColor: theme.palette.background.default,
         },
         contentColumns: {
             overflowY: 'auto',
@@ -53,10 +54,10 @@ const useStyles = (theme: Theme) => {
                 height: '100%',
                 display: 'flex',
                 '&:not(:first-child)': {
-                    marginLeft: theme.spacing(1)
+                    marginLeft: theme.spacing(1),
                 },
                 '&:not(:last-child)': {
-                    marginRight: theme.spacing(1)
+                    marginRight: theme.spacing(1),
                 },
             },
         },
@@ -75,7 +76,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     private listPreviewColumnSet: ColumnSet<SpotifyApi.TrackObjectFull> = [
         { title: 'Name', mapsToField: 'name' },
         { title: 'Artist', mapsToField: 'artists[0].name' },
-        { title: 'Album', mapsToField: 'album.name' }
+        { title: 'Album', mapsToField: 'album.name' },
     ];
 
     async componentDidMount() {
@@ -96,7 +97,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
             const list = await requests.post(`${PlaylistContainer.requestUrl}/populateList`, values.rules);
 
             this.setState({
-                listPreview: list
+                listPreview: list,
             });
         } catch (e) {
             logger.error('Problem populating list for playlist', e);
@@ -196,7 +197,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     }
 
     private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number, treeIdPrefix = '') => {
-        const thisItemTreeId = `${treeIdPrefix ? treeIdPrefix + '.' : ''}rules[${groupIndex}]`;
+        const thisItemTreeId = `${treeIdPrefix ? `${treeIdPrefix }.` : ''}rules[${groupIndex}]`;
         return (
             <RuleGroup
                 key={groupIndex}
@@ -217,7 +218,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     private renderPreviewContent() {
         const { listPreview } = this.state;
-        
+
         if (listPreview === undefined) {
             return <CircularProgress />;
         }
@@ -239,7 +240,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     private onTabChange = (event: React.ChangeEvent, newValue: number) => {
         this.setState({
-            selectedTab: newValue
+            selectedTab: newValue,
         });
     }
 

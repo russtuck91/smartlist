@@ -1,5 +1,5 @@
 import { MenuItem, Select } from '@material-ui/core';
-import { Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { Theme, WithStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
 import { asFormField, FormFieldProps } from '../as-form-field';

@@ -1,4 +1,4 @@
-import { AppBar, Link, Toolbar, Typography, withStyles, Theme, WithStyles, Menu, IconButton, MenuItem } from '@material-ui/core';
+import { AppBar, IconButton, Link, Menu, MenuItem, Theme, Toolbar, Typography, WithStyles, withStyles } from '@material-ui/core';
 import { AccountCircle } from '@material-ui/icons';
 import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';

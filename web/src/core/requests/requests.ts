@@ -8,7 +8,7 @@ export const requests = {
     get: getRequest,
     post: postRequest,
     put: putRequest,
-    delete: deleteRequest
+    delete: deleteRequest,
 };
 
 async function getRequest(url: string): Promise<any> {
@@ -35,8 +35,8 @@ function makeDirectRequest(method: string, url: string, body?: any) {
         body: JSON.stringify(body),
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${state.session.sessionToken}`
-        }
+            Authorization: `Bearer ${state.session.sessionToken}`,
+        },
     })
         .then(async (response: Response) => {
             if (!response.ok) {

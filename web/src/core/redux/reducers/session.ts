@@ -10,7 +10,7 @@ export interface SessionState {
 }
 
 const initialState: SessionState = {
-    sessionToken: localSession.getSessionToken()
+    sessionToken: localSession.getSessionToken(),
 };
 
 export function sessionReducer(state = initialState, action: ActionCall): SessionState {
@@ -18,12 +18,12 @@ export function sessionReducer(state = initialState, action: ActionCall): Sessio
         case ActionTypes.SET_SESSION_TOKEN:
             return {
                 ...state,
-                sessionToken: action.payload.content
+                sessionToken: action.payload.content,
             };
         case ActionTypes.CLEAR_SESSION_TOKEN:
             return {
                 ...state,
-                sessionToken: undefined
+                sessionToken: undefined,
             };
         default:
             return state;

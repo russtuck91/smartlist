@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Container, Grid, IconButton, Link, Paper, TableContainer, Tooltip, Theme, withStyles, WithStyles, StyleRules } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, Grid, IconButton, Link, Paper, StyleRules, TableContainer, Theme, Tooltip, WithStyles, withStyles } from '@material-ui/core';
 import { Delete, Edit, Publish } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
@@ -21,7 +21,7 @@ interface PlaylistBrowserProps extends RouteComponentProps<any, any, PlaylistBro
 
 interface PlaylistBrowserState {
     playlists?: Playlist[];
-    
+
     activeItem?: Playlist;
     showDeleteDialog: boolean;
     showPublishDialog: boolean;
@@ -54,10 +54,10 @@ const useStyles = (theme: Theme) => {
 
                     '& .MuiIconButton-root': {
                         padding: theme.spacing(1),
-                    }
+                    },
                 },
             },
-        }
+        },
     };
     return rules;
 };
@@ -68,13 +68,13 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     state: PlaylistBrowserState = {
         showDeleteDialog: false,
         showPublishDialog: false,
-        publishInProgress: {}
+        publishInProgress: {},
     };
 
     private columnSet: ColumnSet<Playlist> = [
         { title: 'Name', mapsToField: 'name' },
         { title: 'Last Published', mapsToField: 'lastPublished', type: ColumnFormatType.DateTime },
-        { title: 'Actions', mapsToField: '', type: ColumnFormatType.Actions }
+        { title: 'Actions', mapsToField: '', type: ColumnFormatType.Actions },
     ];
 
     componentDidMount() {
@@ -84,13 +84,13 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     async loadPlaylists(reload?: boolean) {
         if (reload) {
             this.setState({
-                playlists: undefined
+                playlists: undefined,
             });
         }
 
         const playlists = await requests.get(`${PlaylistContainer.requestUrl}/lists`);
         this.setState({
-            playlists: playlists
+            playlists: playlists,
         });
     }
 
@@ -116,7 +116,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
             </Container>
         );
     }
-    
+
     private renderPlaylistList() {
         const { playlists } = this.state;
 
@@ -247,14 +247,14 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     private openDeleteDialog = (playlist: Playlist) => {
         this.setState({
             showDeleteDialog: true,
-            activeItem: playlist
+            activeItem: playlist,
         });
     }
 
     private closeDeleteDialog = () => {
         this.setState({
             showDeleteDialog: false,
-            activeItem: undefined
+            activeItem: undefined,
         });
     }
 
@@ -275,14 +275,14 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     private openPublishDialog = (playlist: Playlist) => {
         this.setState({
             activeItem: playlist,
-            showPublishDialog: true
+            showPublishDialog: true,
         });
     }
 
     private closePublishDialog = () => {
         this.setState({
             activeItem: undefined,
-            showPublishDialog: false
+            showPublishDialog: false,
         });
     }
 
@@ -304,11 +304,11 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     }
 
     private setPublishInProgress(id: string, value: boolean) {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             publishInProgress: {
                 ...prevState.publishInProgress,
-                [id]: value
-            }
+                [id]: value,
+            },
         }));
     }
 
@@ -316,8 +316,8 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         this.props.history.replace({
             state: {
                 activeItem: undefined,
-                showJustCreatedDialog: false
-            }
+                showJustCreatedDialog: false,
+            },
         });
     }
 

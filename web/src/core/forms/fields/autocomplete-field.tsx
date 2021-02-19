@@ -7,6 +7,7 @@ import LazyLoad from 'react-lazyload';
 import { RuleParam, SearchItem } from '../../../../../shared';
 
 import { baseRequestUrl, requests } from '../../requests/requests';
+
 import { asFormField, FormFieldProps } from '../as-form-field';
 
 
@@ -26,21 +27,21 @@ const useStyles = (theme: Theme) => ({
     option: {
         padding: 0,
         '& > .MuiListItem-gutters': {
-            padding: theme.spacing(1)
+            padding: theme.spacing(1),
         },
         '& .MuiListItemAvatar-root': {
             minWidth: 'auto',
             marginRight: theme.spacing(1),
             '& img': {
-                maxWidth: '100%'
+                maxWidth: '100%',
             },
         },
         '& .MuiListItemText-primary': {
             display: 'block',
             fontSize: 12,
-            lineHeight: 1
-        }
-    }
+            lineHeight: 1,
+        },
+    },
 });
 
 type FullProps = AutocompleteInputProps & WithStyles<typeof useStyles>;
@@ -49,7 +50,7 @@ export class RawAutocompleteInput extends React.Component<FullProps, Autocomplet
     state: AutocompleteInputState = {
         textFieldValue: '',
         loading: false,
-        options: []
+        options: [],
     };
 
     render() {
@@ -105,12 +106,12 @@ export class RawAutocompleteInput extends React.Component<FullProps, Autocomplet
 
     private searchByText = debounce(async (text: string) => {
         this.setState({
-            loading: true
+            loading: true,
         });
         const result = await requests.get(`${baseRequestUrl}/search?type=${this.props.type}&text=${encodeURIComponent(text)}`);
         this.setState({
             loading: false,
-            options: result
+            options: result,
         });
     }, 500);
 }

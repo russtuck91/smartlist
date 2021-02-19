@@ -1,7 +1,7 @@
-import { Playlist, PlaylistRule, RuleParam, RuleComparator } from '../../../../../shared';
+import { Playlist, PlaylistRule, RuleComparator, RuleParam } from '../../../../../shared';
 
 export interface PlaylistBuilderFormValues extends Pick<Playlist, 'name'|'rules'> {
-    
+
 }
 
 export const getNewConditionByParam = (param: RuleParam): PlaylistRule => {

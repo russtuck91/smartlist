@@ -3,7 +3,7 @@ const SESSION_TOKEN_KEY = 'sessionToken';
 export const session = {
     getSessionToken: getSessionToken,
     setSessionToken: setSessionToken,
-    clearSessionToken: clearSessionToken
+    clearSessionToken: clearSessionToken,
 };
 
 function getSessionToken() {

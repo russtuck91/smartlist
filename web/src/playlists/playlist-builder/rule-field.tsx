@@ -79,7 +79,7 @@ export class RuleField extends React.Component<RuleFieldProps> {
 
         if (
             rule.comparator === RuleComparator.Is &&
-            rule.param !== RuleParam.Genre && 
+            rule.param !== RuleParam.Genre &&
             rule.param !== RuleParam.Year
         ) {
             return (

@@ -1,14 +1,14 @@
 import {
     Box, LabelDisplayedRowsArgs,
     Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow,
-    Theme, Typography, withStyles, WithStyles,
+    Theme, Typography, WithStyles, withStyles,
 } from '@material-ui/core';
 import { get } from 'lodash';
 import * as React from 'react';
 
 import { toDateTimeFormat } from '../../utils/date-util';
 
-import { ColumnSet, ColumnConfig, ColumnFormatType } from './models';
+import { ColumnConfig, ColumnFormatType, ColumnSet } from './models';
 
 export interface TableRendererProps {
     data: any[];

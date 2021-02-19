@@ -9,9 +9,10 @@ import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
 
-import { PlaylistContainer } from '../playlist-container';
-import { PlaylistBuilderFormValues, DEFAULT_NEW_CONDITION, getNewConditionByParam } from './models';
 import { PlaylistBrowserLocationState } from '../playlist-browser/playlist-browser';
+import { PlaylistContainer } from '../playlist-container';
+
+import { DEFAULT_NEW_CONDITION, getNewConditionByParam, PlaylistBuilderFormValues } from './models';
 import { PlaylistBuilderForm } from './playlist-builder-form';
 
 
@@ -39,7 +40,7 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
 
         const playlist = await requests.get(`${PlaylistContainer.requestUrl}/${id}`);
         this.setState({
-            existingPlaylist: playlist
+            existingPlaylist: playlist,
         });
     }
 
@@ -86,12 +87,12 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
                         {
                             type: RuleGroupType.Or,
                             rules: [
-                                DEFAULT_NEW_CONDITION
-                            ]
+                                DEFAULT_NEW_CONDITION,
+                            ],
                         },
-                    ]
-                }
-            ]
+                    ],
+                },
+            ],
         };
     }
 
@@ -112,14 +113,14 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
 
     private mapPlaylistBuilderFormValuesToPlaylist(values: PlaylistBuilderFormValues): Partial<Playlist> {
         return {
-            ...values
+            ...values,
         };
     }
 
     private transitionToBrowse(playlist: Playlist) {
         const locState: PlaylistBrowserLocationState = {
             activeItem: playlist,
-            showJustCreatedDialog: !this.isEditMode()
+            showJustCreatedDialog: !this.isEditMode(),
         };
         history.push(RouteLookup.playlists.base, locState);
     }

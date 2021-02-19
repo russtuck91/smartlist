@@ -2,7 +2,7 @@ import { Checkbox } from '@material-ui/core';
 import { FormikProps } from 'formik';
 import * as React from 'react';
 
-import { FormFieldProps, asFormField } from '../as-form-field';
+import { asFormField, FormFieldProps } from '../as-form-field';
 
 interface CheckboxInputProps {
     id: string;
