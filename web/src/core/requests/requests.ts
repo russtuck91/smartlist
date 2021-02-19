@@ -12,51 +12,49 @@ export const requests = {
 };
 
 async function getRequest(url: string): Promise<any> {
-    return makeDirectRequest('GET', url);
+    return await makeDirectRequest('GET', url);
 }
 
 async function postRequest(url: string, body?: any) {
-    return makeDirectRequest('POST', url, body);
+    return await makeDirectRequest('POST', url, body);
 }
 
 async function putRequest(url: string, body: any) {
-    return makeDirectRequest('PUT', url, body);
+    return await makeDirectRequest('PUT', url, body);
 }
 
 async function deleteRequest(url: string) {
-    return makeDirectRequest('DELETE', url);
+    return await makeDirectRequest('DELETE', url);
 }
 
-function makeDirectRequest(method: string, url: string, body?: any) {
+async function makeDirectRequest(method: string, url: string, body?: any) {
     const state = store.getState();
 
-    return fetch(url, {
+    const response: Response = await fetch(url, {
         method: method,
         body: JSON.stringify(body),
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${state.session.sessionToken}`,
         },
-    })
-        .then(async (response: Response) => {
-            if (!response.ok) {
-                switch (response.status) {
-                    case 401:
-                        logger.info('Received 401 status code, users token expired');
-                        store.dispatch(clearSessionToken());
-                        break;
-                    default:
-                        logger.error(response.statusText, response.status, response.url);
-                        throw new Error(response.statusText);
-                }
-                return;
-            }
+    });
+    if (!response.ok) {
+        switch (response.status) {
+            case 401:
+                logger.info('Received 401 status code, users token expired');
+                store.dispatch(clearSessionToken());
+                break;
+            default:
+                logger.error(response.statusText, response.status, response.url);
+                throw new Error(response.statusText);
+        }
+        return;
+    }
 
-            try {
-                return await response.json();
-            } catch (e) {
-                logger.debug('Error getting JSON response from HTTP request', method, url, response.status);
-                // return;
-            }
-        });
+    try {
+        return await response.json();
+    } catch (e) {
+        logger.debug('Error getting JSON response from HTTP request', method, url, response.status);
+        // return;
+    }
 }
