@@ -7,7 +7,7 @@ const logger = winston.createLogger({
     format: prettyLogFormat,
     transports: [
         new winston.transports.Console(),
-    ]
+    ],
 });
 
 export default logger;

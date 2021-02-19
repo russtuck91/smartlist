@@ -1,18 +1,18 @@
+import { Server } from '@overnightjs/core';
+import { Logger } from '@overnightjs/logger';
 import * as bodyParser from 'body-parser';
+import connectMongo from 'connect-mongo';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import { Request, Response, NextFunction, static as serveStatic } from 'express';
-import connectMongo from 'connect-mongo';
+import { NextFunction, Request, Response, static as serveStatic } from 'express';
 import httpContext from 'express-http-context';
 import session from 'express-session';
 import path from 'path';
 
-import { Server } from '@overnightjs/core';
-import { Logger } from '@overnightjs/logger';
-
 import { MONGODB_URI } from './core/db/db';
 import logger from './core/logger/logger';
 import { setSessionTokenContext } from './core/session/session-util';
+
 import { BaseController } from './base-controller';
 
 const MongoStore = connectMongo(session);
@@ -40,7 +40,7 @@ class AppServer extends Server {
 
         this.app.use(session({
             secret: process.env.client_secret || 'defaultSecret',
-            store: new MongoStore({ url: MONGODB_URI })
+            store: new MongoStore({ url: MONGODB_URI }),
         }));
 
         this.setupControllers();

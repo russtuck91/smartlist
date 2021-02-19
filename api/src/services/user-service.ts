@@ -2,8 +2,8 @@ import httpContext from 'express-http-context';
 import { NotFound } from 'http-errors';
 import { ObjectId } from 'mongodb';
 
-import { User } from '../core/session/models';
 import { db } from '../core/db/db';
+import { User } from '../core/session/models';
 
 
 export async function getCurrentUser(): Promise<User> {
@@ -32,10 +32,10 @@ export async function updateUser(username: string, user: Partial<User>, sessionT
         {
             $set: user,
             $setOnInsert: { createdAt: now },
-            $push: { sessionToken: sessionToken }
+            $push: { sessionToken: sessionToken },
         },
         {
-            upsert: true
+            upsert: true,
         }
     );
 }
@@ -47,7 +47,7 @@ export async function removeSessionTokenFromCurrentUser() {
         { sessionToken: sessionToken },
         {
             $set: { updatedAt: new Date() },
-            $pull: { sessionToken: sessionToken }
+            $pull: { sessionToken: sessionToken },
         }
     );
 }

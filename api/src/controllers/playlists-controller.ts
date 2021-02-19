@@ -5,7 +5,8 @@ import expressAsyncHandler from 'express-async-handler';
 import { Playlist, PlaylistRuleGroup } from '../../../shared';
 
 import { doAndRetryWithCurrentUser } from '../core/session/session-util';
-import { createPlaylist, deletePlaylist, getPlaylistById, getPlaylists, populateListByRules, updatePlaylist, publishPlaylistById } from '../services/playlist-service';
+
+import { createPlaylist, deletePlaylist, getPlaylistById, getPlaylists, populateListByRules, publishPlaylistById, updatePlaylist } from '../services/playlist-service';
 
 @Controller('playlists')
 export class PlaylistsController {

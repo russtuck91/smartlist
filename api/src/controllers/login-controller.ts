@@ -6,8 +6,8 @@ import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
 import { SpotifyApi } from '../core/spotify/spotify-api';
 
-import { updateUser, removeSessionTokenFromCurrentUser } from '../services/user-service';
 import { getMe } from '../services/spotify-service';
+import { removeSessionTokenFromCurrentUser, updateUser } from '../services/user-service';
 
 
 interface SessionRequest extends Request {
@@ -26,7 +26,7 @@ export class LoginController {
         'playlist-read-private',
         'playlist-read-collaborative',
         'playlist-modify-public',
-        'playlist-modify-private'
+        'playlist-modify-private',
     ];
 
     /** Generates a random string containing numbers and letters of N characters */
@@ -58,20 +58,20 @@ export class LoginController {
                 const spotifyApi = new SpotifyApi();
                 const data = await spotifyApi.authorizationCodeGrant(code);
                 const { expires_in, access_token, refresh_token } = data.body;
-        
+
                 const user = await getMe(access_token);
 
                 const username = user.id;
                 const accessTokenPatch: Partial<User> = {
                     username: username,
                     accessToken: access_token,
-                    refreshToken: refresh_token
+                    refreshToken: refresh_token,
                 };
                 const sessionID = req.sessionID!;
 
                 // Store in DB
                 updateUser(username, accessTokenPatch, sessionID);
-        
+
                 // pass the token to the frontend
                 res.redirect(`${baseUiUrl}/login/callback/${sessionID}`);
             } catch (err) {
@@ -89,6 +89,6 @@ export class LoginController {
 
         res.send();
     }
-    
-    
+
+
 }

@@ -2,16 +2,16 @@ import { NotFound } from 'http-errors';
 import { intersectionWith, union } from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleGroupType, RuleParam, RuleComparator } from '../../../shared';
+import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleComparator, RuleGroupType, RuleParam } from '../../../shared';
 
+import { db } from '../core/db/db';
+import logger from '../core/logger/logger';
 import { User } from '../core/session/models';
 import { doAndRetry } from '../core/session/session-util';
 
 import * as spotifyService from './spotify-service';
-import { getCurrentUser, getUserById } from './user-service';
 import { spCache } from './spotify-service-cache';
-import { db } from '../core/db/db';
-import logger from '../core/logger/logger';
+import { getCurrentUser, getUserById } from './user-service';
 
 
 export async function getPlaylists() {
@@ -56,7 +56,7 @@ export async function createPlaylist(playlist: Playlist) {
         ...playlist,
         userId: currentUser._id,
         createdAt: now,
-        updatedAt: now
+        updatedAt: now,
     };
     const result = await db.playlists.insertOne(newPlaylist);
 
@@ -192,7 +192,7 @@ async function getListForRules(
         }
     });
 
-    // If there are none that require a fetch 
+    // If there are none that require a fetch
     if (requiresOwnFetch.length === 0) {
         // If working from a batch of songs
         if (currentBatchOfSongs) {
@@ -398,7 +398,7 @@ export async function preValidatePublishPlaylist(playlist: Playlist, accessToken
 
 export async function publishPlaylist(playlist: Playlist, accessToken?: string) {
     logger.info(`>>>> Entering publishPlaylist(playlist._id = ${playlist._id}`);
-    
+
     const list = await populateListByRules(playlist.rules, accessToken);
     logger.debug(`publishing playlist will have ${list.length} songs`);
 
@@ -418,7 +418,7 @@ export async function publishPlaylist(playlist: Playlist, accessToken?: string) 
     const playlistUpdate: Partial<Playlist> = {
         spotifyPlaylistId: spotifyPlaylistId,
         lastPublished: new Date(),
-        deleted: false
+        deleted: false,
     };
     await updatePlaylist(playlist._id, playlistUpdate);
 }

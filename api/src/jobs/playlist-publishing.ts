@@ -1,6 +1,7 @@
 import Agenda from 'agenda';
 
 import logger from '../core/logger/logger';
+
 import * as playlistService from '../services/playlist-service';
 
 export default function(agenda: Agenda) {

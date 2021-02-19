@@ -11,7 +11,7 @@ export const agenda = new Agenda(connectionOpts);
 const jobTypes = ['playlistPublishing'];
 
 jobTypes.forEach((type) => {
-    const module = require('./jobs/' + kebabCase(type));
+    const module = require(`./jobs/${ kebabCase(type)}`);
     module.default(agenda);
 });
 

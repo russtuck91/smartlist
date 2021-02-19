@@ -11,7 +11,7 @@ export class SpotifyApi extends Spotify {
         super({
             clientId: CLIENT_ID,
             clientSecret: CLIENT_SECRET,
-            redirectUri: REDIRECT_URI
+            redirectUri: REDIRECT_URI,
         });
     }
 }

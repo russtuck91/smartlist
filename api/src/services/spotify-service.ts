@@ -6,8 +6,9 @@ import { PlaylistRule, RuleParam } from '../../../shared/src';
 import logger from '../core/logger/logger';
 import { SpotifyApi } from '../core/spotify/spotify-api';
 import { sleep } from '../core/utils/utils';
-import { getUserById, getCurrentUser } from './user-service';
+
 import createFullTrackObjectsFromAlbums from './spotify/create-full-track-objects-from-albums';
+import { getCurrentUser, getUserById } from './user-service';
 
 
 interface SpResponse<T> {
@@ -92,7 +93,7 @@ export async function getFullMySavedTracks(accessToken: string|undefined): Promi
         return apiResponse.body;
     });
     if (!result) return [];
-    const savedTracks: SpotifyApi.TrackObjectFull[] = result.items.map(item => item.track);
+    const savedTracks: SpotifyApi.TrackObjectFull[] = result.items.map((item) => item.track);
     return savedTracks;
 }
 
@@ -171,7 +172,7 @@ export async function userHasPlaylist(userId: string, playlistId: string, access
 
     if (!usersPlaylists) { return false; }
 
-    return !!(usersPlaylists.items.find(item => item.id === playlistId));
+    return !!(usersPlaylists.items.find((item) => item.id === playlistId));
 }
 
 export async function createNewPlaylist(playlistName: string, userId: ObjectId) {
@@ -181,10 +182,10 @@ export async function createNewPlaylist(playlistName: string, userId: ObjectId) 
     const spotifyApi = new SpotifyApi();
     spotifyApi.setAccessToken(user.accessToken);
 
-    const description = 'Created by SmartList' + (process.env.NODE_ENV === 'development' ? ' [DEV]' : '');
+    const description = `Created by SmartList${ process.env.NODE_ENV === 'development' ? ' [DEV]' : ''}`;
 
     const playlist = await spotifyApi.createPlaylist(user.username, playlistName, {
-        description: description
+        description: description,
     });
 
     return playlist.body;
@@ -330,9 +331,9 @@ export async function getTracksForArtists(artistIds: string[], accessToken: stri
     logger.debug(`>>>> Entering getTracksForArtists(artistIds = ${truncate(artistIds.join(','))}`);
 
     const albums = await getAlbumsForArtists(artistIds, accessToken);
-    const tracks = await getTracksForAlbums(albums.map(album => album.id), accessToken);
+    const tracks = await getTracksForAlbums(albums.map((album) => album.id), accessToken);
     // Filter out for compilation albums with different artists
-    const filteredTracks = tracks.filter(track => track.artists.some(artist => artistIds.includes(artist.id)));
+    const filteredTracks = tracks.filter((track) => track.artists.some((artist) => artistIds.includes(artist.id)));
 
     return filteredTracks;
 }
@@ -349,6 +350,6 @@ export async function getTracksForPlaylist(playlistId: string, accessToken: stri
         return response.body;
     });
     if (!result) return [];
-    return result.items.map(item => item.track);
+    return result.items.map((item) => item.track);
 }
 

@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 import httpContext from 'express-http-context';
 
 import { getCurrentUser } from '../../services/user-service';
+
 import { db } from '../db/db';
 import logger from '../logger/logger';
 import { SpotifyApi } from '../spotify/spotify-api';
+
 import { User } from './models/user';
 
 

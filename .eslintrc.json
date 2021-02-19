@@ -68,7 +68,7 @@
                 // `shared` directory
                 ["^(?:\\.\\./)+shared(?:/|$)"],
                 // `core` directory
-                ["^(?:\\.\\./)+core"],
+                ["^(?:\\.\\.?/)+core(?:/|$)"],
                 // Relative imports at least 2 directories up
                 ["^\\.\\./\\.\\./"],
                 // Relative imports from the parent directory

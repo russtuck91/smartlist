@@ -1,4 +1,4 @@
-import { Controller, ChildControllers } from '@overnightjs/core';
+import { ChildControllers, Controller } from '@overnightjs/core';
 
 import * as controllers from './controllers';
 
