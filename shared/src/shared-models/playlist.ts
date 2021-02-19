@@ -1,7 +1,8 @@
 import { ObjectId } from 'mongodb';
 
-import { SimpleDBObject } from './db';
 import { convertEnumToArray } from '../util/object-util';
+
+import { SimpleDBObject } from './db';
 
 export interface Playlist extends SimpleDBObject {
     name: string;
@@ -25,7 +26,7 @@ export function isPlaylistRuleGroup(input: any): input is PlaylistRuleGroup {
 
 export enum RuleGroupType {
     And = 'And',
-    Or = 'Or'
+    Or = 'Or',
 }
 
 export interface PlaylistRule {
@@ -41,12 +42,12 @@ export enum RuleParam {
     Track = 'Track',
     Genre = 'Genre',
     Year = 'Year',
-    Playlist = 'Playlist'
+    Playlist = 'Playlist',
 }
 
 export enum RuleComparator {
     Is = 'Is',
-    Contains = 'Contains'
+    Contains = 'Contains',
 }
 
 export function getComparatorsForParam(param: RuleParam): RuleComparator[] {

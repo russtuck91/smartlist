@@ -7,7 +7,7 @@
     "start": "node build/api/src/start.js",
     "dev": "nodemon",
     "build": "rm -rf ./build/ && npm run dbupgrade && tsc",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint src --ext .ts",
     "dbupgrade": "ts-node ./scripts/dbupgrade-wrapper.ts",
     "restoredb": "ts-node ./scripts/restore-database-wrapper.ts"
   },
