@@ -17,6 +17,11 @@ interface SpResponse<T> {
     statusCode: number;
 }
 
+interface SpPaginationOptions {
+    offset?: number;
+    limit?: number;
+}
+
 
 export async function getMe(accessToken?: string): Promise<SpotifyApi.CurrentUsersProfileResponse> {
     const spotifyApi = new SpotifyApi();
@@ -30,7 +35,7 @@ export async function getMe(accessToken?: string): Promise<SpotifyApi.CurrentUse
 }
 
 
-async function getFullPagedResults(fn: (options: object) => Promise<SpotifyApi.PagingObject<any>|undefined>) {
+async function getFullPagedResults(fn: (options: SpPaginationOptions) => Promise<SpotifyApi.PagingObject<any>|undefined>) {
     logger.debug('>>>> Entering getFullPagedResults()');
     let result: SpotifyApi.PagingObject<any>|undefined;
     let offset = 0;
