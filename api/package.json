@@ -54,7 +54,6 @@
     "dotenv": "^8.2.0",
     "eslint": "6.5.1",
     "nodemon": "^2.0.4",
-    "tslint": "^5.20.1",
     "typescript": "^3.7.4"
   }
 }
