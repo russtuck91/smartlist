@@ -42,7 +42,7 @@ export async function updatePlaylist(id: string, playlist: Partial<Playlist>) {
 
     const result = await db.playlists.update(
         { _id: new ObjectId(id) },
-        { $set: playlist }
+        { $set: playlist },
     );
 
     return result;
@@ -68,7 +68,7 @@ export async function deletePlaylist(id: string) {
 
     db.playlists.remove(
         { _id: new ObjectId(id), userId: currentUser._id },
-        true
+        true,
     );
 }
 
@@ -80,7 +80,7 @@ export async function populateListByRules(rules: PlaylistRuleGroup[], accessToke
     const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
         rules.map((rule) => {
             return getListForRuleGroup(rule, accessToken, undefined);
-        })
+        }),
     );
 
     // logger.debug('Results, #1, ', results);
@@ -106,7 +106,7 @@ async function getListForRuleGroup(
                 } else {
                     return getListForRules([ rule ], accessToken, currentBatchOfSongs);
                 }
-            })
+            }),
         );
 
         logger.debug('Query Results, OR path, ');
@@ -140,7 +140,7 @@ async function getListForRuleGroup(
         const nestedRuleGroupResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
             nestedRuleGroups.map((rule) => {
                 return getListForRuleGroup(rule, accessToken, listsOfTrackResults[0]);
-            })
+            }),
         );
         listsOfTrackResults.push(...nestedRuleGroupResults);
 
@@ -167,7 +167,7 @@ function getIntersectionOfTrackLists<T extends SpotifyApi.TrackObjectFull | Spot
         ...listsOfTrackResults,
         (a: T, b: T) => {
             return a.id === b.id;
-        }
+        },
     );
 
     return results;
@@ -176,7 +176,7 @@ function getIntersectionOfTrackLists<T extends SpotifyApi.TrackObjectFull | Spot
 async function getListForRules(
     rules: PlaylistRule[],
     accessToken: string|undefined,
-    currentBatchOfSongs: SpotifyApi.TrackObjectFull[]|undefined
+    currentBatchOfSongs: SpotifyApi.TrackObjectFull[]|undefined,
 ): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug('>>>> Entering getListForRules()');
 
@@ -230,7 +230,7 @@ async function getListForRules(
     } else {
         // Else, do fetch for each fetch-required rule
         const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
-            requiresOwnFetch.map((rule) => getTracksForRule(rule, accessToken))
+            requiresOwnFetch.map((rule) => getTracksForRule(rule, accessToken)),
         );
         // Union the results
         const unionOfTrackResults = getIntersectionOfTrackLists(listsOfTrackResults);

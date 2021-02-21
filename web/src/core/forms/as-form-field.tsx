@@ -15,7 +15,7 @@ export interface FormFieldProps {
 }
 
 export function asFormField<T extends FormFieldProps>(
-    WrappedComponent: React.ComponentType<T>
+    WrappedComponent: React.ComponentType<T>,
 ) {
     const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
 

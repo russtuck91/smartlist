@@ -49,7 +49,7 @@ export async function refreshAccessToken(user: User) {
 
         await db.users.update(
             { _id: user._id },
-            { $set: { accessToken: newAccessToken } }
+            { $set: { accessToken: newAccessToken } },
         );
 
         return newAccessToken;

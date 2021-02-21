@@ -36,7 +36,7 @@ export async function updateUser(username: string, user: Partial<User>, sessionT
         },
         {
             upsert: true,
-        }
+        },
     );
 }
 
@@ -48,7 +48,7 @@ export async function removeSessionTokenFromCurrentUser() {
         {
             $set: { updatedAt: new Date() },
             $pull: { sessionToken: sessionToken },
-        }
+        },
     );
 }
 
