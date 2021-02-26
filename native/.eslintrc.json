@@ -1,0 +1,14 @@
+{
+    "extends": [
+        "../.eslintrc.json",
+        "@react-native-community"
+    ],
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    },
+    "rules": {
+        "no-multi-spaces": 1,
+        
+        "prettier/prettier": 0
+    }
+}
