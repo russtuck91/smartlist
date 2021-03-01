@@ -1,9 +1,12 @@
-import { AppBar, IconButton, Link, Menu, MenuItem, Theme, Toolbar, Typography, WithStyles, withStyles } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import { AppBar, Button, StyleRules, Theme, Toolbar, Typography, WithStyles, withStyles } from '@material-ui/core';
+import { AccountCircle, Home, PlayCircleFilled } from '@material-ui/icons';
+import classNames from 'classnames';
 import * as React from 'react';
+import { isBrowser, isMobile } from 'react-device-detect';
 import { connect, ConnectedProps } from 'react-redux';
-import { Link as RouterLink } from 'react-router-dom';
+import { NavLink, Router } from 'react-router-dom';
 
+import { history } from '../core/history/history';
 import { FullStore } from '../core/redux/stores';
 import { RouteLookup } from '../core/routes/route-lookup';
 import isUserLoggedIn from '../core/session/is-user-logged-in';
@@ -12,17 +15,44 @@ interface NavigationProps {
 }
 
 interface NavigationState {
-    menuAnchor?: HTMLElement;
 }
 
-const useStyles = (theme: Theme) => ({
+const useStyles = (theme: Theme): StyleRules => ({
     root: {
-        '& .MuiLink-root': {
-            '&:hover': {
-                color: 'inherit',
+        '& a': {
+            textDecoration: 'none',
+            opacity: 0.6,
+
+            '&.active': {
+                opacity: 1,
             },
+        },
+        '& .MuiButton-root': {
+            textTransform: 'none',
+            fontWeight: 'bold',
+        },
+    },
+    browserRoot: {
+        '& a': {
             '&:not(:last-child)': {
                 marginRight: theme.spacing(2),
+            },
+        },
+    },
+    mobileRoot: {
+        '& .MuiToolbar-root': {
+            justifyContent: 'space-evenly',
+        },
+
+        '& .MuiButton-label': {
+            flexDirection: 'column',
+            lineHeight: '1.4em',
+
+            '& .MuiButton-startIcon': {
+                margin: 0,
+            },
+            '& .MuiSvgIcon-root': {
+                fontSize: '2.2em',
             },
         },
     },
@@ -42,57 +72,51 @@ export class RawNavigation extends React.Component<FullProps, NavigationState> {
 
     render() {
         const { classes } = this.props;
-        const { menuAnchor } = this.state;
         const isLoggedIn = !!isUserLoggedIn();
 
         return (
-            <AppBar position="sticky" className={classes.root}>
-                <Toolbar>
-                    <Link to={RouteLookup.home} component={RouterLink} color="inherit">Home</Link>
-                    {isLoggedIn ? (
-                        <Link to={RouteLookup.playlists.base} component={RouterLink} color="inherit">Playlists</Link>
-                    ) : null}
+            <AppBar
+                position="relative"
+                className={classNames(classes.root, {
+                    [classes.browserRoot]: isBrowser,
+                    [classes.mobileRoot]: isMobile,
+                })}
+            >
+                <Router history={history}>
+                    <Toolbar>
+                        <NavLink to={RouteLookup.home} exact>
+                            <Button startIcon={<Home />} >
+                                Home
+                            </Button>
+                        </NavLink>
+                        {isLoggedIn ? (
+                            <NavLink to={RouteLookup.playlists.base}>
+                                <Button startIcon={<PlayCircleFilled />} >
+                                    Playlists
+                                </Button>
+                            </NavLink>
+                        ) : null}
 
-                    <Typography style={{ flexGrow: 10 }} />
+                        {isBrowser &&
+                            <Typography style={{ flexGrow: 10 }} />}
 
-                    {isLoggedIn ? (
-                        <div>
-                            <IconButton
-                                onClick={this.handleMenuButtonClick}
-                            >
-                                <AccountCircle />
-                            </IconButton>
-                            <Menu
-                                anchorEl={menuAnchor}
-                                open={!!menuAnchor}
-                                onClose={this.handleMenuClose}
-                            >
-                                <Link to={RouteLookup.account} component={RouterLink} color="inherit" underline="none">
-                                    <MenuItem onClick={this.handleMenuClose}>My Account</MenuItem>
-                                </Link>
-                                <Link to={RouteLookup.logout} component={RouterLink} color="inherit" underline="none">
-                                    <MenuItem onClick={this.handleMenuClose}>Logout</MenuItem>
-                                </Link>
-                            </Menu>
-                        </div>
-                    ) : (
-                        <Link to={RouteLookup.login.login} component={RouterLink} color="inherit">Login</Link>
-                    )}
-                </Toolbar>
+                        {isLoggedIn ? (
+                            <NavLink to={RouteLookup.account}>
+                                <Button startIcon={<AccountCircle />} >
+                                    Account
+                                </Button>
+                            </NavLink>
+                        ) : (
+                            <NavLink to={RouteLookup.login.login}>
+                                <Button startIcon={<AccountCircle />}>
+                                    Login
+                                </Button>
+                            </NavLink>
+                        )}
+                    </Toolbar>
+                </Router>
             </AppBar>
         );
-    }
-
-    private handleMenuButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        this.setState({
-            menuAnchor: event.currentTarget,
-        });
-    }
-
-    private handleMenuClose = () => {
-        this.setState({
-            menuAnchor: undefined,
-        });
     }
 }
 

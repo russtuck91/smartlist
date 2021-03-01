@@ -4,19 +4,12 @@ import './core/analytics/google-analytics';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { teal } from '@material-ui/core/colors';
 import React, { Component } from 'react';
-import { Route, Router, Switch } from 'react-router';
+import { Router } from 'react-router';
 
 import { ErrorBoundary } from './core/errors/error-boundary';
 import { history } from './core/history/history';
-import { RouteLookup } from './core/routes/route-lookup';
 
-import { Account } from './account/account';
-import { Home } from './home';
-import { Login } from './login/login';
-import { LoginCallback } from './login/login-callback';
-import { Logout } from './login/logout';
-import { Navigation } from './navigation/navigation';
-import { PlaylistContainer } from './playlists/playlist-container';
+import { AppContents } from './app-contents';
 
 export class App extends Component {
     render() {
@@ -48,19 +41,7 @@ export class App extends Component {
                 <ErrorBoundary>
                     <ThemeProvider theme={theme}>
                         <Router history={history}>
-                            <>
-                                <Navigation />
-                                <Switch>
-                                    <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
-
-                                    <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
-                                    <Route path={RouteLookup.login.login} component={Login} />
-                                    <Route exact path={RouteLookup.logout} component={Logout} />
-
-                                    <Route exact path={RouteLookup.account} component={Account} />
-                                    <Route exact path={RouteLookup.home} component={Home} />
-                                </Switch>
-                            </>
+                            <AppContents />
                         </Router>
                     </ThemeProvider>
                 </ErrorBoundary>

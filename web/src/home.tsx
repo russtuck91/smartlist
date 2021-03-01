@@ -7,57 +7,54 @@ import isUserLoggedIn from './core/session/is-user-logged-in';
 
 interface HomeProps {}
 
-const useStyles = (theme: Theme) => {
-    const rules: StyleRules = {
-        homepage: {
-            textAlign: 'center',
+const useStyles = (theme: Theme): StyleRules => ({
+    homepage: {
+        textAlign: 'center',
 
-            '& p': {
-                '& strong': {
-                    letterSpacing: 1,
+        '& p': {
+            '& strong': {
+                letterSpacing: 1,
+            },
+        },
+
+        '& .MuiButton-root': {
+            marginTop: '4em',
+        },
+    },
+    title: {
+        fontSize: '2.4em',
+        letterSpacing: 3,
+        fontWeight: 200,
+
+        '& span:first-child': {
+            fontWeight: 'bold',
+        },
+    },
+    subtitle: {
+        fontSize: '1.3em',
+        marginBottom: '3em',
+        textTransform: 'uppercase',
+        letterSpacing: 5,
+    },
+    featureRow: {
+        '& > .MuiGrid-item': {
+            padding: theme.spacing(2),
+
+            [theme.breakpoints.up('sm')]: {
+                padding: `${theme.spacing(3)}px ${theme.spacing(4)}px`,
+                '&:first-child': {
+                    textAlign: 'right',
+                    border: 0,
+                    borderRightWidth: 1,
+                    borderStyle: 'solid',
+                },
+                '&:last-child': {
+                    textAlign: 'left',
                 },
             },
-
-            '& .MuiButton-root': {
-                marginTop: '4em',
-            },
         },
-        title: {
-            fontSize: '2.4em',
-            letterSpacing: 3,
-            fontWeight: 200,
-
-            '& span:first-child': {
-                fontWeight: 'bold',
-            },
-        },
-        subtitle: {
-            fontSize: '1.3em',
-            marginBottom: '3em',
-            textTransform: 'uppercase',
-            letterSpacing: 5,
-        },
-        featureRow: {
-            '& > .MuiGrid-item': {
-                padding: theme.spacing(2),
-
-                [theme.breakpoints.up('sm')]: {
-                    padding: `${theme.spacing(3)}px ${theme.spacing(4)}px`,
-                    '&:first-child': {
-                        textAlign: 'right',
-                        border: 0,
-                        borderRightWidth: 1,
-                        borderStyle: 'solid',
-                    },
-                    '&:last-child': {
-                        textAlign: 'left',
-                    },
-                },
-            },
-        },
-    };
-    return rules;
-};
+    },
+});
 
 type FullProps = HomeProps & WithStyles<typeof useStyles>;
 

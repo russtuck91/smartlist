@@ -1,7 +1,9 @@
-import { CircularProgress, Container } from '@material-ui/core';
+import { Button, CircularProgress, Container, Link } from '@material-ui/core';
 import * as React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 import { baseRequestUrl, requests } from '../core/requests/requests';
+import { RouteLookup } from '../core/routes/route-lookup';
 
 interface AccountState {
     userInfo?: SpotifyApi.CurrentUsersProfileResponse;
@@ -45,6 +47,11 @@ export class Account extends React.Component<any, AccountState> {
                                 {' '}
                                 {userInfo.email}
                             </div>
+                            <p>
+                                <Link component={RouterLink} underline="none" to={RouteLookup.logout}>
+                                    <Button variant="contained" color="primary">Log Out</Button>
+                                </Link>
+                            </p>
                         </>
                     )}
                 </div>
