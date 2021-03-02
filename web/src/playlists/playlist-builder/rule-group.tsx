@@ -1,5 +1,6 @@
 import { Box, Button, ButtonGroup, Grid, Paper, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
+import classNames from 'classnames';
 import { FormikProps } from 'formik';
 import { get } from 'lodash';
 import * as React from 'react';
@@ -20,11 +21,14 @@ interface RuleGroupProps {
 }
 
 const useStyles = (theme: Theme) => ({
+    root: {
+        flexGrow: 1,
+    },
     paper: {
         overflow: 'hidden',
     },
     header: {
-        backgroundColor: theme.palette.primary['900'],
+        backgroundColor: '#172545',
         '& .MuiButton-sizeSmall': {
             [theme.breakpoints.down('xs')]: {
                 paddingLeft: theme.spacing(0.75),
@@ -37,6 +41,9 @@ const useStyles = (theme: Theme) => ({
             },
         },
     },
+    andGroupHeader: {
+        backgroundColor: '#451717',
+    },
 });
 
 type FullProps = RuleGroupProps & WithStyles<typeof useStyles>;
@@ -46,7 +53,7 @@ export class RawRuleGroup extends React.Component<FullProps> {
         const { ruleGroup } = this.props;
 
         return (
-            <Grid item>
+            <Grid item className={this.props.classes.root}>
                 <Paper className={this.props.classes.paper} elevation={5}>
                     <Grid container spacing={0}>
                         <Grid item xs={12}>
@@ -72,7 +79,12 @@ export class RawRuleGroup extends React.Component<FullProps> {
     private renderHeader() {
         const { ruleGroup, treeId, formik: { setFieldValue } } = this.props;
         return (
-            <Box className={this.props.classes.header} p={0.75}>
+            <Box
+                p={0.75}
+                className={classNames(this.props.classes.header, {
+                    [this.props.classes.andGroupHeader]: ruleGroup.type === RuleGroupType.And,
+                })}
+            >
                 <Grid container justify="space-between" wrap="nowrap">
                     <Grid item>
                         Type:
