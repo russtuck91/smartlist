@@ -62,6 +62,7 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
                 render={(formikProps: FormikProps<PlaylistBuilderFormValues>) => (
                     <PlaylistBuilderForm
                         formik={formikProps}
+                        isEditMode={this.isEditMode()}
                     />
                 )}
             />

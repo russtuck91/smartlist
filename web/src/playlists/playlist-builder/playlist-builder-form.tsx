@@ -1,16 +1,20 @@
-import { Box, Button, CircularProgress, Container, Grid, StyleRules, Tab, Tabs, Theme, WithStyles, withStyles, WithWidth, withWidth } from '@material-ui/core';
+import { AppBar, Box, Button, CircularProgress, Container, Grid, IconButton, StyleRules, Tab, Tabs, Theme, Toolbar, Typography, WithStyles, withStyles, WithWidth, withWidth } from '@material-ui/core';
+import { ArrowBack } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { FormikProps } from 'formik';
 import { isEmpty } from 'lodash';
 import * as React from 'react';
+import { isBrowser } from 'react-device-detect';
 
 import { PlaylistRuleGroup } from '../../../../shared';
 
 import { ColumnSet } from '../../core/components/tables/models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';
 import { TextField } from '../../core/forms/fields';
+import { history } from '../../core/history/history';
 import logger from '../../core/logger/logger';
 import { requests } from '../../core/requests/requests';
+import { RouteLookup } from '../../core/routes/route-lookup';
 import { Nullable } from '../../core/shared-models/types';
 
 import { PlaylistContainer } from '../playlist-container';
@@ -22,6 +26,7 @@ import TabPanel from './tab-panel';
 
 export interface PlaylistBuilderFormProps {
     formik: FormikProps<PlaylistBuilderFormValues>;
+    isEditMode: boolean;
 }
 
 interface PlaylistBuilderFormState {
@@ -29,41 +34,43 @@ interface PlaylistBuilderFormState {
     selectedTab: number;
 }
 
-const useStyles = (theme: Theme) => {
-    const rules: StyleRules = {
-        container: {
+const useStyles = (theme: Theme): StyleRules => ({
+    appBar: {
+        backgroundColor: theme.palette.primary['400'],
+        boxShadow: isBrowser ? 'rgb(0 0 0 / 15%) 0 3px 3px inset' : undefined,
+    },
+    container: {
+        overflowY: 'auto',
+        display: 'flex',
+        flex: '1 1 auto',
+    },
+    form: {
+        overflowY: 'auto',
+        display: 'flex',
+        flex: '1 1 auto',
+        flexDirection: 'column',
+        paddingTop: theme.spacing(1),
+    },
+    tabBar: {
+        backgroundColor: theme.palette.background.default,
+    },
+    contentColumns: {
+        overflowY: 'auto',
+        display: 'flex',
+        flex: '1 1 auto',
+        '& > .MuiGrid-container > .MuiGrid-item': {
             overflowY: 'auto',
+            height: '100%',
             display: 'flex',
-            flex: '1 1 auto',
-        },
-        form: {
-            overflowY: 'auto',
-            display: 'flex',
-            flex: '1 1 auto',
-            flexDirection: 'column',
-        },
-        tabBar: {
-            backgroundColor: theme.palette.background.default,
-        },
-        contentColumns: {
-            overflowY: 'auto',
-            display: 'flex',
-            flex: '1 1 auto',
-            '& > .MuiGrid-container > .MuiGrid-item': {
-                overflowY: 'auto',
-                height: '100%',
-                display: 'flex',
-                '&:not(:first-child)': {
-                    marginLeft: theme.spacing(1),
-                },
-                '&:not(:last-child)': {
-                    marginRight: theme.spacing(1),
-                },
+            '&:not(:first-child)': {
+                marginLeft: theme.spacing(1),
+            },
+            '&:not(:last-child)': {
+                marginRight: theme.spacing(1),
             },
         },
-    };
-    return rules;
-};
+    },
+});
 
 type FullProps = PlaylistBuilderFormProps & WithStyles<typeof useStyles> & WithWidth;
 
@@ -106,33 +113,44 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     }
 
     render() {
-        const { classes, formik: { handleSubmit, values, isValid, isSubmitting } } = this.props;
+        const { classes, formik: { handleSubmit, values, isValid, isSubmitting }, isEditMode } = this.props;
 
         return (
-            <Container className={classes.container}>
-                <form className={classes.form} onSubmit={handleSubmit}>
-                    <h5>Playlist Builder</h5>
-                    <Box my={1} overflow="hidden" flexShrink={0}>
-                        <Grid container spacing={2} alignItems="flex-end">
-                            <Grid item xs>
-                                <TextField
-                                    id="name"
-                                    value={values.name}
-                                    label="Name"
-                                    required
-                                />
+            <Box display="flex" flex="1 1 auto" flexDirection="column">
+                <AppBar position="relative" className={this.props.classes.appBar}>
+                    <Toolbar>
+                        <IconButton onClick={this.onClickBackButton}>
+                            <ArrowBack />
+                        </IconButton>
+                        <Typography variant="h6">
+                            {isEditMode ? 'Edit Playlist' : 'Create Playlist'}
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+                <Container className={classes.container}>
+                    <form className={classes.form} onSubmit={handleSubmit}>
+                        <Box my={1} overflow="hidden" flexShrink={0}>
+                            <Grid container spacing={2} alignItems="flex-end">
+                                <Grid item xs>
+                                    <TextField
+                                        id="name"
+                                        value={values.name}
+                                        label="Name"
+                                        required
+                                    />
+                                </Grid>
+                                <Grid item>
+                                    <Button type="submit" variant="contained" disabled={!isValid || isSubmitting}>Save</Button>
+                                </Grid>
+                                <Grid item>
+                                    <Button variant="contained" disabled={!this.areRulesValid()} onClick={this.getListPreview}>Refresh</Button>
+                                </Grid>
                             </Grid>
-                            <Grid item>
-                                <Button type="submit" variant="contained" disabled={!isValid || isSubmitting}>Save</Button>
-                            </Grid>
-                            <Grid item>
-                                <Button variant="contained" disabled={!this.areRulesValid()} onClick={this.getListPreview}>Refresh</Button>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                    {this.renderContentArea()}
-                </form>
-            </Container>
+                        </Box>
+                        {this.renderContentArea()}
+                    </form>
+                </Container>
+            </Box>
         );
     }
 
@@ -236,6 +254,10 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 footerLabel="tracks"
             />
         );
+    }
+
+    private onClickBackButton() {
+        history.push(RouteLookup.playlists.base);
     }
 
     private onTabChange = (event: React.ChangeEvent, newValue: number) => {
