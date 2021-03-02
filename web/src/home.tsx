@@ -37,8 +37,12 @@ const useStyles = (theme: Theme): StyleRules => ({
         letterSpacing: 5,
     },
     featureRow: {
+        [theme.breakpoints.down('xs')]: {
+            padding: `${theme.spacing(3)}px 0`,
+        },
+
         '& > .MuiGrid-item': {
-            padding: theme.spacing(2),
+            padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
 
             [theme.breakpoints.up('sm')]: {
                 padding: `${theme.spacing(3)}px ${theme.spacing(4)}px`,
