@@ -1,13 +1,13 @@
-import { AppBar, Box, Button, CircularProgress, Container, Grid, IconButton, StyleRules, Tab, Tabs, Theme, Toolbar, Typography, WithStyles, withStyles, WithWidth, withWidth } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, Grid, IconButton, StyleRules, Tab, Tabs, Theme, Typography, WithStyles, withStyles, WithWidth, withWidth } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { FormikProps } from 'formik';
 import { isEmpty } from 'lodash';
 import * as React from 'react';
-import { isBrowser } from 'react-device-detect';
 
 import { PlaylistRuleGroup } from '../../../../shared';
 
+import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
 import { ColumnSet } from '../../core/components/tables/models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';
 import { TextField } from '../../core/forms/fields';
@@ -35,10 +35,6 @@ interface PlaylistBuilderFormState {
 }
 
 const useStyles = (theme: Theme): StyleRules => ({
-    appBar: {
-        backgroundColor: theme.palette.primary['400'],
-        boxShadow: isBrowser ? 'rgb(0 0 0 / 15%) 0 3px 3px inset' : undefined,
-    },
     container: {
         overflowY: 'auto',
         display: 'flex',
@@ -117,16 +113,14 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
         return (
             <Box display="flex" flex="1 1 auto" flexDirection="column">
-                <AppBar position="relative" className={this.props.classes.appBar}>
-                    <Toolbar>
-                        <IconButton onClick={this.onClickBackButton}>
-                            <ArrowBack />
-                        </IconButton>
-                        <Typography variant="h6">
-                            {isEditMode ? 'Edit Playlist' : 'Create Playlist'}
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
+                <SecondaryAppBar>
+                    <IconButton onClick={this.onClickBackButton}>
+                        <ArrowBack />
+                    </IconButton>
+                    <Typography variant="h6">
+                        {isEditMode ? 'Edit Playlist' : 'Create Playlist'}
+                    </Typography>
+                </SecondaryAppBar>
                 <Container className={classes.container}>
                     <form className={classes.form} onSubmit={handleSubmit}>
                         <Box my={1} overflow="hidden" flexShrink={0}>

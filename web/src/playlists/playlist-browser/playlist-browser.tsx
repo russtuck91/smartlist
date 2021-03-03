@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Container, Grid, IconButton, Link, Paper, StyleRules, TableContainer, Theme, Tooltip, WithStyles, withStyles } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, Grid, IconButton, Link, Paper, StyleRules, TableContainer, Theme, Tooltip, Typography, WithStyles, withStyles } from '@material-ui/core';
 import { Delete, Edit, Publish } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
@@ -7,6 +7,7 @@ import { generatePath, Link as RouterLink, RouteComponentProps } from 'react-rou
 import { Playlist } from '../../../../shared';
 
 import { DialogControl } from '../../core/components/modals/dialog-control';
+import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
 import { ColumnConfig, ColumnFormatType, ColumnSet } from '../../core/components/tables/models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';
 import { history } from '../../core/history/history';
@@ -96,24 +97,29 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
 
     render() {
         return (
-            <Container className={this.props.classes.container}>
-                <Box my={3}>
-                    <Grid container alignItems="flex-end">
-                        <Grid item xs>
-                            <h1 style={{ marginBottom: 0 }}>Playlists</h1>
+            <Box display="flex" flex="1 1 auto" flexDirection="column">
+                <SecondaryAppBar>
+                    <Typography variant="h6">
+                        Playlists
+                    </Typography>
+                </SecondaryAppBar>
+                <Container className={this.props.classes.container}>
+                    <Box my={3}>
+                        <Grid container alignItems="flex-end">
+                            <Grid item xs />
+                            <Grid item>
+                                <Link to={RouteLookup.playlists.create} component={RouterLink} underline="none">
+                                    <Button variant="contained">Create New Playlist</Button>
+                                </Link>
+                            </Grid>
                         </Grid>
-                        <Grid item>
-                            <Link to={RouteLookup.playlists.create} component={RouterLink} underline="none">
-                                <Button variant="contained">Create New Playlist</Button>
-                            </Link>
-                        </Grid>
-                    </Grid>
-                </Box>
-                {this.renderPlaylistList()}
-                {this.renderDeleteDialog()}
-                {this.renderPublishDialog()}
-                {this.renderJustCreatedDialog()}
-            </Container>
+                    </Box>
+                    {this.renderPlaylistList()}
+                    {this.renderDeleteDialog()}
+                    {this.renderPublishDialog()}
+                    {this.renderJustCreatedDialog()}
+                </Container>
+            </Box>
         );
     }
 
