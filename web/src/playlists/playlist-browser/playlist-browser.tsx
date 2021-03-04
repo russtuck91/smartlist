@@ -1,5 +1,5 @@
-import { Box, Button, CircularProgress, Container, Grid, IconButton, Link, Paper, StyleRules, TableContainer, Theme, Tooltip, Typography, WithStyles, withStyles } from '@material-ui/core';
-import { Delete, Edit, Publish } from '@material-ui/icons';
+import { Box, Button, CircularProgress, Container, Grid, Link, List, ListItem, ListItemText, Paper, StyleRules, Theme, Tooltip, Typography, WithStyles, withStyles } from '@material-ui/core';
+import { Delete, Publish } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { generatePath, Link as RouterLink, RouteComponentProps } from 'react-router-dom';
@@ -8,11 +8,10 @@ import { Playlist } from '../../../../shared';
 
 import { DialogControl } from '../../core/components/modals/dialog-control';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
-import { ColumnConfig, ColumnFormatType, ColumnSet } from '../../core/components/tables/models';
-import { TableRenderer } from '../../core/components/tables/table-renderer';
 import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
+import { toDateTimeFormat } from '../../core/utils';
 
 import { PlaylistContainer } from '../playlist-container';
 
@@ -40,23 +39,36 @@ const useStyles = (theme: Theme) => {
             flexDirection: 'column',
             flex: '1 1 auto',
             overflowY: 'auto',
+        },
+        listContainer: {
+            display: 'flex',
+            flex: '1 1 auto',
+            flexDirection: 'column',
+            overflowY: 'auto',
 
-            '& .MuiTableCell-root': {
-                [theme.breakpoints.down('xs')]: {
-                    fontSize: '0.8em',
-                    paddingLeft: theme.spacing(1.25),
-                    paddingRight: theme.spacing(1.25),
-
-                    '& .MuiAlert-root': {
-                        fontSize: 'inherit',
-                        paddingLeft: theme.spacing(1),
-                        paddingRight: theme.spacing(1),
-                    },
-
-                    '& .MuiIconButton-root': {
-                        padding: theme.spacing(1),
-                    },
+            '& .MuiAlert-root': {
+                fontSize: 'inherit',
+                paddingLeft: theme.spacing(1),
+                paddingRight: theme.spacing(1),
+                '& .MuiAlert-icon': {
+                    padding: 0,
+                    marginRight: theme.spacing(1),
+                    fontSize: '1.3em',
                 },
+                '& .MuiAlert-message': {
+                    padding: 0,
+                },
+            },
+
+            '& .MuiButton-root': {
+                margin: theme.spacing(0.5),
+            },
+        },
+        actionArea: {
+            display: 'flex',
+
+            [theme.breakpoints.down('xs')]: {
+                flexDirection: 'column',
             },
         },
     };
@@ -71,12 +83,6 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         showPublishDialog: false,
         publishInProgress: {},
     };
-
-    private columnSet: ColumnSet<Playlist> = [
-        { title: 'Name', mapsToField: 'name' },
-        { title: 'Last Published', mapsToField: 'lastPublished', type: ColumnFormatType.DateTime },
-        { title: 'Actions', mapsToField: '', type: ColumnFormatType.Actions },
-    ];
 
     componentDidMount() {
         this.loadPlaylists();
@@ -135,67 +141,81 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         }
 
         return (
-            <TableContainer component={Paper}>
-                <TableRenderer
-                    data={playlists}
-                    columns={this.columnSet}
-
-                    customCellFormatter={this.cellFormatter}
-                    stickyHeader
-                    footerLabel="playlists"
-                />
-            </TableContainer>
+            <Paper className={this.props.classes.listContainer}>
+                <List>
+                    {playlists.map(this.renderPlaylistItem)}
+                </List>
+            </Paper>
         );
     }
 
-    private cellFormatter = (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: Playlist, rowIndex: number) => {
-        if (column.type === ColumnFormatType.DateTime) {
-            const isPublishInProgress: boolean = this.state.publishInProgress[rowData._id];
-            if (isPublishInProgress) {
-                return <CircularProgress size={20} />;
-            }
-
-            if (rowData.deleted) {
-                const title = (
-                    <div style={{ textAlign: 'center' }}>
-                        Playlist was deleted from Spotify.
-                        <br />
-                        Re-publish to resume automatic updates.
-                    </div>
-                );
-                return (
-                    <Tooltip title={title}>
-                        <Alert severity="error" style={{ display: 'inline-flex' }}>
-                            Deleted
-                        </Alert>
-                    </Tooltip>
-                );
-            }
-        } else if (column.type === ColumnFormatType.Actions) {
-            return this.renderActionsCell(rowData);
-        }
-    }
-
-    private renderActionsCell(item: Playlist) {
+    private renderPlaylistItem = (playlist: Playlist, index: number, playlists: Playlist[]) => {
         return (
-            <div>
-                <Tooltip title="Edit">
-                    <IconButton onClick={() => this.transitionToEdit(item)}>
-                        <Edit fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Delete">
-                    <IconButton onClick={() => this.openDeleteDialog(item)}>
-                        <Delete fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Publish">
-                    <IconButton onClick={() => this.openPublishDialog(item)}>
-                        <Publish fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-            </div>
+            <ListItem
+                key={index}
+                divider={index < playlists.length - 1}
+                button
+                onClick={() => this.transitionToEdit(playlist)}
+            >
+                <ListItemText
+                    primary={playlist.name}
+                    secondary={(
+                        <>
+                            Last Published:
+                            {' '}
+                            {this.renderLastPublishedValue(playlist)}
+                        </>
+                    )}
+                />
+                <Box className={this.props.classes.actionArea}>
+                    <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => this.openPublishDialog(playlist)}
+                        startIcon={<Publish fontSize="small" />}
+                    >
+                        Publish
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => this.openDeleteDialog(playlist)}
+                        startIcon={<Delete fontSize="small" />}
+                    >
+                        Delete
+                    </Button>
+                </Box>
+            </ListItem>
         );
+    }
+
+    private renderLastPublishedValue(playlist: Playlist) {
+        const isPublishInProgress: boolean = this.state.publishInProgress[playlist._id];
+        if (isPublishInProgress) {
+            return <CircularProgress size={20} />;
+        }
+
+        if (playlist.deleted) {
+            const title = (
+                <div style={{ textAlign: 'center' }}>
+                    Playlist was deleted from Spotify.
+                    <br />
+                    Re-publish to resume automatic updates.
+                </div>
+            );
+            return (
+                <Tooltip title={title}>
+                    <Alert severity="error" style={{ display: 'inline-flex' }}>
+                        Deleted
+                    </Alert>
+                </Tooltip>
+            );
+        }
+
+        if (!playlist.lastPublished) {
+            return '';
+        }
+        return toDateTimeFormat(playlist.lastPublished);
     }
 
     private renderDeleteDialog() {
