@@ -7,11 +7,16 @@ import {
     View,
 } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import SplashScreen from 'react-native-splash-screen';
 import { WebView } from 'react-native-webview';
 
 declare const global: {HermesInternal: null | Record<string, unknown>};
 
 const App = () => {
+    function onLoadEnd() {
+        SplashScreen.hide();
+    }
+
     return (
         <>
             <StatusBar barStyle="dark-content" />
@@ -26,6 +31,7 @@ const App = () => {
                         uri: 'https://smart--list.herokuapp.com/',
                     }}
                     style={styles.webview}
+                    onLoadEnd={onLoadEnd}
                 />
             </SafeAreaView>
         </>
