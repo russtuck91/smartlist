@@ -1,6 +1,7 @@
 export const RouteLookup = (() => {
     return {
-        home: '/',
+        index: '/',
+        home: '/home',
         account: '/account',
         login: (() => {
             const base = '/login';

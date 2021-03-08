@@ -8,6 +8,7 @@ import { RouteLookup } from './core/routes/route-lookup';
 
 import { Account } from './account/account';
 import { Home } from './home';
+import { IndexRouter } from './index-router';
 import { Login } from './login/login';
 import { LoginCallback } from './login/login-callback';
 import { Logout } from './login/logout';
@@ -48,6 +49,7 @@ export class RawAppContents extends React.Component<FullProps> {
 
                         <Route exact path={RouteLookup.account} component={Account} />
                         <Route exact path={RouteLookup.home} component={Home} />
+                        <Route path={RouteLookup.index} component={IndexRouter} />
                     </Switch>
                 </div>
             </div>
