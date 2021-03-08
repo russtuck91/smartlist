@@ -68,10 +68,6 @@ class AppServer extends Server {
             this.app.get('*', (req, res) => {
                 res.sendFile(path.resolve('../web/build/index.html'));
             });
-        } else {
-            this.app.get('*', (req, res) => {
-                res.send(this.SERVER_STARTED + port);
-            });
         }
         this.app.listen(port, () => {
             Logger.Imp(this.SERVER_STARTED + port);
