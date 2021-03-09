@@ -11,19 +11,19 @@ async function addMissingCreatedAtForCollection(collection: string) {
         {
             $group: {
                 _id: {},
-                minUpdatedAt: { $min: '$updatedAt' }
-            }
-        }
+                minUpdatedAt: { $min: '$updatedAt' },
+            },
+        },
     ]);
     const theDate = moment(aggResult[0].minUpdatedAt);
 
     // For all docs with missing createdAt, in reverse natural order (from bottom -> top)
     const docs: SimpleDBObject[] = await db[collection].findAsCursor({
-        createdAt: { $exists: false }
+        createdAt: { $exists: false },
     }).sort({
-        $natural: -1
+        $natural: -1,
     }).toArray();
-    
+
     return await docs.reduce(async (aggDate, doc) => {
         await aggDate;
         logger.debug('Updating item:', doc);
@@ -31,8 +31,8 @@ async function addMissingCreatedAtForCollection(collection: string) {
         // Set doc.createdAt to the stored date
         await db[collection].update(doc, {
             $set: {
-                createdAt: theDate.toDate()
-            }
+                createdAt: theDate.toDate(),
+            },
         });
 
         // Decrement by an amount

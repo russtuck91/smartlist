@@ -1,4 +1,5 @@
 import { isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup, RuleComparator, RuleParam } from '../../../shared';
+
 import { db } from '../../src/core/db/db';
 import logger from '../../src/core/logger/logger';
 
@@ -10,7 +11,7 @@ function addComparatorToRuleGroups(rules: PlaylistRuleGroup[]): PlaylistRuleGrou
 function addComparatorToRuleGroup(rule: PlaylistRuleGroup): PlaylistRuleGroup {
     return {
         ...rule,
-        rules: addComparatorToEither(rule.rules)
+        rules: addComparatorToEither(rule.rules),
     };
 }
 
@@ -47,7 +48,7 @@ async function addRuleComparators() {
             playlist.rules = addComparatorToRuleGroups(playlist.rules);
             await db.playlists.update(
                 { _id: playlist._id },
-                { $set: playlist }
+                { $set: playlist },
             );
         }
     } catch (e) {
