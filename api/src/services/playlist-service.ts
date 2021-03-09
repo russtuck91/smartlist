@@ -70,10 +70,12 @@ export async function deletePlaylist(id: string, options: PlaylistDeleteOptions)
     const currentUser: User = await getCurrentUser();
 
     if (options.deleteSpotifyPlaylist) {
-        const playlist = await getPlaylistById(id);
-        if (playlist.spotifyPlaylistId) {
-            await spotifyService.unfollowPlaylist(playlist.spotifyPlaylistId, currentUser.accessToken);
-        }
+        doAndRetry(async (accessToken) => {
+            const playlist = await getPlaylistById(id);
+            if (playlist.spotifyPlaylistId) {
+                await spotifyService.unfollowPlaylist(playlist.spotifyPlaylistId, accessToken);
+            }
+        }, currentUser);
     }
 
     db.playlists.remove(
