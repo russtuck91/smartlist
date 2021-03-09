@@ -4,7 +4,7 @@ import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { generatePath, Link as RouterLink, RouteComponentProps } from 'react-router-dom';
 
-import { Playlist } from '../../../../shared';
+import { Playlist, PlaylistDeleteOptions } from '../../../../shared';
 
 import { DialogControl } from '../../core/components/modals/dialog-control';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
@@ -15,6 +15,7 @@ import { toDateTimeFormat } from '../../core/utils';
 
 import { PlaylistContainer } from '../playlist-container';
 
+import { DeleteDialogContainer } from './delete-dialog/delete-dialog-container';
 
 interface PlaylistBrowserProps extends RouteComponentProps<any, any, PlaylistBrowserLocationState> {
 }
@@ -221,29 +222,21 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         }
 
         if (!playlist.lastPublished) {
-            return '';
+            return '--';
         }
         return toDateTimeFormat(playlist.lastPublished);
     }
 
     private renderDeleteDialog() {
-        const { showDeleteDialog } = this.state;
+        const { activeItem, showDeleteDialog } = this.state;
 
         return (
-            <DialogControl
-                open={showDeleteDialog}
+            <DeleteDialogContainer
+                isOpen={showDeleteDialog}
                 onClose={this.closeDeleteDialog}
                 onConfirm={this.onConfirmDelete}
-                body={this.renderDeleteModalBody()}
+                playlist={activeItem}
             />
-        );
-    }
-
-    private renderDeleteModalBody() {
-        return (
-            <div>
-                <p>Are you sure you want to delete this playlist?</p>
-            </div>
         );
     }
 
@@ -288,22 +281,21 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     private closeDeleteDialog = () => {
         this.setState({
             showDeleteDialog: false,
-            activeItem: undefined,
         });
     }
 
-    private onConfirmDelete = async () => {
+    private onConfirmDelete = async (options: PlaylistDeleteOptions) => {
         if (!this.state.activeItem) { return; }
 
-        await this.deletePlaylist(this.state.activeItem);
+        await this.deletePlaylist(this.state.activeItem, options);
 
         this.closeDeleteDialog();
 
         this.loadPlaylists(true);
     }
 
-    private async deletePlaylist(playlist: Playlist) {
-        await requests.delete(`${PlaylistContainer.requestUrl}/${playlist._id}`);
+    private async deletePlaylist(playlist: Playlist, options: PlaylistDeleteOptions) {
+        await requests.delete(`${PlaylistContainer.requestUrl}/${playlist._id}`, options);
     }
 
     private openPublishDialog = (playlist: Playlist) => {

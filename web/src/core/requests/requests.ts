@@ -23,8 +23,8 @@ async function putRequest(url: string, body: any) {
     return await makeDirectRequest('PUT', url, body);
 }
 
-async function deleteRequest(url: string) {
-    return await makeDirectRequest('DELETE', url);
+async function deleteRequest(url: string, body?: any) {
+    return await makeDirectRequest('DELETE', url, body);
 }
 
 async function makeDirectRequest(method: string, url: string, body?: any) {
