@@ -171,7 +171,11 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
                     <Button
                         variant="contained"
                         size="small"
-                        onClick={() => this.openPublishDialog(playlist)}
+                        onClick={(event) => {
+                            this.openPublishDialog(playlist);
+                            event.stopPropagation();
+                            event.preventDefault();
+                        }}
                         startIcon={<Publish fontSize="small" />}
                     >
                         Publish
@@ -179,7 +183,11 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
                     <Button
                         variant="contained"
                         size="small"
-                        onClick={() => this.openDeleteDialog(playlist)}
+                        onClick={(event) => {
+                            this.openDeleteDialog(playlist);
+                            event.stopPropagation();
+                            event.preventDefault();
+                        }}
                         startIcon={<Delete fontSize="small" />}
                     >
                         Delete
