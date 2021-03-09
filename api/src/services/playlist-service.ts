@@ -2,7 +2,10 @@ import { NotFound } from 'http-errors';
 import { intersectionWith, union } from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import { isPlaylistRuleGroup, Playlist, PlaylistRule, PlaylistRuleGroup, RuleComparator, RuleGroupType, RuleParam } from '../../../shared';
+import {
+    isPlaylistRuleGroup, Playlist, PlaylistDeleteOptions, PlaylistRule, PlaylistRuleGroup,
+    RuleComparator, RuleGroupType, RuleParam,
+} from '../../../shared';
 
 import { db } from '../core/db/db';
 import logger from '../core/logger/logger';
@@ -63,8 +66,15 @@ export async function createPlaylist(playlist: Playlist) {
     return result;
 }
 
-export async function deletePlaylist(id: string) {
+export async function deletePlaylist(id: string, options: PlaylistDeleteOptions) {
     const currentUser: User = await getCurrentUser();
+
+    if (options.deleteSpotifyPlaylist) {
+        const playlist = await getPlaylistById(id);
+        if (playlist.spotifyPlaylistId) {
+            await spotifyService.unfollowPlaylist(playlist.spotifyPlaylistId, currentUser.accessToken);
+        }
+    }
 
     db.playlists.remove(
         { _id: new ObjectId(id), userId: currentUser._id },

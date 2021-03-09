@@ -85,6 +85,16 @@ async function setAccessTokenFromCurrentUser(spotifyApi: SpotifyApi) {
     }
 }
 
+async function initSpotifyApi(accessToken: string|undefined) {
+    const spotifyApi = new SpotifyApi();
+    if (accessToken) {
+        spotifyApi.setAccessToken(accessToken);
+    } else {
+        await setAccessTokenFromCurrentUser(spotifyApi);
+    }
+    return spotifyApi;
+}
+
 export async function getFullMySavedTracks(accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug('>>>> Entering getFullMySavedTracks()');
 
@@ -199,9 +209,7 @@ export async function createNewPlaylist(playlistName: string, userId: ObjectId) 
 export async function removeTracksFromPlaylist(playlistId: string, accessToken: string|undefined) {
     logger.debug(`>>>> Entering removeTracksFromPlaylist(playlistId = ${playlistId}`);
 
-    const spotifyApi = new SpotifyApi();
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
-    await setAccessTokenFromCurrentUser(spotifyApi);
+    const spotifyApi = await initSpotifyApi(accessToken);
 
     await spotifyApi.replaceTracksInPlaylist(playlistId, []);
 }
@@ -214,13 +222,19 @@ export async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi
     const batchSize = 100;
     const batchedUris = chunk(trackUris, batchSize);
 
-    const spotifyApi = new SpotifyApi();
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
-    await setAccessTokenFromCurrentUser(spotifyApi);
+    const spotifyApi = await initSpotifyApi(accessToken);
 
     batchedUris.map(async (uriBatch) => {
         await spotifyApi.addTracksToPlaylist(playlistId, uriBatch);
     });
+}
+
+export async function unfollowPlaylist(playlistId: string, accessToken: string|undefined) {
+    logger.debug(`>>>> Entering unfollowPlaylist(playlistId = ${playlistId}`);
+
+    const spotifyApi = await initSpotifyApi(accessToken);
+
+    await spotifyApi.unfollowPlaylist(playlistId);
 }
 
 
