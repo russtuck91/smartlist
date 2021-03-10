@@ -39,6 +39,10 @@ const useStyles = (theme: Theme): StyleRules => ({
         overflowY: 'auto',
         display: 'flex',
         flex: '1 1 auto',
+
+        '& .MuiTable-root': {
+            minHeight: '100%',
+        },
     },
     form: {
         overflowY: 'auto',

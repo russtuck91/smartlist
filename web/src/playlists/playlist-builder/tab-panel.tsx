@@ -10,17 +10,21 @@ interface TabPanelProps {
 export default function TabPanel(props: TabPanelProps) {
     const { children, value, index } = props;
 
+    const isShown = value === index;
     return (
-        <div
+        <Box
             role="tabpanel"
-            hidden={value !== index}
-            style={{ overflow: 'auto' }}
+            display={isShown ? 'flex' : undefined}
+            flex="1 1 auto"
+            justifyContent="center"
+            overflow="auto"
+            hidden={!isShown}
         >
-            {value === index && (
-                <Box>
+            {isShown && (
+                <Box display="flex" flex="1 1 auto">
                     {children}
                 </Box>
             )}
-        </div>
+        </Box>
     );
 }
