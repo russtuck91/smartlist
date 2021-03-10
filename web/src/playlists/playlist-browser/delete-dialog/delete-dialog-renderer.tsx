@@ -14,6 +14,16 @@ interface DeleteDialogRendererProps {
 }
 
 export class DeleteDialogRenderer extends React.Component<DeleteDialogRendererProps> {
+    componentDidUpdate(prevProps: DeleteDialogRendererProps) {
+        if (prevProps.isOpen && !this.props.isOpen) {
+            this.onModalClose();
+        }
+    }
+
+    onModalClose() {
+        this.props.formikProps.resetForm();
+    }
+
     render() {
         return (
             <DialogControl
