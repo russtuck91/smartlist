@@ -73,6 +73,7 @@ export class RuleField extends React.Component<RuleFieldProps> {
                 <CheckboxField
                     id={`${treeId}.value`}
                     value={Boolean(rule.value)}
+                    disabled
                 />
             );
         }
