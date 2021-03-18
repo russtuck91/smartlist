@@ -28,7 +28,7 @@ const App = () => {
                 )}
                 <WebView
                     source={{
-                        uri: 'https://smart--list.herokuapp.com/',
+                        uri: 'https://www.smartlistmusic.com/',
                     }}
                     style={styles.webview}
                     onLoadEnd={onLoadEnd}

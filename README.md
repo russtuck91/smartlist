@@ -1,6 +1,6 @@
 # Smartlist
 
-[Automatic Spotify Playlists by Rules](https://smart--list.herokuapp.com/)
+[Automatic Spotify Playlists by Rules](https://www.smartlistmusic.com)
 
 
 ## Description
