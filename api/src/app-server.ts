@@ -7,6 +7,7 @@ import cors from 'cors';
 import { NextFunction, Request, Response, static as serveStatic } from 'express';
 import httpContext from 'express-http-context';
 import session from 'express-session';
+import sslRedirect from 'heroku-ssl-redirect';
 import path from 'path';
 
 import { MONGODB_URI } from './core/db/db';
@@ -37,6 +38,7 @@ class AppServer extends Server {
         this.app.use(cors());
         this.app.use(httpContext.middleware);
         this.app.use(setSessionTokenContext);
+        this.app.use(this.sslRedirectHandler);
 
         this.app.use(session({
             secret: process.env.client_secret || 'defaultSecret',
@@ -47,6 +49,14 @@ class AppServer extends Server {
 
         // Error handling
         this.app.use(this.errorHandler);
+    }
+
+    private sslRedirectHandler(req: Request, res: Response, next: NextFunction) {
+        if (req.hostname === 'localhost') {
+            return next();
+        } else {
+            return (sslRedirect())(req, res, next);
+        }
     }
 
     private errorHandler(error: any, req: Request, res: Response, next: NextFunction) {
