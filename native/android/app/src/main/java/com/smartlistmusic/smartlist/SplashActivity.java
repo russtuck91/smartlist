@@ -1,4 +1,4 @@
-package com.smartlist;
+package com.smartlistmusic.smartlist;
 
 import android.content.Intent;
 import android.os.Bundle;

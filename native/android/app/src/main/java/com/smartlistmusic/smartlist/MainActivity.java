@@ -1,4 +1,4 @@
-package com.smartlist;
+package com.smartlistmusic.smartlist;
 
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen;
