@@ -24,7 +24,7 @@ export class RawLoginCallback extends React.Component<FullFinalProps> {
     }
 
     render() {
-        return <Redirect to={RouteLookup.account} />;
+        return <Redirect to={RouteLookup.playlists.base} />;
     }
 }
 
