@@ -143,9 +143,22 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
 
         return (
             <Paper className={this.props.classes.listContainer}>
-                <List>
-                    {playlists.map(this.renderPlaylistItem)}
-                </List>
+                {playlists.length === 0 ? (
+                    <Box
+                        display="flex"
+                        flex="1 1 auto"
+                        alignItems="center"
+                        justifyContent="center"
+                        textAlign="center"
+                        p={4}
+                    >
+                        You have no playlists. Create a new playlist and it will show up here.
+                    </Box>
+                ) : (
+                    <List>
+                        {playlists.map(this.renderPlaylistItem)}
+                    </List>
+                )}
             </Paper>
         );
     }
