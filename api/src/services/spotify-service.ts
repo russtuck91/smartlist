@@ -5,22 +5,16 @@ import { PlaylistRule, RuleParam } from '../../../shared/src';
 
 import logger from '../core/logger/logger';
 import { SpotifyApi } from '../core/spotify/spotify-api';
-import { sleep } from '../core/utils/utils';
 
 import createFullTrackObjectsFromAlbums from './spotify/create-full-track-objects-from-albums';
-import { getCurrentUser, getUserById } from './user-service';
-
-
-interface SpResponse<T> {
-    body: T;
-    headers: Record<string, string>;
-    statusCode: number;
-}
-
-interface SpPaginationOptions {
-    offset?: number;
-    limit?: number;
-}
+import doAndWaitForRateLimit from './spotify-service/do-and-wait-for-rate-limit';
+import getAlbumsForArtists from './spotify-service/get-albums-for-artists';
+import getFullPagedResults from './spotify-service/get-full-paged-results';
+import getUsersPlaylists from './spotify-service/get-users-playlists';
+import initSpotifyApi from './spotify-service/init-spotify-api';
+import setAccessTokenFromCurrentUser from './spotify-service/set-access-token-from-current-user';
+import { SpResponse } from './spotify-service/types';
+import { getUserById } from './user-service';
 
 
 export async function getMe(accessToken?: string): Promise<SpotifyApi.CurrentUsersProfileResponse> {
@@ -34,66 +28,6 @@ export async function getMe(accessToken?: string): Promise<SpotifyApi.CurrentUse
     return user;
 }
 
-
-async function getFullPagedResults(fn: (options: SpPaginationOptions) => Promise<SpotifyApi.PagingObject<any>|undefined>) {
-    logger.debug('>>>> Entering getFullPagedResults()');
-    let result: SpotifyApi.PagingObject<any>|undefined;
-    let offset = 0;
-    const batchSize = 50;
-
-    // while number fetched is less than total reported, send request
-    while (!result || result.total > result.items.length) {
-        try {
-            const options = { limit: batchSize, offset: offset };
-            const response = await fn(options);
-
-            if (!response) {
-                logger.debug('getFullPagedResults exiting because of lack of response from callback fn. Check callback fn.');
-                return;
-            }
-
-            if (!result) {
-                result = response;
-            } else {
-                // take list from response and add it to result
-                result.items.push(...response.items);
-            }
-
-            offset += batchSize;
-        } catch (e) {
-            logger.debug('error in getFullPagedResults iteration', e.statusCode);
-            if (e.statusCode === 404) {
-                logger.debug('404 error, exiting');
-                return result;
-            }
-            logger.debug(e);
-            throw e;
-        }
-    }
-
-    return result;
-}
-
-async function setAccessTokenFromCurrentUser(spotifyApi: SpotifyApi) {
-    try {
-        const user = await getCurrentUser();
-        if (user) {
-            spotifyApi.setAccessToken(user.accessToken);
-        }
-    } catch (e) {
-        // no current user, ignore
-    }
-}
-
-async function initSpotifyApi(accessToken: string|undefined) {
-    const spotifyApi = new SpotifyApi();
-    if (accessToken) {
-        spotifyApi.setAccessToken(accessToken);
-    } else {
-        await setAccessTokenFromCurrentUser(spotifyApi);
-    }
-    return spotifyApi;
-}
 
 export async function getFullMySavedTracks(accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug('>>>> Entering getFullMySavedTracks()');
@@ -167,21 +101,6 @@ export async function searchForItem(type: 'album'|'artist'|'playlist'|'track', i
 }
 
 
-export async function getUsersPlaylists(id: string, accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.PlaylistObjectSimplified>|undefined> {
-    logger.debug('>>>> Entering getUsersPlaylists()');
-
-    const spotifyApi = new SpotifyApi();
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
-    await setAccessTokenFromCurrentUser(spotifyApi);
-
-    const result = await getFullPagedResults(async (options) => {
-        const response = await spotifyApi.getUserPlaylists(options);
-        return response.body;
-    });
-
-    return result;
-}
-
 export async function userHasPlaylist(userId: string, playlistId: string, accessToken: string|undefined): Promise<boolean> {
     const usersPlaylists = await getUsersPlaylists(userId, accessToken);
 
@@ -238,41 +157,6 @@ export async function unfollowPlaylist(playlistId: string, accessToken: string|u
 }
 
 
-export async function getAlbum(albumId: string, accessToken: string|undefined): Promise<SpotifyApi.SingleAlbumResponse> {
-    logger.debug(`>>>> Entering getAlbum(albumId = ${albumId}`);
-
-    const spotifyApi = new SpotifyApi();
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
-    await setAccessTokenFromCurrentUser(spotifyApi);
-
-    const albumResponse = await spotifyApi.getAlbum(albumId);
-    const album = albumResponse.body;
-
-    return album;
-}
-
-async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
-    logger.debug('>>>> Entering doAndWaitForRateLimit()');
-    try {
-        return await bodyFn();
-    } catch (e) {
-        logger.debug('error found in doAndWaitForRateLimit', e.statusCode);
-        if (e.statusCode === 429) {
-            logger.debug('Rate limit error occurred, will wait and try again');
-            // e.headers not yet passed from spotify-web-api-node
-            const retryAfterSec = e.headers && e.headers['retry-after'] ? parseInt(e.headers['retry-after']) : 3;
-            // wait x seconds
-            await sleep(retryAfterSec * 1000);
-
-            // run bodyFn again
-            return await bodyFn();
-        }
-
-        logger.debug(e);
-        throw e;
-    }
-}
-
 export async function getAlbums(albumIds: string[], accessToken: string|undefined): Promise<SpotifyApi.AlbumObjectFull[]> {
     logger.debug(`>>>> Entering getAlbums(albumIds = ${truncate(albumIds.join(','))}`);
 
@@ -324,26 +208,6 @@ export async function getTracksForAlbums(albumIds: string[], accessToken: string
     const tracks = createFullTrackObjectsFromAlbums(albums);
 
     return tracks;
-}
-
-export async function getAlbumsForArtists(artistIds: string[], accessToken: string|undefined) {
-    logger.debug(`>>>> Entering getAlbumsForArtists(artistIds = ${truncate(artistIds.join(','))}`);
-
-    const spotifyApi = new SpotifyApi();
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
-    await setAccessTokenFromCurrentUser(spotifyApi);
-
-    let albums: SpotifyApi.AlbumObjectSimplified[] = [];
-    for (const artistId of artistIds) {
-        const thisArtistAlbums: SpotifyApi.PagingObject<SpotifyApi.AlbumObjectSimplified> = await doAndWaitForRateLimit(async () => await getFullPagedResults(async (options) => {
-            const apiResponse: SpResponse<SpotifyApi.ArtistsAlbumsResponse> = await spotifyApi.getArtistAlbums(artistId, options);
-
-            return apiResponse.body;
-        }));
-        albums = albums.concat(thisArtistAlbums.items);
-    }
-
-    return albums;
 }
 
 export async function getTracksForArtists(artistIds: string[], accessToken: string|undefined) {
