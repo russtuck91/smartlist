@@ -6,7 +6,7 @@ import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
 import { SpotifyApi } from '../core/spotify/spotify-api';
 
-import { getMe } from '../services/spotify-service';
+import spotifyService from '../services/spotify-service/spotify-service';
 import { removeSessionTokenFromCurrentUser, updateUser } from '../services/user-service';
 
 
@@ -59,7 +59,7 @@ export class LoginController {
                 const data = await spotifyApi.authorizationCodeGrant(code);
                 const { expires_in, access_token, refresh_token } = data.body;
 
-                const user = await getMe(access_token);
+                const user = await spotifyService.getMe(access_token);
 
                 const username = user.id;
                 const accessTokenPatch: Partial<User> = {

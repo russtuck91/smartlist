@@ -2,6 +2,7 @@ import { SpotifyApi } from '../../core/spotify/spotify-api';
 
 import setAccessTokenFromCurrentUser from './set-access-token-from-current-user';
 
+
 async function initSpotifyApi(accessToken: string|undefined) {
     const spotifyApi = new SpotifyApi();
     if (accessToken) {

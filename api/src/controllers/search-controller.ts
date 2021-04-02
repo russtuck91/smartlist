@@ -4,7 +4,7 @@ import expressAsyncHandler from 'express-async-handler';
 
 import { doAndRetryWithCurrentUser } from '../core/session/session-util';
 
-import { searchForItem } from '../services/spotify-service';
+import spotifyService from '../services/spotify-service/spotify-service';
 
 @Controller('search')
 export class SearchController {
@@ -14,7 +14,7 @@ export class SearchController {
         await doAndRetryWithCurrentUser(async (accessToken) => {
             const { type, text } = req.query;
 
-            const result = await searchForItem(type.toLowerCase(), text, accessToken);
+            const result = await spotifyService.searchForItem(type.toLowerCase(), text, accessToken);
 
             res.send(result.items);
         });

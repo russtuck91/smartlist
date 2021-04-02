@@ -3,6 +3,7 @@ import { SpotifyApi } from '../../core/spotify/spotify-api';
 
 import setAccessTokenFromCurrentUser from './set-access-token-from-current-user';
 
+
 async function getAlbum(albumId: string, accessToken: string|undefined): Promise<SpotifyApi.SingleAlbumResponse> {
     logger.debug(`>>>> Entering getAlbum(albumId = ${albumId}`);
 

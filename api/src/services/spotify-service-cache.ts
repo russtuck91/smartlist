@@ -1,6 +1,6 @@
 import logger from '../core/logger/logger';
 
-import * as spotifyService from './spotify-service';
+import spotifyService from './spotify-service/spotify-service';
 
 
 export class SpotifyServiceCache {

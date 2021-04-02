@@ -2,6 +2,7 @@ import { SpotifyApi } from '../../core/spotify/spotify-api';
 
 import { getCurrentUser } from '../user-service';
 
+
 async function setAccessTokenFromCurrentUser(spotifyApi: SpotifyApi) {
     try {
         const user = await getCurrentUser();

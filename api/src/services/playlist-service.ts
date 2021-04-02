@@ -12,7 +12,7 @@ import logger from '../core/logger/logger';
 import { User } from '../core/session/models';
 import { doAndRetry } from '../core/session/session-util';
 
-import * as spotifyService from './spotify-service';
+import spotifyService from './spotify-service/spotify-service';
 import { spCache } from './spotify-service-cache';
 import { getCurrentUser, getUserById } from './user-service';
 

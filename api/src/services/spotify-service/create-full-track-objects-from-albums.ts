@@ -1,5 +1,4 @@
-
-export default function(albums: SpotifyApi.AlbumObjectFull[]): SpotifyApi.TrackObjectFull[] {
+function createFullTrackObjectsFromAlbums(albums: SpotifyApi.AlbumObjectFull[]): SpotifyApi.TrackObjectFull[] {
     let tracks: SpotifyApi.TrackObjectFull[] = [];
     tracks = albums.reduce((agg, curr) => {
         const fullTrackObjects: SpotifyApi.TrackObjectFull[] = curr.tracks.items.map((item) => ({
@@ -12,3 +11,5 @@ export default function(albums: SpotifyApi.AlbumObjectFull[]): SpotifyApi.TrackO
     }, tracks);
     return tracks;
 }
+
+export default createFullTrackObjectsFromAlbums;
