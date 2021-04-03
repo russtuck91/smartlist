@@ -6,7 +6,7 @@ import { Playlist, PlaylistDeleteOptions, PlaylistRuleGroup } from '../../../sha
 
 import { doAndRetryWithCurrentUser } from '../core/session/session-util';
 
-import { createPlaylist, deletePlaylist, getPlaylistById, getPlaylists, populateListByRules, publishPlaylistById, updatePlaylist } from '../services/playlist-service';
+import * as playlistService from '../services/playlist-service';
 
 @Controller('playlists')
 export class PlaylistsController {
@@ -14,7 +14,7 @@ export class PlaylistsController {
     @Get('lists')
     @Wrapper(expressAsyncHandler)
     private async getPlaylists(req: Request, res: Response) {
-        const playlists = await getPlaylists();
+        const playlists = await playlistService.getPlaylists();
 
         res.send(playlists);
     }
@@ -22,7 +22,7 @@ export class PlaylistsController {
     @Get(':id')
     @Wrapper(expressAsyncHandler)
     private async getPlaylistById(req: Request, res: Response) {
-        const playlist = await getPlaylistById(req.params.id);
+        const playlist = await playlistService.getPlaylistById(req.params.id);
 
         res.send(playlist);
     }
@@ -31,7 +31,7 @@ export class PlaylistsController {
     @Wrapper(expressAsyncHandler)
     private async updatePlaylist(req: Request, res: Response) {
         const playlist: Playlist = req.body;
-        const result = await updatePlaylist(req.params.id, playlist);
+        const result = await playlistService.updatePlaylist(req.params.id, playlist);
 
         res.send(result);
     }
@@ -40,7 +40,7 @@ export class PlaylistsController {
     @Wrapper(expressAsyncHandler)
     private async createPlaylist(req: Request, res: Response) {
         const playlist: Playlist = req.body;
-        const result = await createPlaylist(playlist);
+        const result = await playlistService.createPlaylist(playlist);
 
         res.send(result);
     }
@@ -49,7 +49,7 @@ export class PlaylistsController {
     @Wrapper(expressAsyncHandler)
     private async deletePlaylist(req: Request, res: Response) {
         const deleteOptions: PlaylistDeleteOptions = req.body;
-        await deletePlaylist(req.params.id, deleteOptions);
+        await playlistService.deletePlaylist(req.params.id, deleteOptions);
 
         res.send();
     }
@@ -61,7 +61,7 @@ export class PlaylistsController {
         await doAndRetryWithCurrentUser(async (accessToken) => {
             const rules: PlaylistRuleGroup[] = req.body;
 
-            const list = await populateListByRules(rules, accessToken);
+            const list = await playlistService.populateListByRules(rules, accessToken);
 
             res.send(list);
         });
@@ -71,7 +71,7 @@ export class PlaylistsController {
     @Post('publish/:id')
     @Wrapper(expressAsyncHandler)
     private async publishPlaylist(req: Request, res: Response) {
-        await publishPlaylistById(req.params.id);
+        await playlistService.publishPlaylistById(req.params.id);
 
         res.send();
     }
