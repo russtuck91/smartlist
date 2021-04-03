@@ -35,8 +35,8 @@ export class SpotifyServiceCache {
         logger.debug('>>>> Entering SpotifyServiceCache.getArtists()');
         // For each artist ID, add to array if not in artistMap cache
         const artistsToBeFetched: string[] = artistIds.filter((artistId) => !this.artistMap[artistId]);
-        logger.debug('# artists requested:', artistIds.length);
-        logger.debug('# artists not cached, will be fetched:', artistsToBeFetched.length);
+        logger.debug(`# artists requested: ${artistIds.length}`);
+        logger.debug(`# artists not cached, will be fetched: ${artistsToBeFetched.length}`);
 
         // Send artistsIds for fetching to spotifyService
         const fetchedArtists = await spotifyService.getArtists(artistsToBeFetched, accessToken);
