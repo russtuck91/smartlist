@@ -12,8 +12,8 @@ export class SpotifyServiceCache {
         logger.debug('>>>> Entering SpotifyServiceCache.getAlbums()');
 
         const albumsToBeFetched: string[] = albumIds.filter((albumId) => !this.albumMap[albumId]);
-        logger.debug('# albums requested:', albumIds.length);
-        logger.debug('# albums not cached, will be fetched:', albumsToBeFetched.length);
+        logger.debug(`# albums requested: ${albumIds.length}`);
+        logger.debug(`# albums not cached, will be fetched: ${albumsToBeFetched.length}`);
 
         const fetchedAlbums = await spotifyService.getAlbums(albumsToBeFetched, accessToken);
 
