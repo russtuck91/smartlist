@@ -3,11 +3,12 @@ import { RemoveCircleOutline } from '@material-ui/icons';
 import { FormikProps } from 'formik';
 import * as React from 'react';
 
-import { getComparatorsForParam, PlaylistRule, RuleComparator, RuleParam } from '../../../../shared';
+import { getComparatorsForParam, isYearBetweenRule, isYearIsRule, isYearRule, PlaylistRule, RuleComparator, RuleParam } from '../../../../shared';
 import { convertEnumToArray } from '../../../../shared/src/util/object-util';
 
 import { CheckboxField, DropdownField, TextField } from '../../core/forms/fields';
 import { AutocompleteField } from '../../core/forms/fields/autocomplete-field';
+import { YearPickerField } from '../../core/forms/fields/year-picker-field';
 
 import { getNewConditionByParam, PlaylistBuilderFormValues } from './models';
 
@@ -50,6 +51,7 @@ export class RuleField extends React.Component<RuleFieldProps> {
                             value={rule.comparator || (comparators.length === 1 ? comparators[0] : rule.comparator)}
                             options={comparators}
                             disabled={comparators.length <= 1}
+                            onChange={this.onChangeComparator}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -74,6 +76,35 @@ export class RuleField extends React.Component<RuleFieldProps> {
                     id={`${treeId}.value`}
                     value={Boolean(rule.value)}
                     disabled
+                />
+            );
+        }
+
+        if (isYearRule(rule)) {
+            if (isYearBetweenRule(rule)) {
+                return (
+                    <Grid container wrap="nowrap" alignItems="center" spacing={1}>
+                        <Grid item xs={6}>
+                            <YearPickerField
+                                id={`${treeId}.value.start`}
+                                required
+                            />
+                        </Grid>
+                        <Grid item>to</Grid>
+                        <Grid item xs={6}>
+                            <YearPickerField
+                                id={`${treeId}.value.end`}
+                                required
+                            />
+                        </Grid>
+                    </Grid>
+                );
+            }
+
+            return (
+                <YearPickerField
+                    id={`${treeId}.value`}
+                    required
                 />
             );
         }
@@ -107,5 +138,33 @@ export class RuleField extends React.Component<RuleFieldProps> {
         const newCondition = getNewConditionByParam(value);
 
         this.props.formik.setFieldValue(this.props.treeId, newCondition);
+    }
+
+    private onChangeComparator = (e: React.ChangeEvent<any>) => {
+        const value: RuleComparator = e.target.value;
+        const modifiedRule: PlaylistRule = this.getNewRuleFromComparatorChange(value, this.props.rule);
+
+        this.props.formik.setFieldValue(this.props.treeId, modifiedRule);
+    }
+
+    private getNewRuleFromComparatorChange(newComparator: RuleComparator, prevRule: PlaylistRule): PlaylistRule {
+        const modifiedRule: PlaylistRule = {
+            ...prevRule,
+            comparator: newComparator,
+        };
+
+        if (isYearRule(prevRule)) {
+            if (newComparator === RuleComparator.Between && isYearIsRule(prevRule)) {
+                modifiedRule.value = {
+                    start: prevRule.value,
+                    end: prevRule.value,
+                };
+            }
+            if (newComparator === RuleComparator.Is && isYearBetweenRule(prevRule)) {
+                modifiedRule.value = prevRule.value.start || prevRule.value.end;
+            }
+        }
+
+        return modifiedRule;
     }
 }
