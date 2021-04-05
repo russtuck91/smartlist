@@ -1,4 +1,4 @@
-import { PlaylistRule, RuleParam } from '../../../../shared';
+import { isYearBetweenRule, PlaylistRule, RuleParam } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
 
@@ -7,6 +7,13 @@ import getFullPagedResults from './get-full-paged-results';
 import initSpotifyApi from './init-spotify-api';
 import { SpResponse } from './types';
 
+
+function getFieldStringValueForRule(rule: PlaylistRule) {
+    if (isYearBetweenRule(rule)) {
+        return `${rule.value.start}-${rule.value.end}`;
+    }
+    return rule.value;
+}
 
 async function getFullSearchResults(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.TrackObjectFull>|undefined> {
     logger.debug('>>>> Entering getFullSearchResults()');
@@ -32,7 +39,8 @@ async function getFullSearchResults(rules: PlaylistRule[], accessToken: string|u
                     return '';
             }
         })(rule.param);
-        searchString += `${fieldFilter}:"${rule.value}"`;
+        const fieldValueString = getFieldStringValueForRule(rule);
+        searchString += `${fieldFilter}:"${fieldValueString}"`;
     });
     logger.debug(`searchString :: ${searchString}`);
 
