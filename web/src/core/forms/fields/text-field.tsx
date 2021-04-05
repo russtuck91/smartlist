@@ -8,7 +8,7 @@ import { OnChangeHandler } from './models';
 
 interface TextInputProps {
     id: string;
-    value: any;
+    value?: any;
     onChange?: OnChangeHandler;
     onBlur?: FormikProps<any>['handleBlur'];
 }
