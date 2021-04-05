@@ -88,6 +88,7 @@ export class RuleField extends React.Component<RuleFieldProps> {
                             <YearPickerField
                                 id={`${treeId}.value.start`}
                                 required
+                                maxDate={rule.value.end}
                             />
                         </Grid>
                         <Grid item>to</Grid>
@@ -95,6 +96,7 @@ export class RuleField extends React.Component<RuleFieldProps> {
                             <YearPickerField
                                 id={`${treeId}.value.end`}
                                 required
+                                minDate={rule.value.start}
                             />
                         </Grid>
                     </Grid>

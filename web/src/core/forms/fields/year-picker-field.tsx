@@ -7,6 +7,8 @@ import { asFormField, FormFieldProps } from '../as-form-field';
 interface YearPickerInputProps extends Partial<FormFieldProps> {
     id: string;
     value?: string;
+    minDate?: string;
+    maxDate?: string;
 }
 
 export class YearPickerInput extends React.Component<YearPickerInputProps> {
@@ -19,6 +21,8 @@ export class YearPickerInput extends React.Component<YearPickerInputProps> {
                 variant="inline"
                 views={['year']}
                 disableFuture
+                minDate={this.props.minDate ? moment.utc(this.props.minDate) : undefined}
+                maxDate={this.props.maxDate ? moment.utc(this.props.maxDate) : undefined}
             />
         );
     }
