@@ -1,4 +1,4 @@
-import { PlaylistRule, RuleComparator, RuleParam } from '../../../../shared';
+import { PlaylistRule, RuleParam } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
 
@@ -40,18 +40,13 @@ async function getListForRules(
         // Else, we are NOT working from a batch, then fetch tracks
         const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = [];
 
-        // Send special "is" rules through specific APIs, others through getFullSearchResults
+        // Send special rules through specific APIs, others through getFullSearchResults
         for (let i = rules.length - 1; i >= 0; i--) {
             const rule = rules[i];
-            if (rule.comparator === RuleComparator.Is) {
-                if (
-                    (rule.param === RuleParam.Artist && typeof rule.value === 'object') ||
-                    (rule.param === RuleParam.Album && typeof rule.value === 'object')
-                ) {
-                    const ruleResults = await getTracksForRule(rule, accessToken);
-                    listsOfTrackResults.push(ruleResults);
-                    rules.splice(i, 1);
-                }
+            const ruleResults = await getTracksForRule(rule, accessToken);
+            if (ruleResults) {
+                listsOfTrackResults.push(ruleResults);
+                rules.splice(i, 1);
             }
         }
 
@@ -65,9 +60,9 @@ async function getListForRules(
 
     } else {
         // Else, do fetch for each fetch-required rule
-        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
+        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = (await Promise.all(
             requiresOwnFetch.map((rule) => getTracksForRule(rule, accessToken)),
-        );
+        )).filter((list): list is SpotifyApi.TrackObjectFull[] => !!list);
         // Union the results
         const unionOfTrackResults = getIntersectionOfTrackLists(listsOfTrackResults);
         // And filter by the filter-able rules
