@@ -1,6 +1,8 @@
 {
   "short_name": "Smartlist",
-  "name": "Smartlist",
+  "name": "Smartlist Music",
+  "description": "Automatic Spotify playlists by rules",
+  "categories": [ "music", "productivity", "utilities" ],
   "icons": [
     {
       "src": "favicon.ico",
@@ -16,10 +18,28 @@
       "src": "android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "purpose": "maskable",
+      "src": "android-chrome-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#009688",
-  "background_color": "#212121"
+  "background_color": "#212121",
+  "prefer_related_applications": true,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.smartlistmusic.smartlist",
+      "id": "com.smartlistmusic.smartlist"
+    },
+    {
+      "platform": "webapp",
+      "url": "https://www.smartlistmusic.com/"
+    }
+  ]
 }
