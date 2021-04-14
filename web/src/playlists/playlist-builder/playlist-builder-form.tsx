@@ -27,6 +27,7 @@ import TabPanel from './tab-panel';
 export interface PlaylistBuilderFormProps {
     formik: FormikProps<PlaylistBuilderFormValues>;
     isEditMode: boolean;
+    isLoading: boolean;
 }
 
 interface PlaylistBuilderFormState {
@@ -113,8 +114,6 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     }
 
     render() {
-        const { classes, formik: { handleSubmit, values, isValid, isSubmitting }, isEditMode } = this.props;
-
         return (
             <Box display="flex" flex="1 1 auto" flexDirection="column">
                 <SecondaryAppBar>
@@ -122,33 +121,49 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                         <ArrowBack />
                     </IconButton>
                     <Typography variant="h6">
-                        {isEditMode ? 'Edit Playlist' : 'Create Playlist'}
+                        {this.props.isEditMode ? 'Edit Playlist' : 'Create Playlist'}
                     </Typography>
                 </SecondaryAppBar>
-                <Container className={classes.container}>
-                    <form className={classes.form} onSubmit={handleSubmit}>
-                        <Box my={1} overflow="hidden" flexShrink={0}>
-                            <Grid container spacing={2} alignItems="flex-end">
-                                <Grid item xs>
-                                    <TextField
-                                        id="name"
-                                        value={values.name}
-                                        label="Name"
-                                        required
-                                    />
-                                </Grid>
-                                <Grid item>
-                                    <Button type="submit" variant="contained" disabled={!isValid || isSubmitting}>Save</Button>
-                                </Grid>
-                                <Grid item>
-                                    <Button variant="contained" disabled={!this.areRulesValid()} onClick={this.getListPreview}>Refresh</Button>
-                                </Grid>
-                            </Grid>
-                        </Box>
-                        {this.renderContentArea()}
-                    </form>
-                </Container>
+                {this.renderFormContainer()}
             </Box>
+        );
+    }
+
+    renderFormContainer() {
+        const { classes, formik: { handleSubmit, values, isValid, isSubmitting }, isLoading } = this.props;
+
+        if (isLoading) {
+            return (
+                <Box flex="1 1 auto" display="flex" alignItems="center" justifyContent="center">
+                    <CircularProgress />
+                </Box>
+            );
+        }
+
+        return (
+            <Container className={classes.container}>
+                <form className={classes.form} onSubmit={handleSubmit}>
+                    <Box my={1} overflow="hidden" flexShrink={0}>
+                        <Grid container spacing={2} alignItems="flex-end">
+                            <Grid item xs>
+                                <TextField
+                                    id="name"
+                                    value={values.name}
+                                    label="Name"
+                                    required
+                                />
+                            </Grid>
+                            <Grid item>
+                                <Button type="submit" variant="contained" disabled={!isValid || isSubmitting}>Save</Button>
+                            </Grid>
+                            <Grid item>
+                                <Button variant="contained" disabled={!this.areRulesValid()} onClick={this.getListPreview}>Refresh</Button>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    {this.renderContentArea()}
+                </form>
+            </Container>
         );
     }
 
