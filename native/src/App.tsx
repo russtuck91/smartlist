@@ -7,16 +7,12 @@ import {
     View,
 } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import SplashScreen from 'react-native-splash-screen';
-import { WebView } from 'react-native-webview';
+
+import WebViewContainer from './WebViewContainer';
 
 declare const global: {HermesInternal: null | Record<string, unknown>};
 
 const App = () => {
-    function onLoadEnd() {
-        SplashScreen.hide();
-    }
-
     return (
         <>
             <StatusBar barStyle="dark-content" />
@@ -26,13 +22,7 @@ const App = () => {
                         <Text style={styles.footer}>Engine: Hermes</Text>
                     </View>
                 )}
-                <WebView
-                    source={{
-                        uri: 'https://www.smartlistmusic.com/',
-                    }}
-                    style={styles.webview}
-                    onLoadEnd={onLoadEnd}
-                />
+                <WebViewContainer />
             </SafeAreaView>
         </>
     );
@@ -45,10 +35,6 @@ const styles = StyleSheet.create({
     engine: {
         position: 'absolute',
         right: 0,
-    },
-    webview: {
-        flex: 1,
-        minHeight: 400,
     },
     footer: {
         color: Colors.dark,
