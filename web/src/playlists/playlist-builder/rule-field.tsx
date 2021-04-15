@@ -37,25 +37,34 @@ export class RuleField extends React.Component<RuleFieldProps> {
                     spacing={2}
                     className="rule"
                 >
-                    <Grid item xs={6}>
-                        <DropdownField
-                            id={`${treeId}.param`}
-                            value={rule.param}
-                            options={ruleParams}
-                            onChange={this.onChangeRuleType}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <DropdownField
-                            id={`${treeId}.comparator`}
-                            value={rule.comparator || (comparators.length === 1 ? comparators[0] : rule.comparator)}
-                            options={comparators}
-                            disabled={comparators.length <= 1}
-                            onChange={this.onChangeComparator}
-                        />
-                    </Grid>
                     <Grid item xs={12}>
-                        {this.renderRuleValueField()}
+                        <Grid
+                            container
+                            alignItems="center"
+                            spacing={2}
+                            wrap={rule.param === RuleParam.Saved ? 'nowrap' : undefined}
+                        >
+                            <Grid item xs={6} sm={3}>
+                                <DropdownField
+                                    id={`${treeId}.param`}
+                                    value={rule.param}
+                                    options={ruleParams}
+                                    onChange={this.onChangeRuleType}
+                                />
+                            </Grid>
+                            <Grid item xs={6} sm={3}>
+                                <DropdownField
+                                    id={`${treeId}.comparator`}
+                                    value={rule.comparator || (comparators.length === 1 ? comparators[0] : rule.comparator)}
+                                    options={comparators}
+                                    disabled={comparators.length <= 1}
+                                    onChange={this.onChangeComparator}
+                                />
+                            </Grid>
+                            <Grid item xs={rule.param === RuleParam.Saved ? true : 12} sm={6}>
+                                {this.renderRuleValueField()}
+                            </Grid>
+                        </Grid>
                     </Grid>
                     <Grid item xs>
                         <IconButton onClick={this.props.removeCondition}>
