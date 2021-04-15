@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Grid, Paper, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Grid, List, ListItem, Paper, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import classNames from 'classnames';
 import { FormikProps } from 'formik';
@@ -23,6 +23,7 @@ interface RuleGroupProps {
 const useStyles = (theme: Theme) => ({
     root: {
         flexGrow: 1,
+        padding: theme.spacing(1),
     },
     paper: {
         overflow: 'hidden',
@@ -53,26 +54,28 @@ export class RawRuleGroup extends React.Component<FullProps> {
         const { ruleGroup } = this.props;
 
         return (
-            <Grid item className={this.props.classes.root}>
+            <ListItem className={this.props.classes.root}>
                 <Paper className={this.props.classes.paper} elevation={5}>
                     <Grid container spacing={0}>
                         <Grid item xs={12}>
                             {this.renderHeader()}
                         </Grid>
-                        <Box p={1} flex="1 1 auto">
-                            <Grid container spacing={1}>
+                        <Box flex="1 1 auto">
+                            <List disablePadding>
                                 {ruleGroup.rules.map((rule, index) => {
                                     if (isPlaylistRuleGroup(rule)) {
                                         return this.renderRuleGroup(rule, index);
                                     } else {
-                                        return this.renderRuleField(rule, index);
+                                        const nextRule = ruleGroup.rules[index + 1];
+                                        const isNextRuleGroup = nextRule && isPlaylistRuleGroup(nextRule);
+                                        return this.renderRuleField(rule, index, isNextRuleGroup);
                                     }
                                 })}
-                            </Grid>
+                            </List>
                         </Box>
                     </Grid>
                 </Paper>
-            </Grid>
+            </ListItem>
         );
     }
 
@@ -140,7 +143,7 @@ export class RawRuleGroup extends React.Component<FullProps> {
         );
     }
 
-    private renderRuleField(rule: PlaylistRule, index: number) {
+    private renderRuleField(rule: PlaylistRule, index: number, isNextRuleGroup: boolean) {
         return (
             <RuleField
                 key={index}
@@ -148,6 +151,7 @@ export class RawRuleGroup extends React.Component<FullProps> {
                 rule={rule}
                 treeId={this.getChildRuleTreeId(index)}
                 removeCondition={() => this.removeCondition(index)}
+                isNextRuleGroup={isNextRuleGroup}
             />
         );
     }

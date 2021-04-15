@@ -1,4 +1,4 @@
-import { Grid, IconButton } from '@material-ui/core';
+import { Grid, IconButton, ListItem, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { RemoveCircleOutline } from '@material-ui/icons';
 import { FormikProps } from 'formik';
 import * as React from 'react';
@@ -20,16 +20,42 @@ interface RuleFieldProps {
     rule: PlaylistRule;
     treeId: string;
     removeCondition: () => void;
+    isNextRuleGroup: boolean;
 }
 
-export class RuleField extends React.Component<RuleFieldProps> {
+const useStyles = (theme: Theme) => ({
+    root: {
+        '&:last-child': {
+            borderBottom: 0,
+        },
+        [theme.breakpoints.down('xs')]: {
+            paddingTop: theme.spacing(1.5),
+            paddingBottom: theme.spacing(1.5),
+        },
+    },
+    inputsContainer: {
+        marginTop: theme.spacing(0.5),
+        marginBottom: theme.spacing(0.5),
+        '& > .MuiGrid-item': {
+            paddingBottom: 0,
+            paddingTop: 0,
+        },
+    },
+});
+
+type FullProps = RuleFieldProps & WithStyles<typeof useStyles>;
+
+export class RawRuleField extends React.Component<FullProps> {
     render() {
-        const { rule, treeId } = this.props;
+        const { rule, treeId, classes, isNextRuleGroup } = this.props;
 
         const comparators = getComparatorsForParam(rule.param);
 
         return (
-            <Grid item xs={12}>
+            <ListItem
+                className={classes.root}
+                divider={!isNextRuleGroup}
+            >
                 <Grid
                     container
                     wrap="nowrap"
@@ -43,6 +69,7 @@ export class RuleField extends React.Component<RuleFieldProps> {
                             alignItems="center"
                             spacing={2}
                             wrap={rule.param === RuleParam.Saved ? 'nowrap' : undefined}
+                            className={classes.inputsContainer}
                         >
                             <Grid item xs={6} sm={3}>
                                 <DropdownField
@@ -72,7 +99,7 @@ export class RuleField extends React.Component<RuleFieldProps> {
                         </IconButton>
                     </Grid>
                 </Grid>
-            </Grid>
+            </ListItem>
         );
     }
 
@@ -179,3 +206,5 @@ export class RuleField extends React.Component<RuleFieldProps> {
         return modifiedRule;
     }
 }
+
+export const RuleField = withStyles(useStyles)(RawRuleField);

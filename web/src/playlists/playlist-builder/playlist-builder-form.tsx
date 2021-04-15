@@ -1,4 +1,11 @@
-import { Box, Button, CircularProgress, Container, Grid, IconButton, StyleRules, Tab, Tabs, Theme, Typography, WithStyles, withStyles, WithWidth, withWidth } from '@material-ui/core';
+import {
+    Box, Button, CircularProgress,
+    Container, Grid, IconButton, List,
+    StyleRules,
+    Tab, Tabs,
+    Theme, Typography,
+    WithStyles, withStyles, WithWidth, withWidth,
+} from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { FormikProps } from 'formik';
@@ -69,6 +76,11 @@ const useStyles = (theme: Theme): StyleRules => ({
             '&:not(:last-child)': {
                 marginRight: theme.spacing(1),
             },
+        },
+    },
+    formAreaList: {
+        '& > .MuiListItem-root': {
+            padding: 0,
         },
     },
 });
@@ -218,12 +230,12 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     }
 
     private renderFormArea() {
-        const { formik: { values } } = this.props;
+        const { formik: { values }, classes } = this.props;
 
         return (
-            <Grid container>
+            <List disablePadding className={classes.formAreaList}>
                 {values.rules.map((rule, index) => this.renderRuleGroup(rule, index))}
-            </Grid>
+            </List>
         );
     }
 
