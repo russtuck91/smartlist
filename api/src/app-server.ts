@@ -52,7 +52,7 @@ class AppServer extends Server {
     }
 
     private sslRedirectHandler(req: Request, res: Response, next: NextFunction) {
-        if (req.hostname === 'localhost') {
+        if (['localhost', '10.0.2.2'].includes(req.hostname)) {
             return next();
         } else {
             return (sslRedirect())(req, res, next);
