@@ -22,6 +22,7 @@ const useStyles = (theme: Theme): StyleRules => ({
         '& a': {
             textDecoration: 'none',
             opacity: 0.6,
+            tapHighlightColor: 'transparent',
 
             '&.active': {
                 opacity: 1,
@@ -40,6 +41,15 @@ const useStyles = (theme: Theme): StyleRules => ({
         },
     },
     mobileRoot: {
+        '& a': {
+            display: 'flex',
+            flex: '1 1 auto',
+        },
+
+        '& .MuiButton-root': {
+            flex: '1 1 auto',
+        },
+
         '& .MuiToolbar-root': {
             justifyContent: 'space-evenly',
         },
