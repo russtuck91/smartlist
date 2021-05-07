@@ -26,6 +26,7 @@ const useStyles = (theme: Theme) => ({
         padding: theme.spacing(1),
     },
     paper: {
+        flexGrow: 1,
         overflow: 'hidden',
     },
     header: {
