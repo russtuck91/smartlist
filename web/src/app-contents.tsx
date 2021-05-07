@@ -7,7 +7,7 @@ import { Route, Switch } from 'react-router';
 import { RouteLookup } from './core/routes/route-lookup';
 
 import { Account } from './account/account';
-import { Home } from './home';
+import { Home } from './home/home';
 import { IndexRouter } from './index-router';
 import { Login } from './login/login';
 import { LoginCallback } from './login/login-callback';
@@ -28,7 +28,6 @@ const useStyles = (theme: Theme): StyleRules => ({
         display: 'flex',
         flex: '1 1 auto',
         overflowY: 'auto',
-        paddingBottom: theme.spacing(2),
     },
 });
 

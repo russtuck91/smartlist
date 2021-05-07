@@ -40,6 +40,7 @@ const useStyles = (theme: Theme) => {
             flexDirection: 'column',
             flex: '1 1 auto',
             overflowY: 'auto',
+            paddingBottom: theme.spacing(2),
         },
         listContainer: {
             display: 'flex',
