@@ -31,7 +31,7 @@
     "express-session": "^1.17.0",
     "heroku-ssl-redirect": "^0.1.1",
     "http-errors": "^1.6.3",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "mongodb": "^3.5.3",
     "mongoist": "^2.4.0",
