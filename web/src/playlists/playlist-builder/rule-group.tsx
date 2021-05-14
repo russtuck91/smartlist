@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Grid, List, ListItem, Paper, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Grid, List, ListItem, Paper, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import classNames from 'classnames';
 import { FormikProps } from 'formik';
@@ -20,7 +20,7 @@ interface RuleGroupProps {
     treeId: string;
 }
 
-const useStyles = (theme: Theme) => ({
+const useStyles = (theme: Theme): StyleRules => ({
     root: {
         flexGrow: 1,
         padding: theme.spacing(1),
@@ -28,23 +28,37 @@ const useStyles = (theme: Theme) => ({
     paper: {
         flexGrow: 1,
         overflow: 'hidden',
+        paddingBottom: theme.spacing(1),
     },
     header: {
+        fontWeight: 'bold',
         backgroundColor: '#172545',
-        '& .MuiButton-sizeSmall': {
-            [theme.breakpoints.down('xs')]: {
-                paddingLeft: theme.spacing(0.75),
-                paddingRight: theme.spacing(0.75),
-            },
-            '& .MuiSvgIcon-root': {
-                fontSize: '1rem',
-                marginRight: theme.spacing(0.5),
-                marginTop: -2,
+
+        '& .MuiButton-root': {
+            '&.MuiButton-contained': {
+                fontWeight: 'inherit',
+                paddingLeft: theme.spacing(3),
+                paddingRight: theme.spacing(3),
             },
         },
     },
     andGroupHeader: {
         backgroundColor: '#451717',
+    },
+    groupLabel: {
+        letterSpacing: 1,
+    },
+    buttonGroup: {
+        '& .MuiButton-root': {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+
+            '& .MuiSvgIcon-root': {
+                fontSize: '1rem',
+                marginRight: theme.spacing(1),
+                marginTop: -2,
+            },
+        },
     },
 });
 
@@ -68,8 +82,17 @@ export class RawRuleGroup extends React.Component<FullProps> {
                                         return this.renderRuleGroup(rule, index);
                                     } else {
                                         const nextRule = ruleGroup.rules[index + 1];
-                                        const isNextRuleGroup = nextRule && isPlaylistRuleGroup(nextRule);
-                                        return this.renderRuleField(rule, index, isNextRuleGroup);
+                                        const isNextRuleARule = nextRule && !isPlaylistRuleGroup(nextRule);
+                                        return (
+                                            <>
+                                                {this.renderRuleField(rule, index, isNextRuleARule)}
+                                                {(!isNextRuleARule) && (
+                                                    <Box key="buttons" display="flex" justifyContent="center">
+                                                        {this.renderButtons()}
+                                                    </Box>
+                                                )}
+                                            </>
+                                        );
                                     }
                                 })}
                             </List>
@@ -81,18 +104,16 @@ export class RawRuleGroup extends React.Component<FullProps> {
     }
 
     private renderHeader() {
-        const { ruleGroup, treeId, formik: { setFieldValue } } = this.props;
+        const { ruleGroup, treeId, formik: { setFieldValue }, classes } = this.props;
         return (
             <Box
                 p={0.75}
-                className={classNames(this.props.classes.header, {
-                    [this.props.classes.andGroupHeader]: ruleGroup.type === RuleGroupType.And,
+                className={classNames(classes.header, {
+                    [classes.andGroupHeader]: ruleGroup.type === RuleGroupType.And,
                 })}
             >
-                <Grid container justify="space-between" wrap="nowrap">
+                <Grid container wrap="nowrap" alignItems="baseline" spacing={2}>
                     <Grid item>
-                        Type:
-                        {' '}
                         <ButtonGroup>
                             {ruleGroupTypes.map((type, index) => (
                                 <Button
@@ -106,30 +127,34 @@ export class RawRuleGroup extends React.Component<FullProps> {
                             ))}
                         </ButtonGroup>
                     </Grid>
-                    <Grid item>
-                        <ButtonGroup>
-                            <Button
-                                variant="contained"
-                                onClick={this.addCondition}
-                                size="small"
-                            >
-                                <AddCircle />
-                                {' '}
-                                condition
-                            </Button>
-                            <Button
-                                variant="contained"
-                                onClick={this.addGroup}
-                                size="small"
-                            >
-                                <AddCircle />
-                                {' '}
-                                group
-                            </Button>
-                        </ButtonGroup>
+                    <Grid item className={classes.groupLabel}>
+                        GROUP
                     </Grid>
                 </Grid>
             </Box>
+        );
+    }
+
+    private renderButtons() {
+        return (
+            <ButtonGroup className={this.props.classes.buttonGroup}>
+                <Button
+                    variant="outlined"
+                    onClick={this.addCondition}
+                >
+                    <AddCircle />
+                    {' '}
+                    rule
+                </Button>
+                <Button
+                    variant="outlined"
+                    onClick={this.addGroup}
+                >
+                    <AddCircle />
+                    {' '}
+                    group
+                </Button>
+            </ButtonGroup>
         );
     }
 
@@ -144,7 +169,7 @@ export class RawRuleGroup extends React.Component<FullProps> {
         );
     }
 
-    private renderRuleField(rule: PlaylistRule, index: number, isNextRuleGroup: boolean) {
+    private renderRuleField(rule: PlaylistRule, index: number, divider: boolean) {
         return (
             <RuleField
                 key={index}
@@ -152,7 +177,7 @@ export class RawRuleGroup extends React.Component<FullProps> {
                 rule={rule}
                 treeId={this.getChildRuleTreeId(index)}
                 removeCondition={() => this.removeCondition(index)}
-                isNextRuleGroup={isNextRuleGroup}
+                divider={divider}
             />
         );
     }

@@ -203,7 +203,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                     <Tab label="Songs" />
                 </Tabs>
                 <TabPanel value={selectedTab} index={0}>
-                    <Box py={1}>
+                    <Box py={1} flexGrow={1}>
                         {this.renderFormArea()}
                     </Box>
                 </TabPanel>

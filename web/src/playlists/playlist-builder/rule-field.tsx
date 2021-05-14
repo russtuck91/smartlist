@@ -20,7 +20,7 @@ interface RuleFieldProps {
     rule: PlaylistRule;
     treeId: string;
     removeCondition: () => void;
-    isNextRuleGroup: boolean;
+    divider: boolean;
 }
 
 const useStyles = (theme: Theme) => ({
@@ -47,14 +47,14 @@ type FullProps = RuleFieldProps & WithStyles<typeof useStyles>;
 
 export class RawRuleField extends React.Component<FullProps> {
     render() {
-        const { rule, treeId, classes, isNextRuleGroup } = this.props;
+        const { rule, treeId, classes, divider } = this.props;
 
         const comparators = getComparatorsForParam(rule.param);
 
         return (
             <ListItem
                 className={classes.root}
-                divider={!isNextRuleGroup}
+                divider={divider}
             >
                 <Grid
                     container
