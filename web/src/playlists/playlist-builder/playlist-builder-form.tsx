@@ -12,7 +12,7 @@ import { FormikProps } from 'formik';
 import { isEmpty } from 'lodash';
 import * as React from 'react';
 
-import { PlaylistRuleGroup } from '../../../../shared';
+import { PlaylistRuleGroup, RuleGroupType } from '../../../../shared';
 
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
 import { ColumnSet } from '../../core/components/tables/models';
@@ -26,7 +26,7 @@ import { Nullable } from '../../core/shared-models/types';
 
 import { PlaylistContainer } from '../playlist-container';
 
-import { PlaylistBuilderFormValues } from './models';
+import { DEFAULT_NEW_CONDITION, PlaylistBuilderFormValues } from './models';
 import { RuleGroup } from './rule-group';
 import TabPanel from './tab-panel';
 
@@ -105,6 +105,13 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         this.getListPreview();
     }
 
+    componentDidUpdate(prevProps: FullProps) {
+        // If whole rules list becomes empty, add 1 rule back
+        if (this.props.formik.values.rules.length === 0 && prevProps.formik.values.rules.length > 0) {
+            this.resetToOneRule();
+        }
+    }
+
     getListPreview = async () => {
         const { values } = this.props.formik;
 
@@ -123,6 +130,16 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
             logger.error('Problem populating list for playlist', e);
             this.setState({ listPreview: null });
         }
+    }
+
+    resetToOneRule() {
+        const { setFieldValue } = this.props.formik;
+
+        const newRules = [ {
+            type: RuleGroupType.And,
+            rules: [ DEFAULT_NEW_CONDITION ],
+        } ];
+        setFieldValue('rules', newRules);
     }
 
     render() {
