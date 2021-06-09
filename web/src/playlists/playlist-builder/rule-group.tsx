@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, Grid, List, ListItem, Paper, StyleRules, Them
 import { AddCircle } from '@material-ui/icons';
 import classNames from 'classnames';
 import { FormikProps } from 'formik';
-import { get } from 'lodash';
+import { clone, get } from 'lodash';
 import * as React from 'react';
 
 import { isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup, RuleGroupType } from '../../../../shared';
@@ -70,6 +70,13 @@ const useStyles = (theme: Theme): StyleRules => ({
 type FullProps = RuleGroupProps & WithStyles<typeof useStyles>;
 
 export class RawRuleGroup extends React.Component<FullProps> {
+    componentDidUpdate(prevProps: FullProps) {
+        // If rule group becomes empty, remove it
+        if (this.props.ruleGroup.rules.length === 0 && prevProps.ruleGroup.rules.length > 0) {
+            this.removeThisRuleGroup();
+        }
+    }
+
     render() {
         const { ruleGroup } = this.props;
 
@@ -197,40 +204,43 @@ export class RawRuleGroup extends React.Component<FullProps> {
     private addCondition = () => {
         const { treeId, ruleGroup, formik: { setFieldValue } } = this.props;
 
-        const insertAtIndex = ruleGroup.rules.reduce((agg, curr, index) => (
+        const newRules = clone(ruleGroup.rules);
+        const insertAtIndex = newRules.reduce((agg, curr, index) => (
             !isPlaylistRuleGroup(curr) ? index : agg
         ), -1) + 1;
-        ruleGroup.rules.splice(insertAtIndex, 0, DEFAULT_NEW_CONDITION);
-        setFieldValue(`${treeId}.rules`, ruleGroup.rules);
+        newRules.splice(insertAtIndex, 0, DEFAULT_NEW_CONDITION);
+        setFieldValue(`${treeId}.rules`, newRules);
     }
 
     private addGroup = () => {
         const { treeId, ruleGroup, formik: { setFieldValue } } = this.props;
 
-        const firstRuleGroup = ruleGroup.rules.findIndex((r) => isPlaylistRuleGroup(r));
-        const insertLoc = firstRuleGroup === -1 ? ruleGroup.rules.length : firstRuleGroup;
-        ruleGroup.rules.splice(insertLoc, 0, { type: RuleGroupType.And, rules: [ DEFAULT_NEW_CONDITION ] });
-        setFieldValue(`${treeId}.rules`, ruleGroup.rules);
+        const newRules = clone(ruleGroup.rules);
+        const firstRuleGroup = newRules.findIndex((r) => isPlaylistRuleGroup(r));
+        const insertLoc = firstRuleGroup === -1 ? newRules.length : firstRuleGroup;
+        newRules.splice(insertLoc, 0, { type: RuleGroupType.And, rules: [ DEFAULT_NEW_CONDITION ] });
+        setFieldValue(`${treeId}.rules`, newRules);
     }
 
     private removeCondition(indexToRemove: number) {
-        const { ruleGroup, treeId, formik: { values, setFieldValue } } = this.props;
+        const { ruleGroup, treeId, formik: { setFieldValue } } = this.props;
 
-        ruleGroup.rules.splice(indexToRemove, 1);
+        const newRules = clone(ruleGroup.rules);
+        newRules.splice(indexToRemove, 1);
+        setFieldValue(`${treeId}.rules`, newRules);
+    }
 
-        // if condition is now empty, remove it
-        if (ruleGroup.rules.length === 0) {
-            const treeIdParts = treeId.split(/\[(\d+)\]$/);
+    private removeThisRuleGroup() {
+        const { treeId, formik: { values, setFieldValue } } = this.props;
 
-            const containingListId = treeIdParts[0];
-            const ruleGroupIndex = parseInt(treeIdParts[1]);
+        const treeIdParts = treeId.split(/\[(\d+)\]$/);
 
-            const newContainingListVal = get(values, containingListId);
-            newContainingListVal.splice(ruleGroupIndex, 1);
-            setFieldValue(containingListId, newContainingListVal);
-        } else {
-            setFieldValue(`${treeId}.rules`, ruleGroup.rules);
-        }
+        const containingListId = treeIdParts[0];
+        const ruleGroupIndex = parseInt(treeIdParts[1]);
+
+        const newContainingListVal = get(values, containingListId);
+        newContainingListVal.splice(ruleGroupIndex, 1);
+        setFieldValue(containingListId, newContainingListVal);
     }
 }
 
