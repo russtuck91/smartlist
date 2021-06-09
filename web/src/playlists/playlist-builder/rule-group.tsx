@@ -48,6 +48,11 @@ const useStyles = (theme: Theme): StyleRules => ({
     groupLabel: {
         letterSpacing: 1,
     },
+    buttonContainer: {
+        '&:first-child': {
+            paddingTop: theme.spacing(1),
+        },
+    },
     buttonGroup: {
         '& .MuiButton-root': {
             paddingLeft: theme.spacing(3),
@@ -79,19 +84,20 @@ export class RawRuleGroup extends React.Component<FullProps> {
                             <List disablePadding>
                                 {ruleGroup.rules.map((rule, index) => {
                                     if (isPlaylistRuleGroup(rule)) {
-                                        return this.renderRuleGroup(rule, index);
+                                        return (
+                                            <React.Fragment key={index}>
+                                                {index === 0 && this.renderButtons()}
+                                                {this.renderRuleGroup(rule, index)}
+                                            </React.Fragment>
+                                        );
                                     } else {
                                         const nextRule = ruleGroup.rules[index + 1];
                                         const isNextRuleARule = nextRule && !isPlaylistRuleGroup(nextRule);
                                         return (
-                                            <>
+                                            <React.Fragment key={index}>
                                                 {this.renderRuleField(rule, index, isNextRuleARule)}
-                                                {(!isNextRuleARule) && (
-                                                    <Box key="buttons" display="flex" justifyContent="center">
-                                                        {this.renderButtons()}
-                                                    </Box>
-                                                )}
-                                            </>
+                                                {!isNextRuleARule && this.renderButtons()}
+                                            </React.Fragment>
                                         );
                                     }
                                 })}
@@ -137,24 +143,26 @@ export class RawRuleGroup extends React.Component<FullProps> {
 
     private renderButtons() {
         return (
-            <ButtonGroup className={this.props.classes.buttonGroup}>
-                <Button
-                    variant="outlined"
-                    onClick={this.addCondition}
-                >
-                    <AddCircle />
-                    {' '}
-                    rule
-                </Button>
-                <Button
-                    variant="outlined"
-                    onClick={this.addGroup}
-                >
-                    <AddCircle />
-                    {' '}
-                    group
-                </Button>
-            </ButtonGroup>
+            <Box key="buttons" display="flex" justifyContent="center" className={this.props.classes.buttonContainer}>
+                <ButtonGroup className={this.props.classes.buttonGroup}>
+                    <Button
+                        variant="outlined"
+                        onClick={this.addCondition}
+                    >
+                        <AddCircle />
+                        {' '}
+                        rule
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        onClick={this.addGroup}
+                    >
+                        <AddCircle />
+                        {' '}
+                        group
+                    </Button>
+                </ButtonGroup>
+            </Box>
         );
     }
 
@@ -199,7 +207,9 @@ export class RawRuleGroup extends React.Component<FullProps> {
     private addGroup = () => {
         const { treeId, ruleGroup, formik: { setFieldValue } } = this.props;
 
-        ruleGroup.rules.push({ type: RuleGroupType.And, rules: [ DEFAULT_NEW_CONDITION ] });
+        const firstRuleGroup = ruleGroup.rules.findIndex((r) => isPlaylistRuleGroup(r));
+        const insertLoc = firstRuleGroup === -1 ? ruleGroup.rules.length : firstRuleGroup;
+        ruleGroup.rules.splice(insertLoc, 0, { type: RuleGroupType.And, rules: [ DEFAULT_NEW_CONDITION ] });
         setFieldValue(`${treeId}.rules`, ruleGroup.rules);
     }
 
