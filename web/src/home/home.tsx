@@ -9,6 +9,8 @@ import isUserLoggedIn from '../core/session/is-user-logged-in';
 import alexaLogo from './images/alexa-logo.png';
 import cortanaLogo from './images/cortana-logo.png';
 import googleAssistantLogo from './images/google-assistant-logo.png';
+import ruleField from './images/rule-field.png';
+import ruleGroup from './images/rule-group.png';
 import siriLogo from './images/siri-logo.png';
 import spotifyLogo from './images/spotify-logo.png';
 
@@ -83,6 +85,10 @@ const useStyles = (theme: Theme): StyleRules => ({
         '& .MuiGrid-container': {
             marginTop: 0,
             marginBottom: 0,
+        },
+
+        '& img': {
+            maxWidth: '100%',
         },
     },
     usePlaylistsSection: {
@@ -172,25 +178,26 @@ export class RawHome extends React.Component<FullProps> {
         return (
             <div className={this.props.classes.section}>
                 <Typography variant="h5">How It Works</Typography>
-                <Grid container spacing={8}>
+                <Grid container spacing={8} alignItems="center">
                     <Grid item xs={12} sm={6}>
-                        Explain individual rules
+                        Define individual rules as building blocks
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        RULE IMAGE
-                    </Grid>
-                </Grid>
-                <Grid container spacing={10} direction="row-reverse">
-                    <Grid item xs={12} sm={6}>
-                        Rules together in a group
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        RULE GROUP IMAGE
+                        <img src={ruleField} />
                     </Grid>
                 </Grid>
-                <Grid container spacing={10}>
+                <Grid container spacing={10} alignItems="center" direction="row-reverse">
                     <Grid item xs={12} sm={6}>
-                        AND groups do something, OR groups do something else
+                        Put those rules together in groups
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <img src={ruleGroup} />
+                    </Grid>
+                </Grid>
+                <Grid container spacing={10} alignItems="center">
+                    <Grid item xs={12} sm={6}>
+                        <p>AND groups match songs for all of the rules</p>
+                        <p>OR groups match songs for any of the rules</p>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         MORE IMAGE
