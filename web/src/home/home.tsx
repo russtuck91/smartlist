@@ -6,10 +6,12 @@ import { Link as RouterLink } from 'react-router-dom';
 import { RouteLookup } from '../core/routes/route-lookup';
 import isUserLoggedIn from '../core/session/is-user-logged-in';
 
-import alexaLogo from './images/alexa-logo.png';
-import cortanaLogo from './images/cortana-logo.png';
-import googleAssistantLogo from './images/google-assistant-logo.png';
 import groupVennComparison from './images/group-venn-comparison.png';
+import logoAlexa from './images/logo-alexa.png';
+import logoCortana from './images/logo-cortana.png';
+import logoGoogleAssistant from './images/logo-google-assistant.png';
+import logoSiri from './images/logo-siri.png';
+import logoSpotify from './images/logo-spotify.png';
 import ruleField from './images/rule-field.png';
 import ruleGroup from './images/rule-group.png';
 import sampleArtistMashup from './images/sample-artist-mashup.png';
@@ -17,8 +19,6 @@ import sampleDecade from './images/sample-decade.png';
 import sampleEarlyStuff from './images/sample-early-stuff.png';
 import sampleGenre from './images/sample-genre.png';
 import samplePlaylist from './images/sample-playlist.png';
-import siriLogo from './images/siri-logo.png';
-import spotifyLogo from './images/spotify-logo.png';
 
 interface HomeProps {}
 
@@ -293,16 +293,16 @@ export class RawHome extends React.Component<FullProps> {
 
                 <Grid container spacing={8}>
                     <Grid item xs={12}>
-                        <div><img src={spotifyLogo} /></div>
+                        <div><img src={logoSpotify} /></div>
                         <Typography variant="h6">Open in Spotify and Play!</Typography>
                     </Grid>
 
                     <Grid item xs={12}>
                         <Grid container justify="center" spacing={4}>
-                            <Grid item><img src={alexaLogo} /></Grid>
-                            <Grid item><img src={siriLogo} /></Grid>
-                            <Grid item><img src={googleAssistantLogo} /></Grid>
-                            <Grid item><img src={cortanaLogo} /></Grid>
+                            <Grid item><img src={logoAlexa} /></Grid>
+                            <Grid item><img src={logoSiri} /></Grid>
+                            <Grid item><img src={logoGoogleAssistant} /></Grid>
+                            <Grid item><img src={logoCortana} /></Grid>
                         </Grid>
                         <Typography variant="h6">Call your voice assistant and say</Typography>
                         <q>
