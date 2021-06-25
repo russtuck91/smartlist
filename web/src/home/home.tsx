@@ -11,6 +11,11 @@ import cortanaLogo from './images/cortana-logo.png';
 import googleAssistantLogo from './images/google-assistant-logo.png';
 import ruleField from './images/rule-field.png';
 import ruleGroup from './images/rule-group.png';
+import sampleArtistMashup from './images/sample-artist-mashup.png';
+import sampleDecade from './images/sample-decade.png';
+import sampleEarlyStuff from './images/sample-early-stuff.png';
+import sampleGenre from './images/sample-genre.png';
+import samplePlaylist from './images/sample-playlist.png';
 import siriLogo from './images/siri-logo.png';
 import spotifyLogo from './images/spotify-logo.png';
 
@@ -213,22 +218,28 @@ export class RawHome extends React.Component<FullProps> {
                 <Typography variant="h5">Create Smart Playlists such as</Typography>
                 <Grid container spacing={8}>
                     <Grid item xs={6} sm={4}>
-                        saved songs from your fav artist
+                        <p>Saved songs from your fav artist</p>
+                        <img src={ruleGroup} />
                     </Grid>
                     <Grid item xs={6} sm={4}>
-                        a mashup of saved songs from 2 artists
+                        <p>Mashup of saved songs from 2 artists</p>
+                        <img src={sampleArtistMashup} />
                     </Grid>
                     <Grid item xs={6} sm={4}>
-                        saved songs of a genre
+                        <p>Saved songs of a genre</p>
+                        <img src={sampleGenre} />
                     </Grid>
                     <Grid item xs={6} sm={4}>
-                        saved songs from a year or a decade
+                        <p>Saved songs from a decade</p>
+                        <img src={sampleDecade} />
                     </Grid>
                     <Grid item xs={6} sm={4}>
-                        XXX
+                        <p>Only their early stuff</p>
+                        <img src={sampleEarlyStuff} />
                     </Grid>
                     <Grid item xs={6} sm={4}>
-                        XXX
+                        <p>Saved songs from a playlist</p>
+                        <img src={samplePlaylist} />
                     </Grid>
                 </Grid>
             </div>
