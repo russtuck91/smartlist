@@ -9,6 +9,7 @@ import isUserLoggedIn from '../core/session/is-user-logged-in';
 import alexaLogo from './images/alexa-logo.png';
 import cortanaLogo from './images/cortana-logo.png';
 import googleAssistantLogo from './images/google-assistant-logo.png';
+import groupVennComparison from './images/group-venn-comparison.png';
 import ruleField from './images/rule-field.png';
 import ruleGroup from './images/rule-group.png';
 import sampleArtistMashup from './images/sample-artist-mashup.png';
@@ -94,6 +95,7 @@ const useStyles = (theme: Theme): StyleRules => ({
 
         '& img': {
             maxWidth: '100%',
+            borderRadius: theme.spacing(0.5),
         },
     },
     usePlaylistsSection: {
@@ -205,7 +207,7 @@ export class RawHome extends React.Component<FullProps> {
                         <p>OR groups match songs for any of the rules</p>
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        MORE IMAGE
+                        <img src={groupVennComparison} />
                     </Grid>
                 </Grid>
             </div>
