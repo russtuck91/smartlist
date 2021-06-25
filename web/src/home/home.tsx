@@ -256,27 +256,27 @@ export class RawHome extends React.Component<FullProps> {
             <div className={this.props.classes.section}>
                 <Typography variant="h5">Create Smart Playlists such as</Typography>
                 <Grid container spacing={8}>
-                    <Grid item xs={6} sm={4}>
+                    <Grid item xs={12} sm={6} lg={4}>
                         <p>Saved songs from your fav artist</p>
                         <img src={ruleGroup} />
                     </Grid>
-                    <Grid item xs={6} sm={4}>
+                    <Grid item xs={12} sm={6} lg={4}>
                         <p>Mashup of saved songs from 2 artists</p>
                         <img src={sampleArtistMashup} />
                     </Grid>
-                    <Grid item xs={6} sm={4}>
-                        <p>Saved songs of a genre</p>
+                    <Grid item xs={12} sm={6} lg={4}>
+                        <p>Saved songs from a genre</p>
                         <img src={sampleGenre} />
                     </Grid>
-                    <Grid item xs={6} sm={4}>
+                    <Grid item xs={12} sm={6} lg={4}>
                         <p>Saved songs from a decade</p>
                         <img src={sampleDecade} />
                     </Grid>
-                    <Grid item xs={6} sm={4}>
+                    <Grid item xs={12} sm={6} lg={4}>
                         <p>Only their early stuff</p>
                         <img src={sampleEarlyStuff} />
                     </Grid>
-                    <Grid item xs={6} sm={4}>
+                    <Grid item xs={12} sm={6} lg={4}>
                         <p>Saved songs from a playlist</p>
                         <img src={samplePlaylist} />
                     </Grid>
