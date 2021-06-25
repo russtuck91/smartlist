@@ -13,6 +13,16 @@ import { history } from './core/history/history';
 
 import { AppContents } from './app-contents';
 
+const customColors = {
+    andGroupRed: '#451717',
+    orGroupBlue: '#172545',
+};
+declare module '@material-ui/core/styles/createMuiTheme' {
+    interface Theme {
+        colors: typeof customColors;
+    }
+}
+
 export class App extends Component {
     render() {
         const theme = createMuiTheme({
@@ -33,6 +43,7 @@ export class App extends Component {
                 },
             },
         });
+        theme.colors = customColors;
         theme.overrides!.MuiTableCell!.head = {
             ...theme.overrides!.MuiTableCell!.head,
             backgroundColor: theme.palette.background.default,

@@ -32,7 +32,7 @@ const useStyles = (theme: Theme): StyleRules => ({
     },
     header: {
         fontWeight: 'bold',
-        backgroundColor: '#172545',
+        backgroundColor: theme.colors.orGroupBlue,
 
         '& .MuiButton-root': {
             '&.MuiButton-contained': {
@@ -43,7 +43,7 @@ const useStyles = (theme: Theme): StyleRules => ({
         },
     },
     andGroupHeader: {
-        backgroundColor: '#451717',
+        backgroundColor: theme.colors.andGroupRed,
     },
     groupLabel: {
         letterSpacing: 1,
