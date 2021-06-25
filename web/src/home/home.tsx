@@ -22,112 +22,132 @@ import spotifyLogo from './images/spotify-logo.png';
 
 interface HomeProps {}
 
-const useStyles = (theme: Theme): StyleRules => ({
-    homepage: {
-        textAlign: 'center',
-        overflow: 'auto',
-        flex: '1 1 auto',
-        paddingBottom: theme.spacing(8),
+const useStyles = (theme: Theme): StyleRules => {
+    const baseGroupHighlight = {
+        padding: `${theme.spacing(0.5)}px ${theme.spacing(1)}px`,
+        borderRadius: theme.spacing(0.5),
+    };
 
-        '& p': {
-            '& strong': {
-                letterSpacing: 1,
-            },
-        },
+    return {
+        homepage: {
+            textAlign: 'center',
+            overflow: 'auto',
+            flex: '1 1 auto',
+            paddingBottom: theme.spacing(8),
 
-        '& .MuiButton-root': {
-            marginTop: '4em',
-        },
-    },
-    title: {
-        fontSize: '2.4em',
-        letterSpacing: 3,
-        fontWeight: 200,
-
-        '& span:first-child': {
-            fontWeight: 'bold',
-        },
-    },
-    subtitle: {
-        fontSize: '1.3em',
-        marginBottom: '3em',
-        textTransform: 'uppercase',
-        letterSpacing: 5,
-    },
-    featureRow: {
-        [theme.breakpoints.down('xs')]: {
-            padding: `${theme.spacing(3)}px 0`,
-        },
-
-        '& > .MuiGrid-item': {
-            padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-
-            [theme.breakpoints.up('sm')]: {
-                padding: `${theme.spacing(3)}px ${theme.spacing(4)}px`,
-                '&:first-child': {
-                    textAlign: 'right',
-                    border: 0,
-                    borderRightWidth: 1,
-                    borderStyle: 'solid',
-                },
-                '&:last-child': {
-                    textAlign: 'left',
+            '& p': {
+                '& strong': {
+                    letterSpacing: 1,
                 },
             },
-        },
-    },
-    section: {
-        marginTop: theme.spacing(8),
-        paddingTop: theme.spacing(8),
-        marginBottom: theme.spacing(8),
-        borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-        overflow: 'hidden',
 
-        '& .MuiTypography-h5': {
-            fontWeight: 'bold',
-            marginBottom: theme.spacing(2),
+            '& .MuiButton-root': {
+                marginTop: '4em',
+            },
         },
+        title: {
+            fontSize: '2.4em',
+            letterSpacing: 3,
+            fontWeight: 200,
 
-        '& .MuiGrid-container': {
-            marginTop: 0,
-            marginBottom: 0,
-        },
-
-        '& img': {
-            maxWidth: '100%',
-            borderRadius: theme.spacing(0.5),
-        },
-    },
-    usePlaylistsSection: {
-        '& img': {
-            width: '4em',
-        },
-        '& q': {
-            display: 'block',
-            fontSize: '1.2em',
-            fontStyle: 'italic',
-            letterSpacing: 1,
-            lineHeight: '1.2em',
-            padding: theme.spacing(2),
-            '&:before, &:after': {
-                fontSize: '2em',
-                position: 'relative',
+            '& span:first-child': {
                 fontWeight: 'bold',
-                fontFamily: 'cursive',
-            },
-            '&:before': {
-                right: theme.spacing(2),
-            },
-            '&:after': {
-                left: theme.spacing(1),
-            },
-
-            '& em': {
-                color: theme.palette.primary['200'],
             },
         },
-    },
-});
+        subtitle: {
+            fontSize: '1.3em',
+            marginBottom: '3em',
+            textTransform: 'uppercase',
+            letterSpacing: 5,
+        },
+        featureRow: {
+            [theme.breakpoints.down('xs')]: {
+                padding: `${theme.spacing(3)}px 0`,
+            },
+
+            '& > .MuiGrid-item': {
+                padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+
+                [theme.breakpoints.up('sm')]: {
+                    padding: `${theme.spacing(3)}px ${theme.spacing(4)}px`,
+                    '&:first-child': {
+                        textAlign: 'right',
+                        border: 0,
+                        borderRightWidth: 1,
+                        borderStyle: 'solid',
+                    },
+                    '&:last-child': {
+                        textAlign: 'left',
+                    },
+                },
+            },
+        },
+        andGroupRed: {
+            ...baseGroupHighlight,
+            backgroundColor: theme.colors.andGroupRed,
+        },
+        orGroupBlue: {
+            ...baseGroupHighlight,
+            backgroundColor: theme.colors.orGroupBlue,
+        },
+        section: {
+            marginTop: theme.spacing(8),
+            paddingTop: theme.spacing(8),
+            marginBottom: theme.spacing(8),
+            borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+            overflow: 'hidden',
+
+            '& .MuiTypography-h5': {
+                fontWeight: 'bold',
+                marginBottom: theme.spacing(2),
+            },
+
+            '& .MuiGrid-container': {
+                marginTop: 0,
+                marginBottom: 0,
+            },
+
+            '& img': {
+                maxWidth: '100%',
+                borderRadius: theme.spacing(0.5),
+            },
+        },
+        howItWorksSection: {
+            '& p': {
+                fontWeight: 600,
+            },
+        },
+        usePlaylistsSection: {
+            '& img': {
+                width: '4em',
+            },
+            '& q': {
+                display: 'block',
+                fontSize: '1.2em',
+                fontStyle: 'italic',
+                letterSpacing: 1,
+                lineHeight: '1.2em',
+                padding: theme.spacing(2),
+                '&:before, &:after': {
+                    fontSize: '2em',
+                    position: 'relative',
+                    fontWeight: 'bold',
+                    fontFamily: 'cursive',
+                },
+                '&:before': {
+                    right: theme.spacing(2),
+                },
+                '&:after': {
+                    left: theme.spacing(1),
+                },
+
+                '& em': {
+                    color: theme.palette.primary['200'],
+                },
+            },
+        },
+    };
+};
 
 type FullProps = HomeProps & WithStyles<typeof useStyles>;
 
@@ -182,12 +202,13 @@ export class RawHome extends React.Component<FullProps> {
     }
 
     private renderHowItWorksSection() {
+        const { classes } = this.props;
         return (
-            <div className={this.props.classes.section}>
+            <div className={classNames(classes.section, classes.howItWorksSection)}>
                 <Typography variant="h5">How It Works</Typography>
                 <Grid container spacing={8} alignItems="center">
                     <Grid item xs={12} sm={6}>
-                        Define individual rules as building blocks
+                        <p>Define individual rules as building blocks</p>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <img src={ruleField} />
@@ -195,7 +216,7 @@ export class RawHome extends React.Component<FullProps> {
                 </Grid>
                 <Grid container spacing={10} alignItems="center" direction="row-reverse">
                     <Grid item xs={12} sm={6}>
-                        Put those rules together in groups
+                        <p>Put those rules together in groups</p>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <img src={ruleGroup} />
@@ -203,8 +224,24 @@ export class RawHome extends React.Component<FullProps> {
                 </Grid>
                 <Grid container spacing={10} alignItems="center">
                     <Grid item xs={12} sm={6}>
-                        <p>AND groups match songs for all of the rules</p>
-                        <p>OR groups match songs for any of the rules</p>
+                        <p>
+                            <span className={classes.andGroupRed}>AND groups</span>
+                            {' '}
+                            match songs for
+                            {' '}
+                            <span className={classes.andGroupRed}>all</span>
+                            {' '}
+                            of the rules
+                        </p>
+                        <p>
+                            <span className={classes.orGroupBlue}>OR groups</span>
+                            {' '}
+                            match songs for
+                            {' '}
+                            <span className={classes.orGroupBlue}>any</span>
+                            {' '}
+                            of the rules
+                        </p>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <img src={groupVennComparison} />
