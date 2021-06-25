@@ -33,7 +33,7 @@ const useStyles = (theme: Theme): StyleRules => {
             textAlign: 'center',
             overflow: 'auto',
             flex: '1 1 auto',
-            paddingBottom: theme.spacing(8),
+            paddingBottom: theme.spacing(16),
 
             '& p': {
                 '& strong': {
@@ -113,8 +113,18 @@ const useStyles = (theme: Theme): StyleRules => {
             },
         },
         howItWorksSection: {
+            '& .MuiGrid-container': {
+                '& .MuiGrid-item.MuiGrid-grid-xs-12': {
+                    '&:first-child': {
+                        [theme.breakpoints.down('xs')]: {
+                            paddingBottom: 0,
+                        },
+                    },
+                },
+            },
             '& p': {
                 fontWeight: 600,
+                lineHeight: '1.8em',
             },
         },
         usePlaylistsSection: {
@@ -214,7 +224,7 @@ export class RawHome extends React.Component<FullProps> {
                         <img src={ruleField} />
                     </Grid>
                 </Grid>
-                <Grid container spacing={10} alignItems="center" direction="row-reverse">
+                <Grid container spacing={8} alignItems="center" direction="row-reverse">
                     <Grid item xs={12} sm={6}>
                         <p>Put those rules together in groups</p>
                     </Grid>
@@ -222,7 +232,7 @@ export class RawHome extends React.Component<FullProps> {
                         <img src={ruleGroup} />
                     </Grid>
                 </Grid>
-                <Grid container spacing={10} alignItems="center">
+                <Grid container spacing={8} alignItems="center">
                     <Grid item xs={12} sm={6}>
                         <p>
                             <span className={classes.andGroupRed}>AND groups</span>
