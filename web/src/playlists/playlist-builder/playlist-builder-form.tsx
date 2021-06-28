@@ -9,7 +9,7 @@ import {
 import { ArrowBack } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { FormikProps } from 'formik';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import * as React from 'react';
 
 import { PlaylistRuleGroup, RuleGroupType } from '../../../../shared';
@@ -102,10 +102,17 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     async componentDidMount() {
         await this.props.formik.validateForm();
 
-        this.getListPreview();
+        if (!this.props.isLoading) {
+            this.getListPreview();
+        }
     }
 
     componentDidUpdate(prevProps: FullProps) {
+        // If values are reinitialized, new playlist data was loaded, then reload the preview
+        if (!isEqual(this.props.formik.initialValues, prevProps.formik.initialValues)) {
+            this.getListPreview();
+        }
+
         // If whole rules list becomes empty, add 1 rule back
         if (this.props.formik.values.rules.length === 0 && prevProps.formik.values.rules.length > 0) {
             this.resetToOneRule();
