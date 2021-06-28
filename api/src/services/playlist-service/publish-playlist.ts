@@ -26,6 +26,11 @@ async function publishPlaylist(playlist: Playlist, accessToken?: string) {
     // Add tracks to playlist
     await spotifyService.addTracksToPlaylist(spotifyPlaylistId, list, accessToken);
 
+    const playlistDetailsUpdates = {
+        name: playlist.name,
+    };
+    await spotifyService.updatePlaylistDetails(spotifyPlaylistId, playlistDetailsUpdates, accessToken);
+
     // Save last published date, spotifyPlaylistId (in case it changed)
     const playlistUpdate: Partial<Playlist> = {
         spotifyPlaylistId: spotifyPlaylistId,
