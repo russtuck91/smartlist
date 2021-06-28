@@ -7,7 +7,7 @@ import {
     isGenreRule,
     isTrackContainsRule, isTrackIsRule, isTrackRule,
     isYearBetweenRule, isYearIsRule, isYearRule,
-    PlaylistRule, RuleComparator, RuleParam, TrackRule, YearRule,
+    PlaylistRule, RuleComparator, TrackRule, YearRule,
 } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
@@ -16,15 +16,10 @@ import { spCache } from '../spotify-service-cache';
 
 
 async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules: PlaylistRule[], accessToken: string|undefined) {
-    const filtersByParam: { [s: string]: PlaylistRule } = rules.reduce((obj, item) => {
-        obj[item.param] = item;
-        return obj;
-    }, {});
-
     let albumMap = {};
     let artistMap = {};
     // Resources only needed if Genre filter is set
-    if (filtersByParam[RuleParam.Genre]) {
+    if (rules.find((rule) => isGenreRule(rule))) {
         const allAlbumIds: string[] = [];
         const allArtistIds: string[] = [];
         trackList.map((track) => {
@@ -39,47 +34,31 @@ async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules:
     }
 
     const filteredList = trackList.filter((track) => {
-        if (filtersByParam[RuleParam.Artist]) {
-            const thisFilter = filtersByParam[RuleParam.Artist];
+        return rules.reduce<boolean>((agg, thisFilter) => {
+            if (!agg) { return agg; }
+
             if (isArtistRule(thisFilter)) {
-                const shouldPass = filterTrackByArtist(track, thisFilter);
-                if (shouldPass === false) { return false; }
+                return filterTrackByArtist(track, thisFilter);
             }
-        }
 
-        if (filtersByParam[RuleParam.Album]) {
-            const thisFilter = filtersByParam[RuleParam.Album];
             if (isAlbumRule(thisFilter)) {
-                const shouldPass = filterTrackByAlbum(track, thisFilter);
-                if (shouldPass === false) { return false; }
+                return !!filterTrackByAlbum(track, thisFilter);
             }
-        }
 
-        if (filtersByParam[RuleParam.Track]) {
-            const thisFilter = filtersByParam[RuleParam.Track];
             if (isTrackRule(thisFilter)) {
-                const shouldPass = filterTrackByTrack(track, thisFilter);
-                if (shouldPass === false) { return false; }
+                return !!filterTrackByTrack(track, thisFilter);
             }
-        }
 
-        if (filtersByParam[RuleParam.Genre]) {
-            const thisFilter = filtersByParam[RuleParam.Genre];
             if (isGenreRule(thisFilter)) {
-                const shouldPass = filterTrackByGenre(track, thisFilter, albumMap, artistMap);
-                if (shouldPass === false) { return false; }
+                return filterTrackByGenre(track, thisFilter, albumMap, artistMap);
             }
-        }
 
-        if (filtersByParam[RuleParam.Year]) {
-            const thisFilter = filtersByParam[RuleParam.Year];
             if (isYearRule(thisFilter)) {
-                const shouldPass = filterTrackByYear(track, thisFilter);
-                if (shouldPass === false) { return false; }
+                return !!filterTrackByYear(track, thisFilter);
             }
-        }
 
-        return true;
+            return true;
+        }, true);
     });
 
     return filteredList;
