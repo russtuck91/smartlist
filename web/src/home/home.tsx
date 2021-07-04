@@ -173,7 +173,7 @@ export class RawHome extends React.Component<FullProps> {
                         <span>list</span>
                     </h1>
 
-                    <h3 className={classes.subtitle}>Automatic Spotify playlists by rules</h3>
+                    <h3 className={classes.subtitle}>Automatic Spotify Playlists by Rules</h3>
 
                     <Grid container className={classes.featureRow}>
                         <Grid item xs={12} sm={4} md={5}>

@@ -1,7 +1,7 @@
 {
   "short_name": "Smartlist",
   "name": "Smartlist Music",
-  "description": "Automatic Spotify playlists by rules",
+  "description": "Automatic Spotify Playlists by Rules",
   "categories": [ "music", "productivity", "utilities" ],
   "icons": [
     {
