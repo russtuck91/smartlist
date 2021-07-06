@@ -104,3 +104,11 @@ export interface PlaylistTypeRule extends PlaylistRule {
 export function isPlaylistTypeRule(rule: PlaylistRule): rule is PlaylistTypeRule {
     return rule.param === RuleParam.Playlist;
 }
+
+export interface TempoRule extends PlaylistRule {
+    param: RuleParam.Tempo;
+    value: BetweenValue;
+}
+export function isTempoRule(rule: PlaylistRule): rule is TempoRule {
+    return rule.param === RuleParam.Tempo;
+}

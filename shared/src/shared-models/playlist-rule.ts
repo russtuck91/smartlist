@@ -12,6 +12,7 @@ export enum RuleParam {
     Genre = 'Genre',
     Year = 'Year',
     Playlist = 'Playlist',
+    Tempo = 'Tempo',
 }
 
 export enum RuleComparator {
@@ -33,6 +34,12 @@ export function getComparatorsForParam(param: RuleParam): RuleComparator[] {
         param === RuleParam.Year
     ) {
         return [ RuleComparator.Is, RuleComparator.Between ];
+    }
+
+    if (
+        param === RuleParam.Tempo
+    ) {
+        return [ RuleComparator.Between ];
     }
 
     return [ RuleComparator.Is, RuleComparator.Contains ];
