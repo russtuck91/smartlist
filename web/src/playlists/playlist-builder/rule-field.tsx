@@ -103,6 +103,44 @@ export class RawRuleField extends React.Component<FullProps> {
         );
     }
 
+    private renderBetweenValueFields() {
+        const { rule, treeId } = this.props;
+
+        return (
+            <Grid container wrap="nowrap" alignItems="center" spacing={1}>
+                <Grid item xs={6}>
+                    {isYearBetweenRule(rule) ? (
+                        <YearPickerField
+                            id={`${treeId}.value.start`}
+                            required
+                            maxDate={rule.value.end}
+                        />
+                    ): (
+                        <TextField
+                            id={`${treeId}.value.start`}
+                            required
+                        />
+                    )}
+                </Grid>
+                <Grid item>to</Grid>
+                <Grid item xs={6}>
+                    {isYearBetweenRule(rule) ? (
+                        <YearPickerField
+                            id={`${treeId}.value.end`}
+                            required
+                            minDate={rule.value.start}
+                        />
+                    ) : (
+                        <TextField
+                            id={`${treeId}.value.end`}
+                            required
+                        />
+                    )}
+                </Grid>
+            </Grid>
+        );
+    }
+
     private renderRuleValueField() {
         const { rule, treeId } = this.props;
 
@@ -116,29 +154,11 @@ export class RawRuleField extends React.Component<FullProps> {
             );
         }
 
-        if (isYearRule(rule)) {
-            if (isYearBetweenRule(rule)) {
-                return (
-                    <Grid container wrap="nowrap" alignItems="center" spacing={1}>
-                        <Grid item xs={6}>
-                            <YearPickerField
-                                id={`${treeId}.value.start`}
-                                required
-                                maxDate={rule.value.end}
-                            />
-                        </Grid>
-                        <Grid item>to</Grid>
-                        <Grid item xs={6}>
-                            <YearPickerField
-                                id={`${treeId}.value.end`}
-                                required
-                                minDate={rule.value.start}
-                            />
-                        </Grid>
-                    </Grid>
-                );
-            }
+        if (rule.comparator === RuleComparator.Between) {
+            return this.renderBetweenValueFields();
+        }
 
+        if (isYearRule(rule)) {
             return (
                 <YearPickerField
                     id={`${treeId}.value`}
