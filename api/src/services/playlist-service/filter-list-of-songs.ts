@@ -5,9 +5,11 @@ import {
     isAlbumContainsRule, isAlbumIsRule, isAlbumRule,
     isArtistContainsRule, isArtistIsRule, isArtistRule,
     isGenreRule,
+    isTempoRule,
     isTrackContainsRule, isTrackIsRule, isTrackRule,
     isYearBetweenRule, isYearIsRule, isYearRule,
-    PlaylistRule, RuleComparator, TrackRule, YearRule,
+    PlaylistRule, RuleComparator,
+    TempoRule, TrackRule, YearRule,
 } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
@@ -18,6 +20,8 @@ import { spCache } from '../spotify-service-cache';
 async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules: PlaylistRule[], accessToken: string|undefined) {
     let albumMap = {};
     let artistMap = {};
+    let audioFeaturesMap = {};
+
     // Resources only needed if Genre filter is set
     if (rules.find((rule) => isGenreRule(rule))) {
         const allAlbumIds: string[] = [];
@@ -31,6 +35,14 @@ async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules:
 
         albumMap = await spCache.getAlbums(allAlbumIds, accessToken);
         artistMap = await spCache.getArtists(allArtistIds, accessToken);
+    }
+
+    if (rules.find((rule) => isTempoRule(rule))) {
+        const allTrackIds: string[] = [];
+        trackList.map((track) => {
+            allTrackIds.push(track.id);
+        });
+        audioFeaturesMap = await spCache.getAudioFeatures(allTrackIds, accessToken);
     }
 
     const filteredList = trackList.filter((track) => {
@@ -55,6 +67,11 @@ async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules:
 
             if (isYearRule(thisFilter)) {
                 return !!filterTrackByYear(track, thisFilter);
+            }
+
+            if (isTempoRule(thisFilter)) {
+                const thisAudioFeatures = audioFeaturesMap[track.id];
+                return filterTrackByTempo(track, thisFilter, thisAudioFeatures);
             }
 
             return true;
@@ -128,6 +145,11 @@ function filterTrackByYear(track: SpotifyApi.TrackObjectFull, thisFilter: YearRu
     if (isYearBetweenRule(thisFilter)) {
         return trackMoment.isSameOrAfter(thisFilter.value.start, 'year') && trackMoment.isSameOrBefore(thisFilter.value.end, 'year');
     }
+}
+
+function filterTrackByTempo(track: SpotifyApi.TrackObjectFull, thisFilter: TempoRule, audioFeatures: SpotifyApi.AudioFeaturesObject) {
+    const { start, end } = thisFilter.value;
+    return (!start || audioFeatures.tempo > parseFloat(start)) && (!end || audioFeatures.tempo < parseFloat(end));
 }
 
 export default filterListOfSongs;

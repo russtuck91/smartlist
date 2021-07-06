@@ -21,7 +21,7 @@ async function getListForRules(
     const canBeFilteredFromABatch: PlaylistRule[] = [];
     const requiresOwnFetch: PlaylistRule[] = [];
     rules.map((rule) => {
-        if ([RuleParam.Artist, RuleParam.Album, RuleParam.Track, RuleParam.Genre, RuleParam.Year].includes(rule.param)) {
+        if ([RuleParam.Artist, RuleParam.Album, RuleParam.Track, RuleParam.Genre, RuleParam.Year, RuleParam.Tempo].includes(rule.param)) {
             canBeFilteredFromABatch.push(rule);
         } else {
             requiresOwnFetch.push(rule);

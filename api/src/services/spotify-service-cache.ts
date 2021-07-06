@@ -6,6 +6,7 @@ import spotifyService from './spotify-service/spotify-service';
 export class SpotifyServiceCache {
     private albumMap: Record<string, SpotifyApi.AlbumObjectFull> = {};
     private artistMap: Record<string, SpotifyApi.ArtistObjectFull> = {};
+    private audioFeatureMap: Record<string, SpotifyApi.AudioFeaturesObject> = {};
 
 
     public async getAlbums(albumIds: string[], accessToken: string|undefined) {
@@ -53,6 +54,28 @@ export class SpotifyServiceCache {
             return obj;
         }, {});
         return returnArtistMap;
+    }
+
+    public async getAudioFeatures(trackIds: string[], accessToken: string|undefined) {
+        logger.debug('>>>> Entering SpotifyServiceCache.getAudioFeatures()');
+        // For each track ID, add to array if not in audioFeatureMap cache
+        const tracksToBeFetched: string[] = trackIds.filter((artistId) => !this.audioFeatureMap[artistId]);
+
+        // Send trackIds for fetching to spotifyService
+        const fetchedTracks = await spotifyService.getAudioFeatures(tracksToBeFetched, accessToken);
+
+        // Add results to audioFeatureMap
+        this.audioFeatureMap = fetchedTracks.reduce((obj, item) => {
+            obj[item.id] = item;
+            return obj;
+        }, this.audioFeatureMap);
+
+        // Return map of requested artistIds
+        const returnAudioFeatureMap: Record<string, SpotifyApi.AudioFeaturesObject> = trackIds.reduce((obj, item) => {
+            obj[item] = this.audioFeatureMap[item];
+            return obj;
+        }, {});
+        return returnAudioFeatureMap;
     }
 
 }
