@@ -9,7 +9,7 @@ import updatePlaylist from './update-playlist';
 
 
 async function preValidatePublishPlaylist(playlist: Playlist, accessToken: string|undefined) {
-    logger.debug('>>>> Entering preValidatePublishPlaylist()');
+    logger.debug(`>>>> Entering preValidatePublishPlaylist(playlist.id = ${playlist.id})`);
 
     // User has deleted playlist. Do not publish on intervals, require user to re-publish manually
     if (playlist.deleted) {

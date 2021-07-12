@@ -13,8 +13,10 @@ async function getPlaylistById(id: string) {
     logger.debug(`>>>> Entering getPlaylistById(id=${id}`);
     const currentUser: User = await getCurrentUser();
 
-    const objId = new ObjectId(id);
-    const playlist = await playlistRepo.findOne({ userId: currentUser._id, _id: objId });
+    const playlist = await playlistRepo.findOne({
+        _id: new ObjectId(id),
+        userId: new ObjectId(currentUser.id),
+    });
 
     if (!playlist) {
         throw new NotFound();

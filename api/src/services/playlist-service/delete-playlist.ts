@@ -25,7 +25,7 @@ async function deletePlaylist(id: string, options: PlaylistDeleteOptions) {
         }, currentUser);
     }
 
-    await playlistRepo.deleteOne({ _id: new ObjectId(id), userId: currentUser._id });
+    await playlistRepo.deleteOne({ _id: new ObjectId(id), userId: new ObjectId(currentUser.id) });
 }
 
 export default deletePlaylist;

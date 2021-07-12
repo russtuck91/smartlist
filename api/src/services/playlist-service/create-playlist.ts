@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import { Playlist } from '../../../../shared';
 
 import { User } from '../../core/session/models';
@@ -13,7 +15,7 @@ async function createPlaylist(playlist: Playlist) {
     const now = new Date();
     const newPlaylist: Playlist = {
         ...playlist,
-        userId: currentUser._id,
+        userId: new ObjectId(currentUser.id),
         createdAt: now,
         updatedAt: now,
     };
