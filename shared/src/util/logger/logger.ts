@@ -16,7 +16,7 @@ export function getLogLevel() {
 
 export const prettyLogFormat = winston.format.combine(
     winston.format.colorize(),
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss ZZ' }),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS ZZ' }),
     winston.format.align(),
     winston.format.printf((info) => {
         const { timestamp, level, message, ...args } = info;

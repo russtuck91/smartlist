@@ -41,6 +41,7 @@ async function getFullPagedResults(fn: (options: SpPaginationOptions) => Promise
         }
     }
 
+    logger.debug(`<<<< Exiting getFullPagedResults after fetching ${offset / batchSize} pages`);
     return result;
 }
 
