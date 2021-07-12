@@ -35,6 +35,7 @@
     "moment": "^2.24.0",
     "mongodb": "^3.5.3",
     "mongoist": "^2.4.0",
+    "mongtype": "^6.0.1",
     "morgan": "~1.9.0",
     "rimraf": "^3.0.2",
     "spotify-web-api-node": "^4.0.0",
