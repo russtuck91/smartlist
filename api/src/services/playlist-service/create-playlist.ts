@@ -1,7 +1,8 @@
 import { Playlist } from '../../../../shared';
 
-import { db } from '../../core/db/db';
 import { User } from '../../core/session/models';
+
+import playlistRepo from '../../repositories/playlist-repository';
 
 import { getCurrentUser } from '../user-service';
 
@@ -16,7 +17,7 @@ async function createPlaylist(playlist: Playlist) {
         createdAt: now,
         updatedAt: now,
     };
-    const result = await db.playlists.insertOne(newPlaylist);
+    const result = await playlistRepo.create(newPlaylist);
 
     return result;
 }

@@ -9,7 +9,7 @@ import updatePlaylist from './update-playlist';
 
 
 async function publishPlaylist(playlist: Playlist, accessToken?: string) {
-    logger.info(`>>>> Entering publishPlaylist(playlist._id = ${playlist._id}`);
+    logger.info(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
 
     const list = await populateListByRules(playlist.rules, accessToken);
     logger.debug(`publishing playlist will have ${list.length} songs`);
@@ -37,7 +37,7 @@ async function publishPlaylist(playlist: Playlist, accessToken?: string) {
         lastPublished: new Date(),
         deleted: false,
     };
-    await updatePlaylist(playlist._id, playlistUpdate);
+    await updatePlaylist(playlist.id, playlistUpdate);
 }
 
 export default publishPlaylist;

@@ -213,7 +213,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     }
 
     private renderLastPublishedValue(playlist: Playlist) {
-        const isPublishInProgress: boolean = this.state.publishInProgress[playlist._id];
+        const isPublishInProgress: boolean = this.state.publishInProgress[playlist.id];
         if (isPublishInProgress) {
             return <CircularProgress size={20} />;
         }
@@ -282,7 +282,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     }
 
     private transitionToEdit(item: Playlist) {
-        history.push(generatePath(RouteLookup.playlists.edit, { id: item._id }));
+        history.push(generatePath(RouteLookup.playlists.edit, { id: item.id }));
     }
 
     private openDeleteDialog = (playlist: Playlist) => {
@@ -309,7 +309,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     }
 
     private async deletePlaylist(playlist: Playlist, options: PlaylistDeleteOptions) {
-        await requests.delete(`${PlaylistContainer.requestUrl}/${playlist._id}`, options);
+        await requests.delete(`${PlaylistContainer.requestUrl}/${playlist.id}`, options);
     }
 
     private openPublishDialog = (playlist: Playlist) => {
@@ -335,12 +335,12 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     }
 
     private async publishPlaylist(playlist: Playlist) {
-        this.setPublishInProgress(playlist._id, true);
+        this.setPublishInProgress(playlist.id, true);
 
-        await requests.post(`${PlaylistContainer.requestUrl}/publish/${playlist._id}`);
+        await requests.post(`${PlaylistContainer.requestUrl}/publish/${playlist.id}`);
         await this.loadPlaylists();
 
-        this.setPublishInProgress(playlist._id, false);
+        this.setPublishInProgress(playlist.id, false);
     }
 
     private setPublishInProgress(id: string, value: boolean) {

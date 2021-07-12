@@ -3,6 +3,7 @@ import { NotFound } from 'http-errors';
 import { ObjectId } from 'mongodb';
 
 import { db } from '../core/db/db';
+import logger from '../core/logger/logger';
 import { User } from '../core/session/models';
 
 
@@ -10,6 +11,7 @@ export async function getCurrentUser(): Promise<User> {
     const sessionToken = httpContext.get('sessionToken');
     const currentUser: User|null = await db.users.findOne({ sessionToken: sessionToken });
     if (!currentUser) {
+        logger.debug('Current user not found, exiting getCurrentUser()');
         throw new NotFound();
     }
     return currentUser;

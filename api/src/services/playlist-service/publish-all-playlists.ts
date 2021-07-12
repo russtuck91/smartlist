@@ -1,8 +1,7 @@
-import { Playlist } from '../../../../shared';
-
-import { db } from '../../core/db/db';
 import logger from '../../core/logger/logger';
 import { doAndRetry } from '../../core/session/session-util';
+
+import playlistRepo from '../../repositories/playlist-repository';
 
 import { getUserById } from '../user-service';
 
@@ -12,7 +11,7 @@ import preValidatePublishPlaylist from './pre-validate-publish-playlist';
 async function publishAllPlaylists() {
     logger.info('>>>> Entering publishAllPlaylists()');
 
-    const playlists: Playlist[] = await db.playlists.find();
+    const playlists = await playlistRepo.find();
     for (const playlist of playlists) {
         try {
             const user = await getUserById(playlist.userId);
@@ -22,7 +21,7 @@ async function publishAllPlaylists() {
                 }, user);
             }
         } catch (e) {
-            logger.info('error publishing playlist', playlist._id.toString());
+            logger.info('error publishing playlist', playlist.id.toString());
             logger.error(e);
         }
     }

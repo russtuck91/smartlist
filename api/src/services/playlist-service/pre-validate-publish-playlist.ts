@@ -22,7 +22,7 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
 
         // User has deleted playlist since last publish
         if (!userHasPlaylist) {
-            await updatePlaylist(playlist._id, { deleted: true });
+            await updatePlaylist(playlist.id, { deleted: true });
             return;
         }
     }

@@ -1,19 +1,19 @@
-import { ObjectId } from 'mongodb';
-
 import { Playlist } from '../../../../shared';
 
-import { db } from '../../core/db/db';
+import playlistRepo from '../../repositories/playlist-repository';
 
 
 async function updatePlaylist(id: string, playlist: Partial<Playlist>) {
-    delete playlist._id;
+    delete playlist.id;
     delete playlist.userId;
 
     playlist.updatedAt = new Date();
 
-    const result = await db.playlists.update(
-        { _id: new ObjectId(id) },
-        { $set: playlist },
+    const result = await playlistRepo.findOneByIdAndUpdate(
+        id,
+        {
+            updates: { $set: playlist },
+        },
     );
 
     return result;

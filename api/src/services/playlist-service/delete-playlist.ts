@@ -2,9 +2,10 @@ import { ObjectId } from 'mongodb';
 
 import { PlaylistDeleteOptions } from '../../../../shared';
 
-import { db } from '../../core/db/db';
 import { User } from '../../core/session/models';
 import { doAndRetry } from '../../core/session/session-util';
+
+import playlistRepo from '../../repositories/playlist-repository';
 
 import spotifyService from '../spotify-service/spotify-service';
 import { getCurrentUser } from '../user-service';
@@ -16,7 +17,7 @@ async function deletePlaylist(id: string, options: PlaylistDeleteOptions) {
     const currentUser: User = await getCurrentUser();
 
     if (options.deleteSpotifyPlaylist) {
-        doAndRetry(async (accessToken) => {
+        await doAndRetry(async (accessToken) => {
             const playlist = await getPlaylistById(id);
             if (playlist.spotifyPlaylistId) {
                 await spotifyService.unfollowPlaylist(playlist.spotifyPlaylistId, accessToken);
@@ -24,10 +25,7 @@ async function deletePlaylist(id: string, options: PlaylistDeleteOptions) {
         }, currentUser);
     }
 
-    db.playlists.remove(
-        { _id: new ObjectId(id), userId: currentUser._id },
-        true,
-    );
+    await playlistRepo.deleteOne({ _id: new ObjectId(id), userId: currentUser._id });
 }
 
 export default deletePlaylist;
