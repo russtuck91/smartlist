@@ -18,6 +18,7 @@ async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: stri
 
     const unionResult = union(...results);
 
+    logger.debug('<<<< Exiting populateListByRules()');
     return unionResult;
 }
 

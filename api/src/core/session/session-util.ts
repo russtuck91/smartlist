@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import httpContext from 'express-http-context';
 
+import userRepo from '../../repositories/user-repository';
 import { getCurrentUser } from '../../services/user-service';
 
-import { db } from '../db/db';
 import logger from '../logger/logger';
 import { SpotifyApi } from '../spotify/spotify-api';
 
@@ -47,9 +47,13 @@ export async function refreshAccessToken(user: User) {
         const refreshResponse = await spotifyApi.refreshAccessToken();
         const newAccessToken = refreshResponse.body.access_token;
 
-        await db.users.update(
-            { _id: user._id },
-            { $set: { accessToken: newAccessToken } },
+        await userRepo.findOneByIdAndUpdate(
+            user.id,
+            {
+                updates: {
+                    $set: { accessToken: newAccessToken },
+                },
+            },
         );
 
         return newAccessToken;
