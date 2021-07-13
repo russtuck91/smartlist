@@ -1,4 +1,4 @@
-import { chunk, truncate } from 'lodash';
+import { chunk, truncate, uniq } from 'lodash';
 
 import logger from '../../core/logger/logger';
 
@@ -13,7 +13,7 @@ async function getArtists(artistIds: string[], accessToken: string|undefined): P
 
     // Spotify API requires batches of 50 max
     const batchSize = 50;
-    const batchedIds = chunk(artistIds, batchSize);
+    const batchedIds = chunk(uniq(artistIds), batchSize);
 
     let artists: SpotifyApi.ArtistObjectFull[] = [];
     for (const batch of batchedIds) {

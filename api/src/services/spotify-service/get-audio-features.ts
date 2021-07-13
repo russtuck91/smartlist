@@ -1,4 +1,4 @@
-import { chunk, truncate } from 'lodash';
+import { chunk, truncate, uniq } from 'lodash';
 
 import logger from '../../core/logger/logger';
 
@@ -12,7 +12,7 @@ async function getAudioFeatures(trackIds: string[], accessToken: string|undefine
 
     // Spotify API requires batches of 100 max
     const batchSize = 100;
-    const batchedIds = chunk(trackIds, batchSize);
+    const batchedIds = chunk(uniq(trackIds), batchSize);
 
     let audioFeatures: SpotifyApi.AudioFeaturesObject[] = [];
     for (const batch of batchedIds) {
