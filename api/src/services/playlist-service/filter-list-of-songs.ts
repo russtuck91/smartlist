@@ -1,3 +1,4 @@
+import { keyBy } from 'lodash';
 import moment from 'moment';
 
 import {
@@ -14,7 +15,7 @@ import {
 
 import logger from '../../core/logger/logger';
 
-import { spCache } from '../spotify-service-cache';
+import spotifyCacheService from '../cache/spotify/spotify-cache-service';
 
 
 async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules: PlaylistRule[], accessToken: string|undefined) {
@@ -33,8 +34,10 @@ async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules:
             });
         });
 
-        albumMap = await spCache.getAlbums(allAlbumIds, accessToken);
-        artistMap = await spCache.getArtists(allArtistIds, accessToken);
+        const albums = await spotifyCacheService.getAlbums(allAlbumIds, accessToken);
+        albumMap = keyBy(albums, 'id');
+        const artists = await spotifyCacheService.getArtists(allArtistIds, accessToken);
+        artistMap = keyBy(artists, 'id');
     }
 
     if (rules.find((rule) => isTempoRule(rule))) {
@@ -42,7 +45,8 @@ async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules:
         trackList.map((track) => {
             allTrackIds.push(track.id);
         });
-        audioFeaturesMap = await spCache.getAudioFeatures(allTrackIds, accessToken);
+        const audioFeatures = await spotifyCacheService.getAudioFeatures(allTrackIds, accessToken);
+        audioFeaturesMap = keyBy(audioFeatures, 'id');
     }
 
     const filteredList = trackList.filter((track) => {
