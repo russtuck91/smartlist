@@ -2,10 +2,11 @@ import Agenda from 'agenda';
 
 import logger from '../core/logger/logger';
 
+import { JobTypes } from '../agenda';
 import { publishAllPlaylists } from '../services/playlist-service';
 
 export default function(agenda: Agenda) {
-    agenda.define('playlistPublishing', async (job) => {
+    agenda.define(JobTypes.playlistPublishing, async (job) => {
         logger.info('>>>> Entering playlistPublishing job');
 
         try {

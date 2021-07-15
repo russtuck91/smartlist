@@ -6,6 +6,8 @@ import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
 import { SpotifyApi } from '../core/spotify/spotify-api';
 
+import { agenda, JobTypes } from '../agenda';
+import { FetchResourcesForUserParams } from '../jobs/fetch-resources-for-user';
 import spotifyService from '../services/spotify-service/spotify-service';
 import { removeSessionTokenFromCurrentUser, updateUser } from '../services/user-service';
 
@@ -59,9 +61,9 @@ export class LoginController {
                 const data = await spotifyApi.authorizationCodeGrant(code);
                 const { expires_in, access_token, refresh_token } = data.body;
 
-                const user = await spotifyService.getMe(access_token);
+                const spotifyUser = await spotifyService.getMe(access_token);
 
-                const username = user.id;
+                const username = spotifyUser.id;
                 const accessTokenPatch: Partial<User> = {
                     username: username,
                     accessToken: access_token,
@@ -70,7 +72,9 @@ export class LoginController {
                 const sessionID = req.sessionID!;
 
                 // Store in DB
-                updateUser(username, accessTokenPatch, sessionID);
+                const user = await updateUser(username, accessTokenPatch, sessionID);
+
+                agenda.now<FetchResourcesForUserParams>(JobTypes.fetchResourcesForUser, { userId: user.id });
 
                 // pass the token to the frontend
                 res.redirect(`${baseUiUrl}/login/callback/${sessionID}`);
