@@ -1,6 +1,8 @@
 import Agenda from 'agenda';
 import { kebabCase } from 'lodash';
 
+import { convertEnumToArray } from '../../shared';
+
 import { MONGODB_URI } from './core/db/db';
 import logger from './core/logger/logger';
 
@@ -8,7 +10,11 @@ const connectionOpts = { db: { address: MONGODB_URI, collection: 'jobs' } };
 
 export const agenda = new Agenda(connectionOpts);
 
-const jobTypes = ['playlistPublishing'];
+export enum JobTypes {
+    playlistPublishing = 'playlistPublishing',
+    fetchResourcesForUser = 'fetchResourcesForUser',
+}
+const jobTypes = convertEnumToArray(JobTypes);
 
 jobTypes.forEach((type) => {
     const module = require(`./jobs/${ kebabCase(type)}`);
