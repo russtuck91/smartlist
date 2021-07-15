@@ -79,6 +79,8 @@ const useStyles = (theme: Theme): StyleRules => ({
         },
     },
     formAreaList: {
+        flex: '1 1 auto',
+
         '& > .MuiListItem-root': {
             padding: 0,
         },
