@@ -4,6 +4,7 @@ import expressAsyncHandler from 'express-async-handler';
 
 import { doAndRetryWithCurrentUser } from '../core/session/session-util';
 
+import spotifyCacheService from '../services/cache/spotify/spotify-cache-service';
 import spotifyService from '../services/spotify-service/spotify-service';
 
 @Controller('search')
@@ -18,5 +19,15 @@ export class SearchController {
 
             res.send(result.items);
         });
+    }
+
+    @Get('genre')
+    @Wrapper(expressAsyncHandler)
+    private async searchForGenre(req: Request, res: Response) {
+        const { text } = req.query;
+
+        const result = await spotifyCacheService.searchForGenre(text);
+
+        res.send(result);
     }
 }
