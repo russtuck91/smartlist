@@ -3,14 +3,15 @@ import { RemoveCircleOutline } from '@material-ui/icons';
 import { FormikProps } from 'formik';
 import * as React from 'react';
 
-import { getComparatorsForParam, isYearBetweenRule, isYearIsRule, isYearRule, PlaylistRule, RuleComparator, RuleParam } from '../../../../shared';
+import { getComparatorsForParam, isGenreRule, isYearBetweenRule, isYearIsRule, isYearRule, PlaylistRule, RuleComparator, RuleParam } from '../../../../shared';
 import { convertEnumToArray } from '../../../../shared/src/util/object-util';
 
 import { CheckboxField, DropdownField, TextField } from '../../core/forms/fields';
-import { AutocompleteField } from '../../core/forms/fields/autocomplete-field';
 import { YearPickerField } from '../../core/forms/fields/year-picker-field';
 
+import { GenreRuleAutocompleteField } from './genre-rule-autocomplete-field';
 import { getNewConditionByParam, PlaylistBuilderFormValues } from './models';
+import { RuleAutocompleteField } from './rule-autocomplete-field';
 
 
 const ruleParams = convertEnumToArray(RuleParam);
@@ -169,15 +170,20 @@ export class RawRuleField extends React.Component<FullProps> {
 
         if (
             rule.comparator === RuleComparator.Is &&
-            rule.param !== RuleParam.Genre &&
             rule.param !== RuleParam.Year
         ) {
+            if (isGenreRule(rule)) {
+                return (
+                    <GenreRuleAutocompleteField
+                        id={`${treeId}.value`}
+                        rule={rule}
+                    />
+                );
+            }
             return (
-                <AutocompleteField
+                <RuleAutocompleteField
                     id={`${treeId}.value`}
-                    value={rule.value}
-                    type={rule.param}
-                    required
+                    rule={rule}
                 />
             );
         }

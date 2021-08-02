@@ -1,12 +1,9 @@
-import { Avatar, ListItem, ListItemAvatar, ListItemText, TextField as MUITextField, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { TextField as MUITextField, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { Autocomplete, RenderOptionState } from '@material-ui/lab';
 import { debounce } from 'lodash';
 import * as React from 'react';
-import LazyLoad from 'react-lazyload';
 
-import { RuleParam, SearchItem } from '../../../../../shared';
-
-import { baseRequestUrl, requests } from '../../requests/requests';
+import { requests } from '../../requests/requests';
 
 import { asFormField, FormFieldProps } from '../as-form-field';
 
@@ -14,20 +11,23 @@ import { asFormField, FormFieldProps } from '../as-form-field';
 interface AutocompleteInputProps extends Partial<FormFieldProps> {
     id: string;
     value: any;
-    type: RuleParam;
+    getSearchUrl: (text: string) => string;
+    renderOption?: (option: any, state: RenderOptionState) => React.ReactNode;
+    getOptionLabel?: (option?: any) => string;
+    freeSolo?: boolean;
 }
 
 interface AutocompleteInputState {
     textFieldValue: string;
     loading: boolean;
-    options: SearchItem[];
+    options: any[];
 }
 
 const useStyles = (theme: Theme) => ({
     option: {
-        padding: 0,
+        padding: theme.spacing(1),
         '& > .MuiListItem-gutters': {
-            padding: theme.spacing(1),
+            padding: 0,
         },
         '& .MuiListItemAvatar-root': {
             minWidth: 'auto',
@@ -56,12 +56,15 @@ export class RawAutocompleteInput extends React.Component<FullProps, Autocomplet
     render() {
         return (
             <Autocomplete
-                {...this.props}
+                id={this.props.id}
+                value={this.props.value}
                 loading={this.state.loading}
                 options={this.state.options}
-                getOptionLabel={(option: SearchItem) => option.name}
-                renderOption={this.renderOption}
+                getOptionLabel={this.props.getOptionLabel}
+                renderOption={this.props.renderOption}
                 onChange={this.onChange}
+                classes={this.props.classes}
+                freeSolo={this.props.freeSolo}
                 renderInput={(params) => (
                     <MUITextField
                         {...params}
@@ -70,23 +73,6 @@ export class RawAutocompleteInput extends React.Component<FullProps, Autocomplet
                     />
                 )}
             />
-        );
-    }
-
-    private renderOption = (option: SearchItem, state: RenderOptionState) => {
-        return (
-            <ListItem>
-                {option.images && option.images[0] ? (
-                    <ListItemAvatar>
-                        <Avatar>
-                            <LazyLoad overflow>
-                                <img src={option.images[0].url} />
-                            </LazyLoad>
-                        </Avatar>
-                    </ListItemAvatar>
-                ) : null}
-                <ListItemText primary={option.name} />
-            </ListItem>
         );
     }
 
@@ -108,7 +94,8 @@ export class RawAutocompleteInput extends React.Component<FullProps, Autocomplet
         this.setState({
             loading: true,
         });
-        const result = await requests.get(`${baseRequestUrl}/search?type=${this.props.type}&text=${encodeURIComponent(text)}`);
+        const searchUrl = this.props.getSearchUrl(text);
+        const result = await requests.get(searchUrl);
         this.setState({
             loading: false,
             options: result,
