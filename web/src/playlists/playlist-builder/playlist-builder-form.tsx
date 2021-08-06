@@ -1,4 +1,5 @@
 import {
+    Avatar,
     Box, Button, CircularProgress,
     Container, Grid, IconButton, List,
     StyleRules,
@@ -11,11 +12,13 @@ import { Alert } from '@material-ui/lab';
 import { FormikProps } from 'formik';
 import { isEmpty, isEqual } from 'lodash';
 import * as React from 'react';
+import LazyLoad from 'react-lazyload';
 
 import { PlaylistRuleGroup, RuleGroupType } from '../../../../shared';
 
+import Ellipsis from '../../core/components/ellipsis';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
-import { ColumnSet } from '../../core/components/tables/models';
+import { ColumnConfig, ColumnFormatType, ColumnSet } from '../../core/components/tables/models';
 import { TableRenderer } from '../../core/components/tables/table-renderer';
 import { TextField } from '../../core/forms/fields';
 import { history } from '../../core/history/history';
@@ -26,6 +29,7 @@ import { Nullable } from '../../core/shared-models/types';
 
 import { PlaylistContainer } from '../playlist-container';
 
+import findImageAtLeastSize from './find-image-at-least-size';
 import { DEFAULT_NEW_CONDITION, PlaylistBuilderFormValues } from './models';
 import { RuleGroup } from './rule-group';
 import TabPanel from './tab-panel';
@@ -85,6 +89,20 @@ const useStyles = (theme: Theme): StyleRules => ({
             padding: 0,
         },
     },
+    previewArea: {
+        '& .MuiTable-root': {
+            tableLayout: 'fixed',
+        },
+        '& .MuiTableCell-root': {
+            width: '100%',
+            color: theme.palette.text.secondary,
+        },
+        '& .MuiAvatar-root': {
+            '& img': {
+                maxWidth: '100%',
+            },
+        },
+    },
 });
 
 type FullProps = PlaylistBuilderFormProps & WithStyles<typeof useStyles> & WithWidth;
@@ -96,9 +114,8 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     };
 
     private listPreviewColumnSet: ColumnSet<SpotifyApi.TrackObjectFull> = [
-        { title: 'Name', mapsToField: 'name' },
-        { title: 'Artist', mapsToField: 'artists[0].name' },
-        { title: 'Album', mapsToField: 'album.name' },
+        { title: 'Name', mapsToField: 'name', type: ColumnFormatType.TrackName },
+        { title: 'Album', mapsToField: 'album.name', type: ColumnFormatType.Ellipsis },
     ];
 
     async componentDidMount() {
@@ -279,7 +296,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     private renderPreviewArea() {
         return (
-            <Box flex="1 1 auto" display="flex" justifyContent="center">
+            <Box className={this.props.classes.previewArea} flex="1 1 auto" display="flex" justifyContent="center">
                 {this.renderPreviewContent()}
             </Box>
         );
@@ -301,10 +318,31 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 data={listPreview}
                 columns={this.listPreviewColumnSet}
 
+                customCellFormatter={this.cellFormatter}
                 stickyHeader
                 footerLabel="tracks"
             />
         );
+    }
+
+    private cellFormatter = (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: SpotifyApi.TrackObjectFull, rowIndex: number) => {
+        if (column.type === ColumnFormatType.TrackName) {
+            return (
+                <Grid container wrap="nowrap" spacing={1}>
+                    <Grid item>
+                        <Avatar variant="square">
+                            <LazyLoad overflow offset={5000}>
+                                <img src={findImageAtLeastSize(rowData.album.images, 40)?.url} />
+                            </LazyLoad>
+                        </Avatar>
+                    </Grid>
+                    <Grid item xs style={{ overflow: 'hidden' }}>
+                        <Typography color="textPrimary"><Ellipsis>{cellValue}</Ellipsis></Typography>
+                        <Ellipsis>{rowData.artists[0].name}</Ellipsis>
+                    </Grid>
+                </Grid>
+            );
+        }
     }
 
     private onClickBackButton() {

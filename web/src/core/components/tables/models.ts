@@ -11,4 +11,6 @@ export type ColumnSet<T = any> = ColumnConfig<T>[];
 export enum ColumnFormatType {
     Actions = 'Actions',
     DateTime = 'DateTime',
+    Ellipsis = 'Ellipsis',
+    TrackName = 'TrackName',
 }

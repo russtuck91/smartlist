@@ -8,6 +8,8 @@ import { PlaylistRule, SearchItem } from '../../../../shared';
 import { AutocompleteField } from '../../core/forms/fields/autocomplete-field';
 import { baseRequestUrl } from '../../core/requests/requests';
 
+import findImageAtLeastSize from './find-image-at-least-size';
+
 
 interface RuleAutocompleteFieldProps {
     id: string;
@@ -31,15 +33,13 @@ export class RuleAutocompleteField extends React.Component<RuleAutocompleteField
     private renderOption = (option: SearchItem, state: RenderOptionState) => {
         return (
             <ListItem>
-                {option.images && option.images[0] ? (
-                    <ListItemAvatar>
-                        <Avatar>
-                            <LazyLoad overflow>
-                                <img src={option.images[0].url} />
-                            </LazyLoad>
-                        </Avatar>
-                    </ListItemAvatar>
-                ) : null}
+                <ListItemAvatar>
+                    <Avatar>
+                        <LazyLoad overflow offset={5000}>
+                            <img src={findImageAtLeastSize(option.images || [], 40)?.url} />
+                        </LazyLoad>
+                    </Avatar>
+                </ListItemAvatar>
                 <ListItemText primary={option.name} />
             </ListItem>
         );

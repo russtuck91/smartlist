@@ -8,6 +8,8 @@ import * as React from 'react';
 
 import { toDateTimeFormat } from '../../utils/date-util';
 
+import Ellipsis from '../ellipsis';
+
 import { ColumnConfig, ColumnFormatType, ColumnSet } from './models';
 
 export interface TableRendererProps {
@@ -126,6 +128,9 @@ export class RawTableRenderer extends React.Component<FullProps> {
 
         if (column.type === ColumnFormatType.DateTime) {
             return toDateTimeFormat(cellValue);
+        }
+        if (column.type === ColumnFormatType.Ellipsis) {
+            return <Ellipsis>{cellValue}</Ellipsis>;
         }
 
         return cellValue;
