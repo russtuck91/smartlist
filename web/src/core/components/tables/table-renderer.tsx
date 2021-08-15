@@ -3,25 +3,29 @@ import {
     Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow,
     Theme, Typography, WithStyles, withStyles,
 } from '@material-ui/core';
-import { get } from 'lodash';
 import * as React from 'react';
 
-import { toDateTimeFormat } from '../../utils/date-util';
-
-import Ellipsis from '../ellipsis';
-
-import { ColumnConfig, ColumnFormatType, ColumnSet } from './models';
+import { ColumnConfig, ColumnSet, CustomCellFormatter, ExpandableRowOptions } from './models';
+import { RowRenderer } from './row-renderer';
 
 export interface TableRendererProps {
     data: any[];
     columns: ColumnSet;
 
-    customCellFormatter?: (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: any, rowIndex: number) => any;
+    customCellFormatter?: CustomCellFormatter;
     stickyHeader?: boolean;
     footerLabel?: React.ReactNode;
+    expandableRows?: ExpandableRowOptions;
 }
 
 const useStyles = (theme: Theme) => ({
+    expansionToggleColumn: {
+        '&.MuiTableCell-root': {
+            '&.MuiTableCell-root': {
+                width: '3em',
+            },
+        },
+    },
     footer: {
         '& .MuiTablePagination-toolbar': {
             paddingRight: theme.spacing(3),
@@ -58,12 +62,15 @@ export class RawTableRenderer extends React.Component<FullProps> {
     }
 
     private renderHead() {
-        const { columns } = this.props;
+        const { columns, expandableRows, classes } = this.props;
 
         return (
             <TableHead>
                 <TableRow>
                     {columns.map(this.renderHeadColumn)}
+                    {expandableRows && (
+                        <TableCell className={classes.expansionToggleColumn} />
+                    )}
                 </TableRow>
             </TableHead>
         );
@@ -97,43 +104,17 @@ export class RawTableRenderer extends React.Component<FullProps> {
     }
 
     private renderRow = (datum: any, rowIndex: number) => {
-        const { columns } = this.props;
-
         return (
-            <TableRow key={rowIndex}>
-                {columns.map((column, columnIndex) => {
-                    const cellValue = get(datum, column.mapsToField);
-                    const formattedCellValue = this.cellFormatter(cellValue, column, columnIndex, datum, rowIndex);
-                    return (
-                        <TableCell key={columnIndex}>{formattedCellValue}</TableCell>
-                    );
-                })}
-            </TableRow>
+            <RowRenderer
+                key={rowIndex}
+                row={datum}
+                rowIndex={rowIndex}
+                columns={this.props.columns}
+
+                customCellFormatter={this.props.customCellFormatter}
+                expandableRows={this.props.expandableRows}
+            />
         );
-    }
-
-    private cellFormatter(cellValue: any, column: ColumnConfig, columnIndex: number, rowData: any, rowIndex: number) {
-        const { customCellFormatter } = this.props;
-
-        if (customCellFormatter) {
-            const customFormatResult = customCellFormatter(cellValue, column, columnIndex, rowData, rowIndex);
-            if (customFormatResult != null) {
-                return customFormatResult;
-            }
-        }
-
-        if (cellValue === null || cellValue === undefined) {
-            return null;
-        }
-
-        if (column.type === ColumnFormatType.DateTime) {
-            return toDateTimeFormat(cellValue);
-        }
-        if (column.type === ColumnFormatType.Ellipsis) {
-            return <Ellipsis>{cellValue}</Ellipsis>;
-        }
-
-        return cellValue;
     }
 
     private renderFooter() {

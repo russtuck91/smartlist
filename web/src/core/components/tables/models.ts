@@ -14,3 +14,12 @@ export enum ColumnFormatType {
     Ellipsis = 'Ellipsis',
     TrackName = 'TrackName',
 }
+
+
+export type CustomCellFormatter = (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: any, rowIndex: number) => any;
+
+
+export interface ExpandableRowOptions {
+    renderExpandedRow: (rowData: any) => React.ReactNode;
+}
+
