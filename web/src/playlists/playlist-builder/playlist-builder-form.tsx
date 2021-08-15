@@ -33,6 +33,7 @@ import findImageAtLeastSize from './find-image-at-least-size';
 import { DEFAULT_NEW_CONDITION, PlaylistBuilderFormValues } from './models';
 import { RuleGroup } from './rule-group';
 import TabPanel from './tab-panel';
+import { TrackRowDetails } from './track-row-details';
 
 
 export interface PlaylistBuilderFormProps {
@@ -114,8 +115,8 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     };
 
     private listPreviewColumnSet: ColumnSet<SpotifyApi.TrackObjectFull> = [
-        { title: 'Name', mapsToField: 'name', type: ColumnFormatType.TrackName },
-        { title: 'Album', mapsToField: 'album.name', type: ColumnFormatType.Ellipsis },
+        { title: 'Name', mapsToField: 'name', type: ColumnFormatType.TrackName, width: '60%' },
+        { title: 'Album', mapsToField: 'album.name', type: ColumnFormatType.Ellipsis, width: '40%' },
     ];
 
     async componentDidMount() {
@@ -321,6 +322,9 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 customCellFormatter={this.cellFormatter}
                 stickyHeader
                 footerLabel="tracks"
+                expandableRows={{
+                    renderExpandedRow: this.renderExpandedRow,
+                }}
             />
         );
     }
@@ -343,6 +347,14 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 </Grid>
             );
         }
+    }
+
+    private renderExpandedRow(rowData: SpotifyApi.TrackObjectFull) {
+        return (
+            <TrackRowDetails
+                track={rowData}
+            />
+        );
     }
 
     private onClickBackButton() {

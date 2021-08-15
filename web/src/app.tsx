@@ -22,6 +22,11 @@ declare module '@material-ui/core/styles/createMuiTheme' {
         colors: typeof customColors;
     }
 }
+declare module '@material-ui/core/styles/createPalette' {
+    interface TypeBackground {
+        secondary: string;
+    }
+}
 
 export class App extends Component {
     render() {
@@ -29,6 +34,9 @@ export class App extends Component {
             palette: {
                 type: 'dark',
                 primary: teal,
+                background: {
+                    secondary: '#191919',
+                },
             },
             overrides: {
                 MuiInputBase: {
@@ -47,6 +55,10 @@ export class App extends Component {
         theme.overrides!.MuiTableCell!.head = {
             ...theme.overrides!.MuiTableCell!.head,
             backgroundColor: theme.palette.background.default,
+        };
+        theme.overrides!.MuiTableCell!.sizeSmall = {
+            ...theme.overrides!.MuiTableCell!.sizeSmall,
+            padding: `${theme.spacing(0.75)}px ${theme.spacing(1.5)}px`,
         };
 
         return (

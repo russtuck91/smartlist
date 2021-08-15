@@ -3,6 +3,7 @@ export interface ColumnConfig<T = any> {
     title: string;
     mapsToField: keyof T|''|string;
     type?: ColumnFormatType;
+    width?: string;
 }
 
 export type ColumnSet<T = any> = ColumnConfig<T>[];

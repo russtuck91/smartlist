@@ -78,7 +78,7 @@ export class RawTableRenderer extends React.Component<FullProps> {
 
     private renderHeadColumn(column: ColumnConfig, index: number) {
         return (
-            <TableCell key={index}>{column.title}</TableCell>
+            <TableCell key={index} style={{ width: column.width }}>{column.title}</TableCell>
         );
     }
 
