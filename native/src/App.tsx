@@ -15,7 +15,10 @@ declare const global: {HermesInternal: null | Record<string, unknown>};
 const App = () => {
     return (
         <>
-            <StatusBar barStyle="dark-content" />
+            <StatusBar
+                backgroundColor="#009688"
+                barStyle="light-content"
+            />
             <SafeAreaView style={styles.safeAreaView}>
                 {global.HermesInternal == null ? null : (
                     <View style={styles.engine}>
