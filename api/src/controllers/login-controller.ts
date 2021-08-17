@@ -1,6 +1,7 @@
 import { Controller, Get } from '@overnightjs/core';
 import { Request, Response } from 'express';
 
+import { userLoggedInEvent } from '../core/analytics/analytics-utils';
 import logger from '../core/logger/logger';
 import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
@@ -35,7 +36,7 @@ export class LoginController {
     private generateRandomString = (N: number) => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2);
 
     @Get('/')
-    private getSpotifyLoginUrl(req: Request, res: Response) {
+    getSpotifyLoginUrl(req: Request, res: Response) {
         const state = this.generateRandomString(16);
         res.cookie(this.STATE_KEY, state);
 
@@ -45,7 +46,7 @@ export class LoginController {
 
 
     @Get('callback')
-    private async processSpotifyAuth(req: SessionRequest, res: Response) {
+    async processSpotifyAuth(req: SessionRequest, res: Response) {
         const { code, state } = req.query;
         const storedState = req.cookies ? req.cookies[this.STATE_KEY] : null;
 
@@ -76,6 +77,8 @@ export class LoginController {
 
                 agenda.now<FetchResourcesForUserParams>(JobTypes.fetchResourcesForUser, { userId: user.id });
 
+                userLoggedInEvent();
+
                 // pass the token to the frontend
                 res.redirect(`${baseUiUrl}/login/callback/${sessionID}`);
             } catch (err) {
@@ -88,7 +91,7 @@ export class LoginController {
 
 
     @Get('logout')
-    private async logout(req: Request, res: Response) {
+    async logout(req: Request, res: Response) {
         await removeSessionTokenFromCurrentUser();
 
         res.send();
