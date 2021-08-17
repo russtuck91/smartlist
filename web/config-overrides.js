@@ -9,6 +9,8 @@ module.exports = override(
         path.resolve('../shared/src'),
     ]),
     addWebpackPlugin(
-        new GenerateSW(),
+        new GenerateSW({
+            skipWaiting: true,
+        }),
     ),
 );
