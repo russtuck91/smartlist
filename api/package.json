@@ -12,6 +12,7 @@
     "restoredb": "ts-node ./scripts/restore-database-wrapper.ts"
   },
   "dependencies": {
+    "@analytics/google-analytics": "^0.5.3",
     "@overnightjs/core": "^1.6.12",
     "@overnightjs/logger": "^1.1.10",
     "@seiren/mongoutils": "^1.0.2",
@@ -19,6 +20,7 @@
     "@types/spotify-api": "0.0.2",
     "@types/spotify-web-api-node": "^4.0.1",
     "agenda": "^3.0.0",
+    "analytics": "^0.7.13",
     "body-parser": "1.18.3",
     "connect-mongo": "^3.2.0",
     "cookie-parser": "~1.4.3",
