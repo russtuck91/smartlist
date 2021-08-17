@@ -8,9 +8,10 @@ module.exports = override(
         path.resolve('src'),
         path.resolve('../shared/src'),
     ]),
-    addWebpackPlugin(
-        new GenerateSW({
-            skipWaiting: true,
-        }),
-    ),
+    process.env.NODE_ENV !== 'development' ?
+        addWebpackPlugin(
+            new GenerateSW({
+                skipWaiting: true,
+            }),
+        ) : null,
 );
