@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "private": true,
   "main": "build/api/src/start.js",
   "scripts": {
