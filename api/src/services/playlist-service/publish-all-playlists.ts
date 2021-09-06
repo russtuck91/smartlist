@@ -11,7 +11,12 @@ import preValidatePublishPlaylist from './pre-validate-publish-playlist';
 async function publishAllPlaylists() {
     logger.info('>>>> Entering publishAllPlaylists()');
 
-    const playlists = await playlistRepo.find();
+    const playlists = await playlistRepo.find({
+        conditions: {},
+        sort: {
+            lastPublished: 1,
+        },
+    });
     for (const playlist of playlists) {
         try {
             const user = await getUserById(playlist.userId);
