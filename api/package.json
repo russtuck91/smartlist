@@ -18,7 +18,7 @@
     "@seiren/mongoutils": "^1.0.2",
     "@types/node": "^13.1.6",
     "@types/spotify-api": "0.0.2",
-    "@types/spotify-web-api-node": "^4.0.1",
+    "@types/spotify-web-api-node": "^5.0.0",
     "agenda": "^3.0.0",
     "analytics": "^0.7.13",
     "body-parser": "1.18.3",
@@ -40,7 +40,7 @@
     "mongtype": "^6.0.1",
     "morgan": "~1.9.0",
     "rimraf": "^3.0.2",
-    "spotify-web-api-node": "^4.0.0",
+    "spotify-web-api-node": "^5.0.0",
     "ts-node": "^8.6.1",
     "winston": "^3.3.3"
   },

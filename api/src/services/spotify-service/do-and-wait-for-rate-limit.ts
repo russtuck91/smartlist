@@ -10,13 +10,12 @@ async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
         logger.debug('error found in doAndWaitForRateLimit', e.statusCode);
         if (e.statusCode === 429) {
             logger.info('Rate limit error occurred, will wait and try again');
-            // e.headers not yet passed from spotify-web-api-node
             const retryAfterSec = e.headers && e.headers['retry-after'] ? parseInt(e.headers['retry-after']) : 3;
             // wait x seconds
             await sleep(retryAfterSec * 1000);
 
             // run bodyFn again
-            return await bodyFn();
+            return await doAndWaitForRateLimit(bodyFn);
         }
 
         logger.debug(e);

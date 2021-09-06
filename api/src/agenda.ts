@@ -27,7 +27,9 @@ if (jobTypes.length) {
         await agenda.start();
         logger.info('Started agenda');
 
-        await agenda.every('3 hours', 'playlistPublishing');
+        if (process.env.NODE_ENV !== 'development') {
+            await agenda.every('3 hours', 'playlistPublishing');
+        }
 
         // await agenda.now('playlistPublishing');
     })();

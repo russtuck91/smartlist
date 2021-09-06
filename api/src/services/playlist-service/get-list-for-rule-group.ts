@@ -27,12 +27,10 @@ async function getListForRuleGroup(
             }),
         );
 
-        logger.debug('Query Results, OR path, ');
-        // logger.debug(listOfTrackResults);
-
         // Get "OR" union
         const results = union(...listOfTrackResults);
 
+        logger.debug(`<<<< Exiting getListForRuleGroup, via the "OR" path. Found ${results.length} tracks for rules`);
         return results;
     } else {
         // Send batches of PlaylistRules to getListForRules, send individual PlaylistRuleGroups
@@ -62,16 +60,10 @@ async function getListForRuleGroup(
         );
         listsOfTrackResults.push(...nestedRuleGroupResults);
 
-        logger.debug('Query Results, AND path...');
-        // logger.debug(listsOfTrackResults[0][0]);
-        // logger.debug(listsOfTrackResults[1][0]);
-
-        if (listsOfTrackResults.length <= 1) {
-            return listsOfTrackResults[0];
-        }
-
         // Get "AND" intersection
         const results = getIntersectionOfTrackLists(listsOfTrackResults);
+
+        logger.debug(`<<<< Exiting getListForRuleGroup, via the "AND" path. Found ${results.length} tracks for rules`);
         return results;
     }
 }

@@ -15,7 +15,7 @@ async function createNewPlaylist(playlistName: string, userId: ObjectId) {
 
     const description = `Created by SmartList${ process.env.NODE_ENV === 'development' ? ' [DEV]' : ''}`;
 
-    const playlist = await spotifyApi.createPlaylist(user.username, playlistName, {
+    const playlist = await spotifyApi.createPlaylist(playlistName, {
         description: description,
     });
 
