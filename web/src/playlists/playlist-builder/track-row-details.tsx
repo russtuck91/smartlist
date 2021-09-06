@@ -1,4 +1,5 @@
 import { Box, CircularProgress, Grid, Paper, Theme, WithStyles, withStyles } from '@material-ui/core';
+import moment from 'moment';
 import React from 'react';
 
 import { TrackDetails } from '../../../../shared';
@@ -71,6 +72,10 @@ export class RawTrackRowDetails extends React.Component<FullProps, TrackRowDetai
                     </Box>
                 </Grid>
                 <Grid item>
+                    <div>
+                        <strong>Year: </strong>
+                        {moment(this.props.track.album.release_date).format('YYYY')}
+                    </div>
                     <div>
                         <strong>Tempo: </strong>
                         {details.audioFeatures.tempo}
