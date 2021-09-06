@@ -24,7 +24,7 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
     } catch (e) {
         logger.debug('error found in doAndRetry', e.statusCode);
         if (e.statusCode === 401) {
-            logger.debug('accessToken has expired, will refresh accessToken and try again');
+            logger.info('accessToken has expired, will refresh accessToken and try again');
             const newAccessToken = await refreshAccessToken(user);
 
             if (newAccessToken) {
