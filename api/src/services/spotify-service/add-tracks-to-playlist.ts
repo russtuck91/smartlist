@@ -2,6 +2,7 @@ import { chunk } from 'lodash';
 
 import logger from '../../core/logger/logger';
 
+import doAndWaitForRateLimit from './do-and-wait-for-rate-limit';
 import initSpotifyApi from './init-spotify-api';
 
 
@@ -16,7 +17,9 @@ async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi.TrackO
     const spotifyApi = await initSpotifyApi(accessToken);
 
     batchedUris.map(async (uriBatch) => {
-        await spotifyApi.addTracksToPlaylist(playlistId, uriBatch);
+        await doAndWaitForRateLimit(async () =>
+            await spotifyApi.addTracksToPlaylist(playlistId, uriBatch),
+        );
     });
 }
 

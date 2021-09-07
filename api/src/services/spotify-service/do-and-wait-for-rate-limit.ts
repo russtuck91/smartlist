@@ -18,7 +18,7 @@ async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
             return await doAndWaitForRateLimit(bodyFn);
         }
 
-        logger.debug(e);
+        logger.debug(`${e.statusCode} ${e.body.error?.message}`);
         throw e;
     }
 }

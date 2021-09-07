@@ -1,5 +1,6 @@
 import logger from '../../core/logger/logger';
 
+import doAndWaitForRateLimit from './do-and-wait-for-rate-limit';
 import initSpotifyApi from './init-spotify-api';
 
 
@@ -15,7 +16,9 @@ async function updatePlaylistDetails(playlistId: string, options: ChangePlaylist
 
     const spotifyApi = await initSpotifyApi(accessToken);
 
-    await spotifyApi.changePlaylistDetails(playlistId, options);
+    await doAndWaitForRateLimit(async () => {
+        await spotifyApi.changePlaylistDetails(playlistId, options);
+    });
 }
 
 export default updatePlaylistDetails;

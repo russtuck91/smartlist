@@ -32,7 +32,7 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
             }
         }
 
-        logger.debug(e);
+        logger.debug(`${e.statusCode} ${e.body.error?.message}`);
         throw e;
     }
 }

@@ -36,7 +36,7 @@ async function getFullPagedResults(fn: (options: SpPaginationOptions) => Promise
                 logger.debug('404 error, exiting');
                 return result;
             }
-            logger.debug(e);
+            logger.debug(`${e.statusCode} ${e.body.error?.message}`);
             throw e;
         }
     }
