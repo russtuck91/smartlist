@@ -15,8 +15,8 @@ async function getRequest(url: string): Promise<any> {
     return await makeDirectRequest('GET', url);
 }
 
-async function postRequest(url: string, body?: any) {
-    return await makeDirectRequest('POST', url, body);
+async function postRequest(url: string, body?: any, headers?: Record<string, string>) {
+    return await makeDirectRequest('POST', url, body, headers);
 }
 
 async function putRequest(url: string, body: any) {
@@ -27,7 +27,7 @@ async function deleteRequest(url: string, body?: any) {
     return await makeDirectRequest('DELETE', url, body);
 }
 
-async function makeDirectRequest(method: string, url: string, body?: any) {
+async function makeDirectRequest(method: string, url: string, body?: any, headers?: Record<string, string>) {
     const state = store.getState();
 
     const response: Response = await fetch(url, {
@@ -36,6 +36,7 @@ async function makeDirectRequest(method: string, url: string, body?: any) {
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${state.session.sessionToken}`,
+            ...headers,
         },
     });
     if (!response.ok) {
