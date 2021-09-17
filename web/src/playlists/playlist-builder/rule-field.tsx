@@ -6,8 +6,7 @@ import * as React from 'react';
 import { getComparatorsForParam, isGenreRule, isYearBetweenRule, isYearIsRule, isYearRule, PlaylistRule, RuleComparator, RuleParam } from '../../../../shared';
 import { convertEnumToArray } from '../../../../shared/src/util/object-util';
 
-import { CheckboxField, DropdownField, TextField } from '../../core/forms/fields';
-import { YearPickerField } from '../../core/forms/fields/year-picker-field';
+import { CheckboxField, DropdownField, TextField, YearPickerField } from '../../core/forms/fields';
 
 import { GenreRuleAutocompleteField } from './genre-rule-autocomplete-field';
 import { getNewConditionByParam, PlaylistBuilderFormValues } from './models';

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { GenreRule } from '../../../../shared';
 
-import { AutocompleteField } from '../../core/forms/fields/autocomplete-field';
+import { AutocompleteField } from '../../core/forms/fields';
 import { baseRequestUrl } from '../../core/requests/requests';
 
 
