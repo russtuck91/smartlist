@@ -1,4 +1,5 @@
 import { Field, FormikProps } from 'formik';
+import _ from 'lodash';
 import * as React from 'react';
 
 export interface FormFieldProps {
@@ -28,10 +29,13 @@ export function asFormField<T extends FormFieldProps>(
                     <Field
                         name={this.props.id}
                         render={({ field, form }) => {
+                            const fieldTouched = _.get(form.touched, field.name);
+                            const fieldError = _.get(form.errors, field.name);
                             return (
                                 <WrappedComponent
                                     {...field}
                                     setFieldValue={form.setFieldValue}
+                                    error={fieldTouched && fieldError}
                                     {...this.props}
                                 />
                             );

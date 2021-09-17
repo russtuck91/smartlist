@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { FormControl, FormLabel, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import React from 'react';
 
@@ -10,7 +10,7 @@ interface ToggleButtonInputProps extends FormFieldProps {
     options: string[];
 }
 
-const useStyles = (theme: Theme) => ({
+const useStyles = (theme: Theme): StyleRules => ({
     formControl: {
         width: '100%',
     },
@@ -19,6 +19,7 @@ const useStyles = (theme: Theme) => ({
     },
     toggleButtonOption: {
         flex: '1 1 auto',
+        textTransform: 'none',
     },
 });
 
@@ -42,6 +43,7 @@ export class RawToggleButtonInput extends React.Component<FullProps> {
                     value={this.props.value}
                     onChange={this.onChange}
                     exclusive
+                    size="small"
                 >
                     {this.props.options.map((option, index) => (
                         <ToggleButton

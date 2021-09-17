@@ -19,8 +19,11 @@ export class TextInput extends React.Component<TextInputProps> {
                 id={this.props.id}
                 value={this.props.value}
                 onChange={this.props.onChange}
+                onBlur={this.props.onBlur}
                 label={this.props.label}
                 required={this.props.required}
+                error={!!this.props.error}
+                helperText={this.props.error}
 
                 variant={this.props.variant as any}
                 multiline={this.props.multiline}
