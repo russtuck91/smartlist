@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { asFormField, FormFieldProps } from '../as-form-field';
 
-interface CheckboxInputProps {
+interface CheckboxInputProps extends Partial<FormFieldProps> {
     id: string;
     value?: boolean;
     onChange?: FormikProps<any>['handleChange'];
@@ -18,8 +18,10 @@ export class CheckboxInput extends React.Component<CheckboxInputProps> {
                 label={this.props.label}
                 control={(
                     <Checkbox
-                        {...this.props}
+                        id={this.props.id}
                         checked={this.props.value}
+                        onChange={this.props.onChange}
+                        disabled={this.props.disabled}
                     />
                 )}
             />
