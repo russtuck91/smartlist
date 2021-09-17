@@ -1,5 +1,6 @@
+import { sleep } from '../../../../shared';
+
 import logger from '../../core/logger/logger';
-import { sleep } from '../../core/utils/utils';
 
 
 async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
