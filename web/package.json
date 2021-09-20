@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "0.5.5",
+  "version": "0.5.10",
   "private": true,
   "proxy": "http://localhost:8080/",
   "dependencies": {
