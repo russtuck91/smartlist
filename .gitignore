@@ -100,3 +100,6 @@ typings/
 
 # DB build upgrades
 api/dbdump
+
+# certificates
+*.pem
