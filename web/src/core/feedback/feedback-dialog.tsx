@@ -12,6 +12,8 @@ import { FeedbackFormValues, FeedbackType } from './models';
 interface FeedbackDialogProps {
     isOpen: boolean;
     onClose: () => void;
+    dialogTitle?: React.ReactNode;
+    initialValues?: Partial<FeedbackFormValues>;
 }
 
 interface FeedbackDialogState {
@@ -41,6 +43,7 @@ class FeedbackDialog extends React.Component<FeedbackDialogProps, FeedbackDialog
                         isOpen={this.props.isOpen}
                         onClose={this.props.onClose}
                         submitSuccess={this.state.submitSuccess}
+                        dialogTitle={this.props.dialogTitle}
                     />
                 )}
             </Formik>
@@ -61,6 +64,7 @@ class FeedbackDialog extends React.Component<FeedbackDialogProps, FeedbackDialog
             email: this.state.userInfo?.email || '',
             type: FeedbackType.General,
             message: '',
+            ...this.props.initialValues,
         };
     }
 

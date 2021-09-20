@@ -18,9 +18,14 @@ interface FeedbackDialogFormProps {
     isOpen: boolean;
     onClose: () => void;
     submitSuccess: boolean;
+    dialogTitle?: React.ReactNode;
 }
 
 class FeedbackDialogForm extends React.Component<FeedbackDialogFormProps> {
+    static defaultProps: Partial<FeedbackDialogFormProps> = {
+        dialogTitle: 'Send Feedback',
+    };
+
     componentDidUpdate(prevProps: FeedbackDialogFormProps) {
         if (prevProps.isOpen && !this.props.isOpen) {
             this.onModalClose();
@@ -37,7 +42,7 @@ class FeedbackDialogForm extends React.Component<FeedbackDialogFormProps> {
                 open={this.props.isOpen}
                 onClose={this.props.onClose}
                 onConfirm={this.props.formik.submitForm}
-                title="Feedback"
+                title={this.props.dialogTitle}
                 body={this.renderFeedbackDialogBody()}
 
                 confirmButtonText={this.renderConfirmButtonText()}
@@ -70,7 +75,7 @@ class FeedbackDialogForm extends React.Component<FeedbackDialogFormProps> {
                         label="Message"
                         multiline
                         variant="outlined"
-                        rows={4}
+                        rows={6}
                         required
                     />
                 </Grid>

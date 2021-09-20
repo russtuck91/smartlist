@@ -14,6 +14,7 @@ import { LoginCallback } from './login/login-callback';
 import { Logout } from './login/logout';
 import { Navigation } from './navigation/navigation';
 import { PlaylistContainer } from './playlists/playlist-container';
+import ShakeFeedback from './shake-feedback/shake-feedback';
 
 interface AppContentsProps {}
 
@@ -38,6 +39,7 @@ export class RawAppContents extends React.Component<FullProps> {
         return (
             <div className={this.props.classes.root}>
                 <Navigation />
+                <ShakeFeedback />
                 <div className={this.props.classes.mainContents}>
                     <Switch>
                         <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
