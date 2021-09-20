@@ -3,7 +3,7 @@ import { RemoveCircleOutline } from '@material-ui/icons';
 import { FormikProps } from 'formik';
 import * as React from 'react';
 
-import { getComparatorsForParam, isGenreRule, isYearBetweenRule, isYearIsRule, isYearRule, PlaylistRule, RuleComparator, RuleParam } from '../../../../shared';
+import { getComparatorsForParam, isGenreRule, isTempoRule, isYearBetweenRule, isYearIsRule, isYearRule, PlaylistRule, RuleComparator, RuleParam } from '../../../../shared';
 import { convertEnumToArray } from '../../../../shared/src/util/object-util';
 
 import { CheckboxField, DropdownField, TextField, YearPickerField } from '../../core/forms/fields';
@@ -226,6 +226,13 @@ export class RawRuleField extends React.Component<FullProps> {
             if (newComparator === RuleComparator.Is && isYearBetweenRule(prevRule)) {
                 modifiedRule.value = prevRule.value.start || prevRule.value.end;
             }
+        }
+
+        if (isTempoRule(modifiedRule) && !isTempoRule(prevRule)) {
+            modifiedRule.value = {
+                start: '',
+                end: '',
+            };
         }
 
         return modifiedRule;
