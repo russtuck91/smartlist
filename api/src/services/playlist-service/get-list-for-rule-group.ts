@@ -10,7 +10,7 @@ import getListForRules from './get-list-for-rules';
 
 async function getListForRuleGroup(
     ruleGroup: PlaylistRuleGroup,
-    accessToken: string|undefined,
+    accessToken: string,
     currentBatchOfSongs: SpotifyApi.TrackObjectFull[]|undefined,
 ): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug('>>>> Entering getListForRuleGroup()');

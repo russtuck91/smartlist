@@ -7,7 +7,7 @@ import logger from '../../core/logger/logger';
 import getListForRuleGroup from './get-list-for-rule-group';
 
 
-async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
+async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug('>>>> Entering populateListByRules()');
 
     const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(

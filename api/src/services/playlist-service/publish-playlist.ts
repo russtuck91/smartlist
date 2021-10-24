@@ -8,7 +8,7 @@ import populateListByRules from './populate-list-by-rules';
 import updatePlaylist from './update-playlist';
 
 
-async function publishPlaylist(playlist: Playlist, accessToken: string|undefined) {
+async function publishPlaylist(playlist: Playlist, accessToken: string) {
     logger.info(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
 
     const list = await populateListByRules(playlist.rules, accessToken);

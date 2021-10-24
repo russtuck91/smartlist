@@ -11,7 +11,7 @@ import getTracksForRule from './get-tracks-for-rule';
 
 async function getListForRules(
     rules: PlaylistRule[],
-    accessToken: string|undefined,
+    accessToken: string,
     currentBatchOfSongs: SpotifyApi.TrackObjectFull[]|undefined,
 ): Promise<SpotifyApi.TrackObjectFull[]> {
     logger.debug('>>>> Entering getListForRules()');
