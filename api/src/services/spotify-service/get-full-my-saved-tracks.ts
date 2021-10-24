@@ -5,7 +5,7 @@ import initSpotifyApi from './init-spotify-api';
 import { SpResponse } from './types';
 
 
-async function getFullMySavedTracks(accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
+async function getFullMySavedTracks(accessToken: string|undefined, maxPages?: number): Promise<SpotifyApi.SavedTrackObject[]> {
     logger.debug('>>>> Entering getFullMySavedTracks()');
 
     const spotifyApi = await initSpotifyApi(accessToken);
@@ -14,10 +14,10 @@ async function getFullMySavedTracks(accessToken: string|undefined): Promise<Spot
         const apiResponse: SpResponse<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>> = await spotifyApi.getMySavedTracks(options);
 
         return apiResponse.body;
-    });
+    }, maxPages);
     if (!result) return [];
-    const savedTracks: SpotifyApi.TrackObjectFull[] = result.items.map((item) => item.track);
-    return savedTracks;
+    const savedTrackObjects: SpotifyApi.SavedTrackObject[] = result.items;
+    return savedTrackObjects;
 }
 
 export default getFullMySavedTracks;

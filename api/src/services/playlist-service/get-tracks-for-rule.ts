@@ -1,11 +1,12 @@
 import { isAlbumIsRule, isArtistIsRule, isPlaylistTypeRule, PlaylistRule, RuleParam } from '../../../../shared';
 
+import spotifyCacheService from '../cache/spotify/spotify-cache-service';
 import spotifyService from '../spotify-service/spotify-service';
 
 
-async function getTracksForRule(rule: PlaylistRule, accessToken: string|undefined): Promise<(SpotifyApi.TrackObjectFull[] | null)> {
+async function getTracksForRule(rule: PlaylistRule, accessToken: string): Promise<(SpotifyApi.TrackObjectFull[] | null)> {
     if (rule.param === RuleParam.Saved) {
-        return await spotifyService.getFullMySavedTracks(accessToken);
+        return await spotifyCacheService.getFullMySavedTracks(accessToken);
     }
     if (isPlaylistTypeRule(rule)) {
         return await spotifyService.getTracksForPlaylist(rule.value.id, accessToken);

@@ -1,7 +1,6 @@
 import logger from '../../core/logger/logger';
 
 import spotifyCacheService from '../cache/spotify/spotify-cache-service';
-import spotifyService from '../spotify-service/spotify-service';
 
 import getUserById from './get-user-by-id';
 
@@ -11,7 +10,7 @@ async function fetchResourcesForUser(userId: string) {
     const user = await getUserById(userId);
     const { accessToken } = user;
 
-    const tracks = await spotifyService.getFullMySavedTracks(accessToken);
+    const tracks = await spotifyCacheService.getFullMySavedTracks(accessToken);
 
     const albumIds: string[] = [];
     const artistIds: string[] = [];
