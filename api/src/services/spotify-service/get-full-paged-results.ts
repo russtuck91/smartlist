@@ -5,14 +5,19 @@ interface SpPaginationOptions {
     limit?: number;
 }
 
-async function getFullPagedResults(fn: (options: SpPaginationOptions) => Promise<SpotifyApi.PagingObject<any>|undefined>) {
+type PagedResultsSourceMethod = (options: SpPaginationOptions) => Promise<SpotifyApi.PagingObject<any>|undefined>
+
+async function getFullPagedResults(fn: PagedResultsSourceMethod, maxPages?: number) {
     logger.debug('>>>> Entering getFullPagedResults()');
     let result: SpotifyApi.PagingObject<any>|undefined;
     let offset = 0;
     const batchSize = 50;
 
     // while number fetched is less than total reported, send request
-    while (!result || result.total > result.items.length) {
+    while (
+        (!maxPages || (offset / batchSize) < maxPages) &&
+        (!result || result.total > result.items.length)
+    ) {
         try {
             const options = { limit: batchSize, offset: offset };
             const response = await fn(options);
