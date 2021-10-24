@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import httpContext from 'express-http-context';
 
 import userRepo from '../../repositories/user-repository';
+import { isSpotifyError } from '../../services/spotify-service/types';
 import { getCurrentUser } from '../../services/user-service';
 
 import logger from '../logger/logger';
@@ -23,16 +24,20 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
         return await bodyFn(user.accessToken);
     } catch (e) {
         logger.debug('error found in doAndRetry', e.statusCode);
-        if (e.statusCode === 401) {
-            logger.info('accessToken has expired, will refresh accessToken and try again');
-            const newAccessToken = await refreshAccessToken(user);
+        if (isSpotifyError(e)) {
+            if (e.statusCode === 401) {
+                logger.info('accessToken has expired, will refresh accessToken and try again');
+                const newAccessToken = await refreshAccessToken(user);
 
-            if (newAccessToken) {
-                return await bodyFn(newAccessToken);
+                if (newAccessToken) {
+                    return await bodyFn(newAccessToken);
+                }
             }
-        }
 
-        logger.debug(`${e.statusCode} ${e.body.error?.message}`);
+            logger.debug(`${e.statusCode} ${e.body.error.message}`);
+        } else {
+            logger.debug(e);
+        }
         throw e;
     }
 }
