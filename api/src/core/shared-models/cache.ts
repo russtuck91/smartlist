@@ -7,3 +7,8 @@ export interface SavedCacheRecord<T> {
 export interface CacheableResource {
     id: string;
 }
+
+export interface ChronoCacheRecord {
+    userId: string;
+    tracks: SpotifyApi.SavedTrackObject[];
+}
