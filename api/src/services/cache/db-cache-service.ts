@@ -43,7 +43,7 @@ class DbCacheService<Resource extends CacheableResource> {
         // donotawait - send new fetched items to DB cache
         this.repo.insertManyResources(fetchedItems);
 
-        logger.debug(`<<< Exiting DbCacheService.getItems() after fetching ${fetchedItems.length} items`);
+        logger.debug(`<<<< Exiting DbCacheService.getItems() after fetching ${fetchedItems.length} items`);
         return [ ...resourceItemsFromDb, ...fetchedItems ];
     }
 
