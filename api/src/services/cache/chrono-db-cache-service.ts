@@ -31,15 +31,19 @@ class ChronoDbCacheService {
         // Get user id from access token
         const user = await getUserByAccessToken(accessToken);
         const userId = user?.id;
+        logger.debug(`Found user of userId: ${userId}`);
 
         // Get cached list from DB
         const cachedList = await this.repo.findOne({
             userId: userId,
         });
+        logger.debug(`Found cachedList of length ${cachedList?.tracks.length}`);
 
         // Truncate cachedList to same as freshFirstPage and compare
         const truncatedCachedList = cachedList?.tracks.slice(0, freshFirstPage.length);
+        logger.debug(`Truncated cache list is ${truncatedCachedList?.length} items big, and fresh first page is ${freshFirstPage.length} items big`);
         const isCachedEqual = _.isEqual(freshFirstPage, truncatedCachedList);
+        logger.debug(`Determined if the cache list is valid: ${!!cachedList && isCachedEqual}`);
         if (cachedList && isCachedEqual) {
             // If equal, cachedList is valid, return it
             logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after valid list found in cache');
