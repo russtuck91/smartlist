@@ -8,4 +8,7 @@ export interface User extends DBObject {
     // Spotify
     accessToken: string;
     refreshToken: string;
+
+    // Feature flags
+    useNewCacheFeature: boolean;
 }
