@@ -21,17 +21,26 @@ class ChronoDbCacheService {
     getFullList = async (accessToken: string): Promise<SpotifyApi.TrackObjectFull[]> => {
         logger.debug('>>>> Entering ChronoDbCacheService.getFullList()');
 
+        // Get user id from access token
+        const user = await getUserByAccessToken(accessToken);
+        const userId = user?.id;
+        logger.debug(`Found user of userId: ${userId}`);
+
+        // FEATURE FLAG: useNewCacheFeature
+        // This block should be removed when feature is ready. Also move user block back down below freshFirstPage.length === 0
+        if (!user || !user.useNewCacheFeature) {
+            const freshResults = await this.sourceMethod(accessToken);
+            logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after user does not have feature enabled and fetching fresh list');
+            return freshResults.map((i) => i.track);
+        }
+        // END FEATURE FLAG
+
         // Get first page from sourceMethod
         const freshFirstPage = await this.sourceMethod(accessToken, 1);
         if (freshFirstPage.length === 0) {
             logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after fresh list had no entries');
             return freshFirstPage.map((i) => i.track);
         }
-
-        // Get user id from access token
-        const user = await getUserByAccessToken(accessToken);
-        const userId = user?.id;
-        logger.debug(`Found user of userId: ${userId}`);
 
         // Get cached list from DB
         const cachedList = await this.repo.findOne({
