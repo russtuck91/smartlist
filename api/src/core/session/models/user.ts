@@ -10,5 +10,5 @@ export interface User extends DBObject {
     refreshToken: string;
 
     // Feature flags
-    useNewCacheFeature: boolean;
+    suppressNewCacheFeature: boolean;
 }

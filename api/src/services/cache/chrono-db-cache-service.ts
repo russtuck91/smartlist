@@ -26,9 +26,9 @@ class ChronoDbCacheService {
         const userId = user?.id;
         logger.debug(`Found user of userId: ${userId}`);
 
-        // FEATURE FLAG: useNewCacheFeature
+        // FEATURE FLAG: suppressNewCacheFeature
         // This block should be removed when feature is ready. Also move user block back down below freshFirstPage.length === 0
-        if (!user || !user.useNewCacheFeature) {
+        if (!user || user.suppressNewCacheFeature) {
             const freshResults = await this.sourceMethod(accessToken);
             logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after user does not have feature enabled and fetching fresh list');
             return freshResults.map((i) => i.track);
