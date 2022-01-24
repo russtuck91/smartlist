@@ -71,6 +71,12 @@ class DbCacheService<Resource extends CacheableResource> {
         this.repo.bulkUpdateResources(fetchedItems);
         logger.debug(`<<<< Exiting DbCacheService.revalidateCacheItems() after updating ${fetchedItems.length} items`);
     }
+
+    setItems = async (items: Resource[]) => {
+        logger.debug('>>>> Entering DbCacheService.setItems()');
+        await this.repo.bulkUpdateResources(items);
+        logger.debug(`<<<< Exiting DbCacheService.setItems after setting ${items.length} items`);
+    }
 }
 
 export default DbCacheService;
