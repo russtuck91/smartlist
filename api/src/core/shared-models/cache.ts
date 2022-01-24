@@ -10,5 +10,10 @@ export interface CacheableResource {
 
 export interface ChronoCacheRecord {
     userId: string;
-    tracks: SpotifyApi.SavedTrackObject[];
+    tracks: UserSavedTrackReference[];
+}
+
+export interface UserSavedTrackReference {
+    added_at: string;
+    trackId: string;
 }
