@@ -7,6 +7,7 @@ import getFullMySavedTracks from './get-full-my-saved-tracks';
 import getFullSearchResults from './get-full-search-results';
 import getMe from './get-me';
 import getTrackById from './get-track-by-id';
+import getTracksById from './get-tracks-by-id';
 import getTracksForAlbums from './get-tracks-for-albums';
 import getTracksForArtists from './get-tracks-for-artists';
 import getTracksForPlaylist from './get-tracks-for-playlist';
@@ -33,6 +34,7 @@ class SpotifyService {
     getArtists = getArtists;
     getAudioFeatures = getAudioFeatures;
     getTrackById = getTrackById;
+    getTracksById = getTracksById;
     getTracksForAlbums = getTracksForAlbums;
     getTracksForArtists = getTracksForArtists;
     getTracksForPlaylist = getTracksForPlaylist;
