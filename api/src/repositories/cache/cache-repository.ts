@@ -28,6 +28,7 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
             updateOne: {
                 filter: { 'item.id': cacheItem.item.id },
                 update: { $set: cacheItem },
+                upsert: true,
             },
         }));
         const result = await collection.bulkWrite(operations, { ordered: true });
