@@ -10,7 +10,7 @@ class SpotifyCacheService {
     getFullMySavedTracks = userSavedTracksCacheService.getFullList;
 
     getTracks = trackCacheService.getItems;
-    setTracks = trackCacheService.setItems;
+    setTracks = trackCacheService.setItems!;
     getAlbums = albumCacheService.getItems;
     getArtists = artistCacheService.getItems;
     getAudioFeatures = audioFeaturesCacheService.getItems;

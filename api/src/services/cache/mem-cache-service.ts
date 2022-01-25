@@ -7,6 +7,7 @@ import { SourceMethod } from './types';
 class MemCacheService<Resource extends CacheableResource> {
     private store: Record<string, Resource> = {};
     private sourceMethod: SourceMethod<Resource>;
+    setItems?: (items: Resource[]) => Promise<void>;
 
     constructor(sourceMethod: SourceMethod<Resource>) {
         this.sourceMethod = sourceMethod;
