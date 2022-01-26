@@ -14,7 +14,7 @@ import { isEmpty, isEqual } from 'lodash';
 import * as React from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { PlaylistRuleGroup, RuleGroupType } from '../../../../shared';
+import { PlaylistRuleGroup, RuleGroupType, Track } from '../../../../shared';
 
 import Ellipsis from '../../core/components/ellipsis';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
@@ -29,7 +29,6 @@ import { Nullable } from '../../core/shared-models/types';
 
 import { PlaylistContainer } from '../playlist-container';
 
-import findImageAtLeastSize from './find-image-at-least-size';
 import { DEFAULT_NEW_CONDITION, PlaylistBuilderFormValues } from './models';
 import { RuleGroup } from './rule-group';
 import TabPanel from './tab-panel';
@@ -43,7 +42,7 @@ export interface PlaylistBuilderFormProps {
 }
 
 interface PlaylistBuilderFormState {
-    listPreview?: Nullable<SpotifyApi.TrackObjectFull[]>;
+    listPreview?: Nullable<Track[]>;
     selectedTab: number;
 }
 
@@ -114,9 +113,9 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         selectedTab: 0,
     };
 
-    private listPreviewColumnSet: ColumnSet<SpotifyApi.TrackObjectFull> = [
+    private listPreviewColumnSet: ColumnSet<Track> = [
         { title: 'Name', mapsToField: 'name', type: ColumnFormatType.TrackName, width: '60%' },
-        { title: 'Album', mapsToField: 'album.name', type: ColumnFormatType.Ellipsis, width: '40%' },
+        { title: 'Album', mapsToField: 'albumName', type: ColumnFormatType.Ellipsis, width: '40%' },
     ];
 
     async componentDidMount() {
@@ -329,27 +328,27 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         );
     }
 
-    private cellFormatter = (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: SpotifyApi.TrackObjectFull, rowIndex: number) => {
+    private cellFormatter = (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: Track, rowIndex: number) => {
         if (column.type === ColumnFormatType.TrackName) {
             return (
                 <Grid container wrap="nowrap" spacing={1}>
                     <Grid item>
                         <Avatar variant="square">
                             <LazyLoad overflow offset={5000}>
-                                <img src={findImageAtLeastSize(rowData.album.images, 40)?.url} />
+                                <img src={rowData.albumThumbnail} />
                             </LazyLoad>
                         </Avatar>
                     </Grid>
                     <Grid item xs style={{ overflow: 'hidden' }}>
                         <Typography color="textPrimary"><Ellipsis>{cellValue}</Ellipsis></Typography>
-                        <Ellipsis>{rowData.artists[0].name}</Ellipsis>
+                        <Ellipsis>{rowData.artistNames[0]}</Ellipsis>
                     </Grid>
                 </Grid>
             );
         }
     }
 
-    private renderExpandedRow(rowData: SpotifyApi.TrackObjectFull) {
+    private renderExpandedRow(rowData: Track) {
         return (
             <TrackRowDetails
                 track={rowData}

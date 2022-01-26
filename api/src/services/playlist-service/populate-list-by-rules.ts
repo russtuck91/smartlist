@@ -1,16 +1,16 @@
 import { union } from 'lodash';
 
-import { PlaylistRuleGroup } from '../../../../shared';
+import { PlaylistRuleGroup, Track } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
 
 import getListForRuleGroup from './get-list-for-rule-group';
 
 
-async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string): Promise<SpotifyApi.TrackObjectFull[]> {
+async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: string): Promise<Track[]> {
     logger.debug('>>>> Entering populateListByRules()');
 
-    const results: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
+    const results: (Track[])[] = await Promise.all(
         rules.map((rule) => {
             return getListForRuleGroup(rule, accessToken, undefined);
         }),

@@ -2,13 +2,13 @@ import { Box, CircularProgress, Grid, Paper, Theme, WithStyles, withStyles } fro
 import moment from 'moment';
 import React from 'react';
 
-import { TrackDetails } from '../../../../shared';
+import { Track, TrackDetails } from '../../../../shared';
 
 import { baseRequestUrl, requests } from '../../core/requests/requests';
 
 
 interface TrackRowDetailsProps {
-    track: SpotifyApi.TrackObjectFull;
+    track: Track;
 }
 
 interface TrackRowDetailsState {
@@ -74,7 +74,7 @@ export class RawTrackRowDetails extends React.Component<FullProps, TrackRowDetai
                 <Grid item>
                     <div>
                         <strong>Year: </strong>
-                        {moment(this.props.track.album.release_date).format('YYYY')}
+                        {moment(this.props.track.albumReleaseDate).format('YYYY')}
                     </div>
                     <div>
                         <strong>Tempo: </strong>

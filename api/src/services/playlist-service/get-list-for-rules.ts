@@ -1,6 +1,8 @@
-import { PlaylistRule, RuleParam } from '../../../../shared';
+import { PlaylistRule, RuleParam, Track } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
+
+import { mapToTrack } from '../../mappers/spotify/track-object-full-mapper';
 
 import spotifyService from '../spotify-service/spotify-service';
 
@@ -12,8 +14,8 @@ import getTracksForRule from './get-tracks-for-rule';
 async function getListForRules(
     rules: PlaylistRule[],
     accessToken: string,
-    currentBatchOfSongs: SpotifyApi.TrackObjectFull[]|undefined,
-): Promise<SpotifyApi.TrackObjectFull[]> {
+    currentBatchOfSongs: Track[]|undefined,
+): Promise<Track[]> {
     logger.debug('>>>> Entering getListForRules()');
 
     // Separate rules by those that can optionally be filtered from a list (Artist, Album, Genre, etc)
@@ -38,7 +40,7 @@ async function getListForRules(
         }
 
         // Else, we are NOT working from a batch, then fetch tracks
-        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = [];
+        const listsOfTrackResults: (Track[])[] = [];
 
         // Send special rules through specific APIs, others through getFullSearchResults
         for (let i = rules.length - 1; i >= 0; i--) {
@@ -52,7 +54,7 @@ async function getListForRules(
 
         const searchResults = await spotifyService.getFullSearchResults(rules, accessToken);
         if (searchResults) {
-            listsOfTrackResults.push(searchResults.items);
+            listsOfTrackResults.push(searchResults.items.map(mapToTrack));
         }
 
         // Union the results
@@ -60,9 +62,9 @@ async function getListForRules(
 
     } else {
         // Else, do fetch for each fetch-required rule
-        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = (await Promise.all(
+        const listsOfTrackResults: (Track[])[] = (await Promise.all(
             requiresOwnFetch.map((rule) => getTracksForRule(rule, accessToken)),
-        )).filter((list): list is SpotifyApi.TrackObjectFull[] => !!list);
+        )).filter((list): list is Track[] => !!list);
         // Union the results
         const unionOfTrackResults = getIntersectionOfTrackLists(listsOfTrackResults);
         // And filter by the filter-able rules

@@ -3,12 +3,10 @@ import { RenderOptionState } from '@material-ui/lab';
 import React from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { PlaylistRule, SearchItem } from '../../../../shared';
+import { findImageAtLeastSize, PlaylistRule, SearchItem } from '../../../../shared';
 
 import { AutocompleteField } from '../../core/forms/fields';
 import { baseRequestUrl } from '../../core/requests/requests';
-
-import findImageAtLeastSize from './find-image-at-least-size';
 
 
 interface RuleAutocompleteFieldProps {

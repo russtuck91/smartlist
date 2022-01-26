@@ -1,6 +1,6 @@
 import { union } from 'lodash';
 
-import { isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup, RuleGroupType } from '../../../../shared';
+import { isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup, RuleGroupType, Track } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
 
@@ -11,8 +11,8 @@ import getListForRules from './get-list-for-rules';
 async function getListForRuleGroup(
     ruleGroup: PlaylistRuleGroup,
     accessToken: string,
-    currentBatchOfSongs: SpotifyApi.TrackObjectFull[]|undefined,
-): Promise<SpotifyApi.TrackObjectFull[]> {
+    currentBatchOfSongs: Track[]|undefined,
+): Promise<Track[]> {
     logger.debug('>>>> Entering getListForRuleGroup()');
 
     if (ruleGroup.type === RuleGroupType.Or) {
@@ -45,7 +45,7 @@ async function getListForRuleGroup(
             }
         });
 
-        const listsOfTrackResults: (SpotifyApi.TrackObjectFull[])[] = [];
+        const listsOfTrackResults: (Track[])[] = [];
 
         // Do straight rules before nestedRuleGroups, then send results into call for nestedRuleGroups
         if (straightRules.length > 0) {
@@ -53,7 +53,7 @@ async function getListForRuleGroup(
             listsOfTrackResults.push(straightRuleResults);
         }
 
-        const nestedRuleGroupResults: (SpotifyApi.TrackObjectFull[])[] = await Promise.all(
+        const nestedRuleGroupResults: (Track[])[] = await Promise.all(
             nestedRuleGroups.map((rule) => {
                 return getListForRuleGroup(rule, accessToken, listsOfTrackResults[0]);
             }),

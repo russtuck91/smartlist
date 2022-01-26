@@ -24,7 +24,8 @@ async function publishPlaylist(playlist: Playlist, accessToken: string) {
     }
 
     // Add tracks to playlist
-    await spotifyService.addTracksToPlaylist(spotifyPlaylistId, list, accessToken);
+    const trackUris = list.map((i) => i.uri);
+    await spotifyService.addTracksToPlaylist(spotifyPlaylistId, trackUris, accessToken);
 
     const playlistDetailsUpdates = {
         name: playlist.name,

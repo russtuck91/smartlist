@@ -15,9 +15,9 @@ async function fetchResourcesForUser(userId: string) {
     const albumIds: string[] = [];
     const artistIds: string[] = [];
     tracks.map((track) => {
-        albumIds.push(track.album.id);
-        track.artists.map((artist) => {
-            artistIds.push(artist.id);
+        albumIds.push(track.albumId);
+        track.artistIds.map((aId) => {
+            artistIds.push(aId);
         });
     });
 

@@ -6,9 +6,8 @@ import doAndWaitForRateLimit from './do-and-wait-for-rate-limit';
 import initSpotifyApi from './init-spotify-api';
 
 
-async function addTracksToPlaylist(playlistId: string, tracks: SpotifyApi.TrackObjectFull[], accessToken: string|undefined) {
+async function addTracksToPlaylist(playlistId: string, trackUris: string[], accessToken: string|undefined) {
     logger.debug(`>>>> Entering addTracksToPlaylist(playlistId = ${playlistId}`);
-    const trackUris = tracks.map((track) => track.uri);
 
     // Spotify API requires batches of 100 max
     const batchSize = 100;

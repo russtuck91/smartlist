@@ -1,9 +1,11 @@
 import _ from 'lodash';
 
+import { Track } from '../../../../shared';
+
 import logger from '../../core/logger/logger';
 import { UserSavedTrackReference } from '../../core/shared-models';
 
-import { mapToTrackObjectFull, mapToUserSavedTrackReference } from '../../mappers/spotify/saved-track-object-mapper';
+import { mapToTrack, mapToUserSavedTrackReference } from '../../mappers/spotify/saved-track-object-mapper';
 import ChronoCacheRepository from '../../repositories/cache/chrono-cache-repository';
 
 import { getUserByAccessToken } from '../user-service';
@@ -22,7 +24,7 @@ class ChronoDbCacheService {
         this.sourceMethod = sourceMethod;
     }
 
-    getFullList = async (accessToken: string): Promise<SpotifyApi.TrackObjectFull[]> => {
+    getFullList = async (accessToken: string): Promise<Track[]> => {
         logger.debug('>>>> Entering ChronoDbCacheService.getFullList()');
 
         // Get user id from access token
@@ -34,7 +36,7 @@ class ChronoDbCacheService {
         if (!user || user.suppressNewCacheFeature) {
             const freshResults = await this.sourceMethod(accessToken);
             logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after user does not have feature enabled and fetching fresh list');
-            return freshResults.map(mapToTrackObjectFull);
+            return freshResults.map(mapToTrack);
         }
         // END FEATURE FLAG
 
@@ -42,7 +44,7 @@ class ChronoDbCacheService {
         const freshFirstPage = await this.sourceMethod(accessToken, 1);
         if (freshFirstPage.length === 0) {
             logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after fresh list had no entries');
-            return freshFirstPage.map(mapToTrackObjectFull);
+            return freshFirstPage.map(mapToTrack);
         }
 
         // Get cached list from DB
@@ -70,21 +72,19 @@ class ChronoDbCacheService {
 
         // Else, get full results from sourceMethod
         const freshResults = await this.sourceMethod(accessToken);
-        const trackResults = freshResults.map(mapToTrackObjectFull);
 
         // donotawait - save new results to cache
         this.storeFreshResultsInCache(userId, freshResults);
 
         logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after fetching fresh list');
-        return trackResults;
+        return freshResults.map(mapToTrack);
     }
 
     private async storeFreshResultsInCache(userId: string, freshResults: SpotifyApi.SavedTrackObject[]) {
         const freshUserSavedTrackRef: UserSavedTrackReference[] = freshResults.map(mapToUserSavedTrackReference);
         this.repo.updateTracksForUserId(userId, freshUserSavedTrackRef);
 
-        const trackResults = freshResults.map(mapToTrackObjectFull);
-        spotifyCacheService.setTracks(trackResults);
+        spotifyCacheService.setTracks(freshResults.map(mapToTrack));
     }
 }
 

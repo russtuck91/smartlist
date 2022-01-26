@@ -10,7 +10,9 @@ import {
     isTrackContainsRule, isTrackIsRule, isTrackRule,
     isYearBetweenRule, isYearIsRule, isYearRule,
     PlaylistRule, RuleComparator,
-    TempoRule, TrackRule, YearRule,
+    TempoRule,
+    Track,
+    TrackRule, YearRule,
 } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
@@ -18,7 +20,7 @@ import logger from '../../core/logger/logger';
 import spotifyCacheService from '../cache/spotify/spotify-cache-service';
 
 
-async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules: PlaylistRule[], accessToken: string|undefined) {
+async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], accessToken: string|undefined) {
     let albumMap = {};
     let artistMap = {};
     let audioFeaturesMap = {};
@@ -28,9 +30,9 @@ async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules:
         const allAlbumIds: string[] = [];
         const allArtistIds: string[] = [];
         trackList.map((track) => {
-            allAlbumIds.push(track.album.id);
-            track.artists.map((artist) => {
-                allArtistIds.push(artist.id);
+            allAlbumIds.push(track.albumId);
+            track.artistIds.map((aId) => {
+                allArtistIds.push(aId);
             });
         });
 
@@ -54,7 +56,7 @@ async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules:
             if (!agg) { return agg; }
 
             if (isArtistRule(thisFilter)) {
-                return filterTrackByArtist(track, thisFilter);
+                return !!filterTrackByArtist(track, thisFilter);
             }
 
             if (isAlbumRule(thisFilter)) {
@@ -85,29 +87,31 @@ async function filterListOfSongs(trackList: SpotifyApi.TrackObjectFull[], rules:
     return filteredList;
 }
 
-function filterTrackByArtist(track: SpotifyApi.TrackObjectFull, thisFilter: ArtistRule) {
-    return track.artists.some((artist) => {
-        if (isArtistIsRule(thisFilter)) {
-            return artist.id === thisFilter.value.id;
-        }
-        if (isArtistContainsRule(thisFilter)) {
-            return artist.name.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
-        }
-        logger.warn('Did not find matching filter logic for stored filter value');
-        logger.debug(thisFilter);
-    });
+function filterTrackByArtist(track: Track, thisFilter: ArtistRule) {
+    if (isArtistIsRule(thisFilter)) {
+        return track.artistIds.some((id) => {
+            return id === thisFilter.value.id;
+        });
+    }
+    if (isArtistContainsRule(thisFilter)) {
+        return track.artistNames.some((name) => {
+            return name.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
+        });
+    }
+    logger.warn('Did not find matching filter logic for stored filter value');
+    logger.debug(thisFilter);
 }
 
-function filterTrackByAlbum(track: SpotifyApi.TrackObjectFull, thisFilter: AlbumRule) {
+function filterTrackByAlbum(track: Track, thisFilter: AlbumRule) {
     if (isAlbumIsRule(thisFilter)) {
-        return track.album.id === thisFilter.value.id;
+        return track.albumId === thisFilter.value.id;
     }
     if (isAlbumContainsRule(thisFilter)) {
-        return track.album.name.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
+        return track.albumName.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
     }
 }
 
-function filterTrackByTrack(track: SpotifyApi.TrackObjectFull, thisFilter: TrackRule) {
+function filterTrackByTrack(track: Track, thisFilter: TrackRule) {
     if (isTrackIsRule(thisFilter)) {
         return track.id === thisFilter.value.id;
     }
@@ -116,9 +120,9 @@ function filterTrackByTrack(track: SpotifyApi.TrackObjectFull, thisFilter: Track
     }
 }
 
-function filterTrackByGenre(track: SpotifyApi.TrackObjectFull, thisFilter: GenreRule, albumMap: Record<string, SpotifyApi.AlbumObjectFull>, artistMap: Record<string, SpotifyApi.ArtistObjectFull>) {
-    const fullAlbum = albumMap[track.album.id];
-    const fullArtists = track.artists.map((artist) => artistMap[artist.id]);
+function filterTrackByGenre(track: Track, thisFilter: GenreRule, albumMap: Record<string, SpotifyApi.AlbumObjectFull>, artistMap: Record<string, SpotifyApi.ArtistObjectFull>) {
+    const fullAlbum = albumMap[track.albumId];
+    const fullArtists = track.artistIds.map((id) => artistMap[id]);
 
     let allGenres: string[] = [];
     if (fullAlbum) {
@@ -141,8 +145,8 @@ function filterTrackByGenre(track: SpotifyApi.TrackObjectFull, thisFilter: Genre
     return shouldPass;
 }
 
-function filterTrackByYear(track: SpotifyApi.TrackObjectFull, thisFilter: YearRule) {
-    const trackMoment = moment(track.album.release_date);
+function filterTrackByYear(track: Track, thisFilter: YearRule) {
+    const trackMoment = moment(track.albumReleaseDate);
     if (isYearIsRule(thisFilter)) {
         return trackMoment.format('YYYY') === thisFilter.value;
     }
@@ -151,7 +155,7 @@ function filterTrackByYear(track: SpotifyApi.TrackObjectFull, thisFilter: YearRu
     }
 }
 
-function filterTrackByTempo(track: SpotifyApi.TrackObjectFull, thisFilter: TempoRule, audioFeatures: SpotifyApi.AudioFeaturesObject) {
+function filterTrackByTempo(track: Track, thisFilter: TempoRule, audioFeatures: SpotifyApi.AudioFeaturesObject) {
     const { start, end } = thisFilter.value;
     return (!start || audioFeatures.tempo > parseFloat(start)) && (!end || audioFeatures.tempo < parseFloat(end));
 }
