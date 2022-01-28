@@ -357,7 +357,11 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     }
 
     private onClickBackButton() {
-        history.push(RouteLookup.playlists.base);
+        if (history.location.key) {
+            history.goBack();
+        } else {
+            history.push(RouteLookup.playlists.base);
+        }
     }
 
     private onTabChange = (event: React.ChangeEvent, newValue: number) => {
