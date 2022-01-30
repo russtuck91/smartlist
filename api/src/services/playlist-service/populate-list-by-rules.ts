@@ -18,7 +18,7 @@ async function populateListByRules(rules: PlaylistRuleGroup[], accessToken: stri
 
     const unionResult = union(...results);
 
-    logger.debug('<<<< Exiting populateListByRules()');
+    logger.debug(`<<<< Exiting populateListByRules(), the playlist will have ${unionResult.length} songs`);
     return unionResult;
 }
 

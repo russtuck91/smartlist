@@ -18,8 +18,7 @@ class MemCacheService<Resource extends CacheableResource> {
 
         // Any IDs not found in memory need to be fetched
         const idsToFetch = ids.filter((id) => !this.store[id]);
-        logger.debug(`# items requested: ${ids.length}`);
-        logger.debug(`# items not found in memory, will be fetched: ${idsToFetch.length}`);
+        logger.debug(`Total requested: ${ids.length} /// Not in memory, will be fetched: ${idsToFetch.length}`);
 
         if (idsToFetch.length > 0) {
             // Fetch remaining IDs from source method

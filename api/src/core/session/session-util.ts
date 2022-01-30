@@ -23,10 +23,9 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
     try {
         return await bodyFn(user.accessToken);
     } catch (e) {
-        logger.debug('error found in doAndRetry', e.statusCode);
         if (isSpotifyError(e)) {
             if (e.statusCode === 401) {
-                logger.info('accessToken has expired, will refresh accessToken and try again');
+                logger.info('doAndRetry: accessToken has expired, will refresh accessToken and try again');
                 const newAccessToken = await refreshAccessToken(user);
 
                 if (newAccessToken) {
@@ -34,7 +33,7 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
                 }
             }
 
-            logger.debug(`${e.statusCode} ${e.body.error.message}`);
+            logger.debug(`doAndRetry error: ${e.statusCode} ${e.body.error.message}`);
         } else {
             logger.debug(e);
         }

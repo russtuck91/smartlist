@@ -29,7 +29,6 @@ class ChronoDbCacheService {
 
         // Get user id from access token
         const user = await getUserByAccessToken(accessToken);
-        logger.debug(`Found user of userId: ${user?.id}`);
 
         // FEATURE FLAG: suppressNewCacheFeature
         // This block should be removed when feature is ready. Also move user block back down below freshFirstPage.length === 0
@@ -52,15 +51,12 @@ class ChronoDbCacheService {
         const cachedList = await this.repo.findOne({
             userId: userId,
         });
-        logger.debug(`Found cachedList of length ${cachedList?.tracks.length}`);
 
         if (cachedList) {
             // Truncate cachedList to same as freshFirstPage and compare
             const truncatedCachedList = cachedList.tracks.slice(0, freshFirstPage.length);
-            logger.debug(`Truncated cache list is ${truncatedCachedList.length} items big, and fresh first page is ${freshFirstPage.length} items big`);
             const freshFirstPageIds: UserSavedTrackReference[] = freshFirstPage.map(mapToUserSavedTrackReference);
             const isCachedEqual = _.isEqual(freshFirstPageIds, truncatedCachedList);
-            logger.debug(`Determined if the cache list is valid: ${isCachedEqual}`);
             if (isCachedEqual) {
                 // If equal, cachedList is valid, return it
                 const cachedListIds = cachedList.tracks.map((i) => i.trackId);

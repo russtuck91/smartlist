@@ -12,7 +12,6 @@ async function publishPlaylist(playlist: Playlist, accessToken: string) {
     logger.info(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
 
     const list = await populateListByRules(playlist.rules, accessToken);
-    logger.debug(`publishing playlist will have ${list.length} songs`);
 
     let spotifyPlaylistId = playlist.spotifyPlaylistId;
     if (spotifyPlaylistId && !playlist.deleted) {

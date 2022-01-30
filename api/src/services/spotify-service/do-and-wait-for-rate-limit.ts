@@ -8,9 +8,8 @@ async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
     try {
         return await bodyFn();
     } catch (e) {
-        logger.debug('error found in doAndWaitForRateLimit', e.statusCode);
         if (e.statusCode === 429) {
-            logger.info('Rate limit error occurred, will wait and try again');
+            logger.info('doAndWaitForRateLimit: Rate limit error occurred, will wait and try again');
             const retryAfterSec = e.headers && e.headers['retry-after'] ? parseInt(e.headers['retry-after']) : 3;
             // wait x seconds
             await sleep(retryAfterSec * 1000);
@@ -19,7 +18,7 @@ async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
             return await doAndWaitForRateLimit(bodyFn);
         }
 
-        logger.debug(`${e.statusCode} ${e.body.error?.message}`);
+        logger.debug(`doAndWaitForRateLimit error: ${e.statusCode} ${e.body.error?.message}`);
         throw e;
     }
 }

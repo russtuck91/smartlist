@@ -36,12 +36,11 @@ async function getFullPagedResults(fn: PagedResultsSourceMethod, maxPages?: numb
 
             offset += batchSize;
         } catch (e) {
-            logger.debug('error in getFullPagedResults iteration', e.statusCode);
             if (e.statusCode === 404) {
-                logger.debug('404 error, exiting');
+                logger.debug('getFullPagedResults iteration received 404 error, exiting');
                 return result;
             }
-            logger.debug(`${e.statusCode} ${e.body.error?.message}`);
+            logger.debug(`getFullPagedResults iteration error: ${e.statusCode} ${e.body.error?.message}`);
             throw e;
         }
     }
