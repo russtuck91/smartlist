@@ -3,6 +3,7 @@ import React from 'react';
 
 import { sleep } from '../../../../shared';
 
+import logger from '../logger/logger';
 import { baseRequestUrl, requests } from '../requests/requests';
 
 import FeedbackDialogForm from './feedback-dialog-form';
@@ -51,12 +52,16 @@ class FeedbackDialog extends React.Component<FeedbackDialogProps, FeedbackDialog
     }
 
     private async getUserInfo() {
-        const url = `${baseRequestUrl}/users/me`;
-        const userInfo = await requests.get(url);
+        try {
+            const url = `${baseRequestUrl}/users/me`;
+            const userInfo = await requests.get(url);
 
-        this.setState({
-            userInfo: userInfo,
-        });
+            this.setState({
+                userInfo: userInfo,
+            });
+        } catch (e) {
+            logger.error('Problem getting user info for feedback dialog.', e);
+        }
     }
 
     private getDefaultFormValues(): FeedbackFormValues {
