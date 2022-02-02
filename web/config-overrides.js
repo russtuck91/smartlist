@@ -12,6 +12,7 @@ module.exports = override(
         addWebpackPlugin(
             new GenerateSW({
                 skipWaiting: true,
+                clientsClaim: true,
             }),
         ) : null,
 );
