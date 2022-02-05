@@ -14,17 +14,15 @@ export default function TabPanel(props: TabPanelProps) {
     return (
         <Box
             role="tabpanel"
-            display={isShown ? 'flex' : undefined}
+            display={isShown ? 'flex' : 'none'}
             flex="1 1 auto"
             justifyContent="center"
             overflow="auto"
             hidden={!isShown}
         >
-            {isShown && (
-                <Box display="flex" flex="1 1 auto">
-                    {children}
-                </Box>
-            )}
+            <Box display="flex" flex="1 1 auto">
+                {children}
+            </Box>
         </Box>
     );
 }
