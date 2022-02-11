@@ -1,5 +1,5 @@
 import { Collapse, TableCell, Theme, WithStyles, withStyles } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { ExpandableRowOptions } from './models';
 

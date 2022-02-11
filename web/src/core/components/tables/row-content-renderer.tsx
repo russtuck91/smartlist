@@ -2,7 +2,7 @@ import { IconButton, TableCell, Theme, WithStyles, withStyles } from '@material-
 import { MoreVert } from '@material-ui/icons';
 import classNames from 'classnames';
 import { get } from 'lodash';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { toDateTimeFormat } from '../../utils';
 

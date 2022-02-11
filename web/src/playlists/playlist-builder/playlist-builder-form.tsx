@@ -18,8 +18,8 @@ import { PlaylistRuleGroup, RuleGroupType, Track } from '../../../../shared';
 
 import Ellipsis from '../../core/components/ellipsis';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
+import { VirtualTableRenderer } from '../../core/components/tables';
 import { ColumnConfig, ColumnFormatType, ColumnSet } from '../../core/components/tables/models';
-import { TableRenderer } from '../../core/components/tables/table-renderer';
 import { TextField } from '../../core/forms/fields';
 import { history } from '../../core/history/history';
 import logger from '../../core/logger/logger';
@@ -314,12 +314,11 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         }
 
         return (
-            <TableRenderer
+            <VirtualTableRenderer
                 data={listPreview}
                 columns={this.listPreviewColumnSet}
 
                 customCellFormatter={this.cellFormatter}
-                stickyHeader
                 footerLabel="tracks"
                 expandableRows={{
                     renderExpandedRow: this.renderExpandedRow,
