@@ -310,7 +310,11 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         }
 
         if (listPreview === null) {
-            return <Alert severity="error">There was a problem loading the playlist. Please try again.</Alert>;
+            return (
+                <Box>
+                    <Alert severity="error">There was a problem loading the playlist. Please try again.</Alert>
+                </Box>
+            );
         }
 
         return (
