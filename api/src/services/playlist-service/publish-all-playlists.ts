@@ -26,8 +26,8 @@ async function publishAllPlaylists() {
                 }, user);
             }
         } catch (e) {
-            logger.info('error publishing playlist', playlist.id.toString());
-            logger.error(e);
+            logger.info(`error publishing playlist ${playlist.id.toString()}`);
+            logger.error(JSON.stringify(e));
         }
     }
 }

@@ -19,8 +19,10 @@ import { BaseController } from './base-controller';
 const MongoStore = connectMongo(session);
 
 process.on('unhandledRejection', (error: any, promise) => {
-    logger.info('Unhandled Rejection at: Promise', promise);
-    logger.error('Error:', error);
+    logger.info('Unhandled Rejection at: Promise');
+    console.log(promise);
+    logger.debug(`${error.statusCode} - ${error.body?.error?.message}`);
+    logger.error(JSON.stringify(error));
     console.dir(error.stack);
     // throw error;
 });

@@ -12,7 +12,7 @@ export default function(agenda: Agenda) {
         try {
             await publishAllPlaylists();
         } catch (e) {
-            logger.error('error in playlistPublishing', e);
+            logger.error(`error in playlistPublishing ${JSON.stringify(e)}`);
         }
     });
 }
