@@ -26,7 +26,7 @@ process.on('unhandledRejection', (error: any, promise) => {
 });
 
 class AppServer extends Server {
-    private readonly SERVER_STARTED = 'Example server started on port: ';
+    private readonly SERVER_STARTED = 'Smartlist server started on port: ';
 
     constructor() {
         super(true);
