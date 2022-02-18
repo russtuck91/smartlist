@@ -63,7 +63,7 @@ class AppServer extends Server {
 
     private errorHandler(error: any, req: Request, res: Response, next: NextFunction) {
         logger.debug('>>>> Entering errorHandler()');
-        logger.error(error);
+        logger.error(JSON.stringify(error));
 
         res.sendStatus(error.statusCode);
     }
