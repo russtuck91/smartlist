@@ -4,6 +4,7 @@ import React from 'react';
 import { isMobile } from 'react-device-detect';
 import { Route, Switch } from 'react-router';
 
+import { ErrorBoundary } from './core/errors/error-boundary';
 import { RouteLookup } from './core/routes/route-lookup';
 
 import { Account } from './account/account';
@@ -41,17 +42,19 @@ export class RawAppContents extends React.Component<FullProps> {
                 <Navigation />
                 <ShakeFeedback />
                 <div className={this.props.classes.mainContents}>
-                    <Switch>
-                        <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
+                    <ErrorBoundary>
+                        <Switch>
+                            <Route path={RouteLookup.playlists.base} component={PlaylistContainer} />
 
-                        <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
-                        <Route path={RouteLookup.login.login} component={Login} />
-                        <Route exact path={RouteLookup.logout} component={Logout} />
+                            <Route exact path={RouteLookup.login.callback} component={LoginCallback} />
+                            <Route path={RouteLookup.login.login} component={Login} />
+                            <Route exact path={RouteLookup.logout} component={Logout} />
 
-                        <Route exact path={RouteLookup.account} component={Account} />
-                        <Route exact path={RouteLookup.home} component={Home} />
-                        <Route path={RouteLookup.index} component={IndexRouter} />
-                    </Switch>
+                            <Route exact path={RouteLookup.account} component={Account} />
+                            <Route exact path={RouteLookup.home} component={Home} />
+                            <Route path={RouteLookup.index} component={IndexRouter} />
+                        </Switch>
+                    </ErrorBoundary>
                 </div>
             </div>
         );
