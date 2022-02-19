@@ -8,7 +8,7 @@ import {
     WithStyles, withStyles, WithWidth, withWidth,
 } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
+import { Alert, Skeleton } from '@material-ui/lab';
 import { FormikProps } from 'formik';
 import { isEmpty, isEqual } from 'lodash';
 import * as React from 'react';
@@ -19,7 +19,7 @@ import { PlaylistRuleGroup, RuleGroupType, Track } from '../../../../shared';
 import Ellipsis from '../../core/components/ellipsis';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
 import { VirtualTableRenderer } from '../../core/components/tables';
-import { ColumnConfig, ColumnFormatType, ColumnSet } from '../../core/components/tables/models';
+import { ColumnFormatType, ColumnSet, CustomCellFormatterProps } from '../../core/components/tables/models';
 import { TextField } from '../../core/forms/fields';
 import { history } from '../../core/history/history';
 import logger from '../../core/logger/logger';
@@ -100,6 +100,13 @@ const useStyles = (theme: Theme): StyleRules => ({
         '& .MuiAvatar-root': {
             '& img': {
                 maxWidth: '100%',
+            },
+        },
+        '& .MuiSkeleton-root': {
+            '& .MuiAvatar-root': {
+                '& .MuiAvatar-fallback': {
+                    display: 'none',
+                },
             },
         },
     },
@@ -305,10 +312,6 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     private renderPreviewContent() {
         const { listPreview } = this.state;
 
-        if (listPreview === undefined) {
-            return <CircularProgress />;
-        }
-
         if (listPreview === null) {
             return (
                 <Box>
@@ -319,9 +322,10 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
         return (
             <VirtualTableRenderer
-                data={listPreview}
+                data={listPreview || []}
                 columns={this.listPreviewColumnSet}
 
+                isLoading={listPreview === undefined}
                 customCellFormatter={this.cellFormatter}
                 footerLabel="tracks"
                 expandableRows={{
@@ -331,20 +335,26 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         );
     }
 
-    private cellFormatter = (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: Track, rowIndex: number) => {
+    private cellFormatter = ({ cellValue, column, rowData, isLoading }: CustomCellFormatterProps<Track>) => {
         if (column.type === ColumnFormatType.TrackName) {
             return (
                 <Grid container wrap="nowrap" spacing={1}>
                     <Grid item>
-                        <Avatar variant="square">
-                            <LazyLoad overflow offset={5000}>
-                                <img src={rowData.albumThumbnail} />
-                            </LazyLoad>
-                        </Avatar>
+                        {isLoading ? (
+                            <Skeleton variant="rect">
+                                <Avatar variant="square" />
+                            </Skeleton>
+                        ) : (
+                            <Avatar variant="square">
+                                <LazyLoad overflow offset={5000}>
+                                    <img src={rowData.albumThumbnail} />
+                                </LazyLoad>
+                            </Avatar>
+                        )}
                     </Grid>
                     <Grid item xs style={{ overflow: 'hidden' }}>
-                        <Typography color="textPrimary"><Ellipsis>{cellValue}</Ellipsis></Typography>
-                        <Ellipsis>{rowData.artistNames[0]}</Ellipsis>
+                        {isLoading ? <Skeleton /> : <Typography color="textPrimary"><Ellipsis>{cellValue}</Ellipsis></Typography>}
+                        {isLoading ? <Skeleton /> : <Ellipsis>{rowData.artistNames[0]}</Ellipsis>}
                     </Grid>
                 </Grid>
             );

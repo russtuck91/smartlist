@@ -3,6 +3,8 @@ import {
     Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow,
     Theme, Typography, WithStyles, withStyles,
 } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
+import classNames from 'classnames';
 import { cloneDeep } from 'lodash';
 import React from 'react';
 import { ItemProps, ListProps, TableProps, TableVirtuoso } from 'react-virtuoso';
@@ -16,6 +18,7 @@ export interface VirtualTableRendererProps {
     data: any[];
     columns: ColumnSet;
 
+    isLoading?: boolean;
     customCellFormatter?: CustomCellFormatter;
     footerLabel?: React.ReactNode;
     expandableRows?: ExpandableRowOptions;
@@ -29,6 +32,11 @@ const useStyles = (theme: Theme) => ({
     virtuosoBase: {
         '& .MuiTable-root': {
             borderCollapse: 'separate',
+        },
+    },
+    virtuosoBaseLoading: {
+        '& > div[style]': {
+            overflow: 'hidden',
         },
     },
     expansionToggleColumn: {
@@ -76,7 +84,10 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
         return (
             <Box display="flex" flex="1 1 auto" flexDirection="column">
                 <TableVirtuoso
-                    className={this.props.classes.virtuosoBase}
+                    key={`table-${this.props.isLoading ? 'loading' : 'loaded'}`}
+                    className={classNames(this.props.classes.virtuosoBase, {
+                        [this.props.classes.virtuosoBaseLoading]: this.props.isLoading,
+                    })}
                     data={this.getData()}
                     components={{
                         Table: this.renderTableComponent,
@@ -98,6 +109,10 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
     }
 
     private getData() {
+        if (this.props.isLoading) {
+            // Create dummy rows to display Skeleton components
+            return Array(100).fill({});
+        }
         const result: any[] = this.props.data.reduce((agg, item) => {
             agg.push(item);
             if (this.props.expandableRows) {
@@ -151,9 +166,15 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
         );
     }
 
-    private renderHeadColumn(column: ColumnConfig, index: number) {
+    private renderHeadColumn = (column: ColumnConfig, index: number) => {
         return (
-            <TableCell key={index} style={{ width: column.width }}>{column.title}</TableCell>
+            <TableCell key={index} style={{ width: column.width }}>
+                {this.props.isLoading ? (
+                    <Skeleton />
+                ) : (
+                    column.title
+                )}
+            </TableCell>
         );
     }
 
@@ -175,6 +196,7 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                 rowIndex={index}
                 columns={this.props.columns}
 
+                isLoading={!!this.props.isLoading}
                 customCellFormatter={this.props.customCellFormatter}
                 expandableRows={this.props.expandableRows}
                 onToggleExpanded={() => this.handleToggleRowExpansion(index)}

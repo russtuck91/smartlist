@@ -12,6 +12,7 @@ export interface TableRendererProps {
     data: any[];
     columns: ColumnSet;
 
+    isLoading?: boolean;
     customCellFormatter?: CustomCellFormatter;
     stickyHeader?: boolean;
     footerLabel?: React.ReactNode;
@@ -111,6 +112,7 @@ export class RawTableRenderer extends React.Component<FullProps> {
                 rowIndex={rowIndex}
                 columns={this.props.columns}
 
+                isLoading={!!this.props.isLoading}
                 customCellFormatter={this.props.customCellFormatter}
                 expandableRows={this.props.expandableRows}
             />

@@ -11,6 +11,7 @@ interface RowRendererProps {
     rowIndex: number;
     columns: ColumnSet;
 
+    isLoading: boolean;
     customCellFormatter?: CustomCellFormatter;
     expandableRows?: ExpandableRowOptions;
 }

@@ -1,5 +1,6 @@
-import { IconButton, TableCell, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { IconButton, StyleRules, TableCell, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
+import { Skeleton } from '@material-ui/lab';
 import classNames from 'classnames';
 import { get } from 'lodash';
 import React from 'react';
@@ -16,14 +17,18 @@ interface RowContentRendererProps {
     rowIndex: number;
     columns: ColumnSet;
 
+    isLoading: boolean;
     customCellFormatter?: CustomCellFormatter;
     expandableRows?: ExpandableRowOptions;
     onToggleExpanded: () => void;
 }
 
-const useStyles = (theme: Theme) => ({
+const useStyles = (theme: Theme): StyleRules => ({
     hasExpandableRows: {
         borderBottom: 'unset',
+    },
+    expansionToggleLoading: {
+        visibility: 'hidden',
     },
 });
 
@@ -36,16 +41,28 @@ const RawRowContentRenderer: React.FC<FullProps> = ({
     row,
     rowIndex,
 
+    isLoading,
     customCellFormatter,
     expandableRows,
     onToggleExpanded,
 }) => {
     function cellFormatter(cellValue: any, column: ColumnConfig, columnIndex: number) {
         if (customCellFormatter) {
-            const customFormatResult = customCellFormatter(cellValue, column, columnIndex, row, rowIndex);
+            const customFormatResult = customCellFormatter({
+                cellValue,
+                column,
+                columnIndex,
+                rowData: row,
+                rowIndex,
+                isLoading,
+            });
             if (customFormatResult != null) {
                 return customFormatResult;
             }
+        }
+
+        if (isLoading) {
+            return <Skeleton />;
         }
 
         if (cellValue === null || cellValue === undefined) {
@@ -70,6 +87,7 @@ const RawRowContentRenderer: React.FC<FullProps> = ({
                 key="expansion-toggle"
                 className={classNames({
                     [classes.hasExpandableRows]: expandableRows,
+                    [classes.expansionToggleLoading]: isLoading,
                 })}
             >
                 <IconButton onClick={onToggleExpanded}>

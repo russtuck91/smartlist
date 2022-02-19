@@ -17,7 +17,16 @@ export enum ColumnFormatType {
 }
 
 
-export type CustomCellFormatter = (cellValue: any, column: ColumnConfig, columnIndex: number, rowData: any, rowIndex: number) => any;
+export type CustomCellFormatter = (props: CustomCellFormatterProps) => React.ReactNode;
+
+export interface CustomCellFormatterProps<R = any> {
+    cellValue: any;
+    column: ColumnConfig;
+    columnIndex: number;
+    rowData: R;
+    rowIndex: number;
+    isLoading: boolean;
+}
 
 
 export interface ExpandableRowOptions {
