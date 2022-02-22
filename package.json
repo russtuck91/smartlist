@@ -9,7 +9,6 @@
     "npm-run-all": "^4.0.2",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-scripts": "^4.0.2",
     "typescript": "^3.7.5",
     "winston": "^3.3.3"
   },
@@ -36,8 +35,9 @@
     "build:api": "cd api && npm run build",
     "build:web": "cd web && npm run build",
     "dbupgrade": "cd api && npm run dbupgrade",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "run-p test:api test:web",
+    "test:api": "cd api && npm run test",
+    "test:web": "cd web && npm run test"
   },
   "eslintConfig": {
     "extends": "react-app"
