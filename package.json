@@ -1,6 +1,6 @@
 {
   "name": "smartlist",
-  "version": "0.6.14",
+  "version": "0.6.15",
   "private": true,
   "dependencies": {
     "@types/spotify-api": "0.0.2",
