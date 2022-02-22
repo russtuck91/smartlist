@@ -216,13 +216,18 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                         rowsPerPageOptions={[]}
                         page={0}
                         onChangePage={() => {}}
-                        labelDisplayedRows={(paginationInfo: LabelDisplayedRowsArgs) => (
-                            <>
-                                {paginationInfo.count}
-                                {' '}
-                                {footerLabel}
-                            </>
-                        )}
+                        labelDisplayedRows={(paginationInfo: LabelDisplayedRowsArgs) => {
+                            if (this.props.isLoading) {
+                                return <Skeleton width="5em" />;
+                            }
+                            return (
+                                <>
+                                    {paginationInfo.count}
+                                    {' '}
+                                    {footerLabel}
+                                </>
+                            );
+                        }}
                     />
                 </TableRow>
             </TableFooter>
