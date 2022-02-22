@@ -39,9 +39,6 @@
     "test:api": "cd api && npm run test",
     "test:web": "cd web && npm run test"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": [
     ">0.2%",
     "not dead",
