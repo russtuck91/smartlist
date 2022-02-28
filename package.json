@@ -37,7 +37,11 @@
     "dbupgrade": "cd api && npm run dbupgrade",
     "test": "run-p test:api test:web",
     "test:api": "cd api && npm run test",
-    "test:web": "cd web && npm run test"
+    "test:web": "cd web && npm run test",
+    "lint": "run-p -c lint:api lint:web lint:native",
+    "lint:api": "cd api && npm run lint",
+    "lint:web": "cd web && npm run lint",
+    "lint:native": "cd native && npm run lint"
   },
   "browserslist": [
     ">0.2%",

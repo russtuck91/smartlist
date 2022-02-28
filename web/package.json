@@ -45,6 +45,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "start:ssl": "HTTPS=true SSL_CRT_FILE=../localhost.pem SSL_KEY_FILE=../localhost-key.pem react-app-rewired start",
+    "prebuild": "npm run lint",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "lint": "eslint src --ext .ts,.tsx",
