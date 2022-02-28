@@ -10,7 +10,8 @@
         "skipLibCheck": true,
         "esModuleInterop": true,
         "types": [
-            "spotify-api"
+            "spotify-api",
+            "jest"
         ]
     }
 }
