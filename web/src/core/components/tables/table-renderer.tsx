@@ -117,7 +117,7 @@ export class RawTableRenderer extends React.Component<FullProps> {
                 expandableRows={this.props.expandableRows}
             />
         );
-    }
+    };
 
     private renderFooter() {
         const { classes, data, footerLabel } = this.props;

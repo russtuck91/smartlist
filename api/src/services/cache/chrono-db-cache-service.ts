@@ -74,7 +74,7 @@ class ChronoDbCacheService {
 
         logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after fetching fresh list');
         return freshResults.map(mapToTrack);
-    }
+    };
 
     private async storeFreshResultsInCache(userId: string, freshResults: SpotifyApi.SavedTrackObject[]) {
         const freshUserSavedTrackRef: UserSavedTrackReference[] = freshResults.map(mapToUserSavedTrackReference);

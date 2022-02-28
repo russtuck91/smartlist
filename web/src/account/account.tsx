@@ -107,11 +107,11 @@ export class Account extends React.Component<any, AccountState> {
         this.setState({
             showFeedbackDialog: true,
         });
-    }
+    };
 
     private closeFeedbackDialog = () => {
         this.setState({
             showFeedbackDialog: false,
         });
-    }
+    };
 }

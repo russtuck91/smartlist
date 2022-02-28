@@ -210,7 +210,7 @@ export class RawRuleGroup extends React.Component<FullProps> {
         ), -1) + 1;
         newRules.splice(insertAtIndex, 0, DEFAULT_NEW_CONDITION);
         setFieldValue(`${treeId}.rules`, newRules);
-    }
+    };
 
     private addGroup = () => {
         const { treeId, ruleGroup, formik: { setFieldValue } } = this.props;
@@ -220,7 +220,7 @@ export class RawRuleGroup extends React.Component<FullProps> {
         const insertLoc = firstRuleGroup === -1 ? newRules.length : firstRuleGroup;
         newRules.splice(insertLoc, 0, { type: RuleGroupType.And, rules: [ DEFAULT_NEW_CONDITION ] });
         setFieldValue(`${treeId}.rules`, newRules);
-    }
+    };
 
     private removeCondition(indexToRemove: number) {
         const { ruleGroup, treeId, formik: { setFieldValue } } = this.props;

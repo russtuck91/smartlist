@@ -201,14 +201,14 @@ export class RawRuleField extends React.Component<FullProps> {
         const newCondition = getNewConditionByParam(value);
 
         this.props.formik.setFieldValue(this.props.treeId, newCondition);
-    }
+    };
 
     private onChangeComparator = (e: React.ChangeEvent<any>) => {
         const value: RuleComparator = e.target.value;
         const modifiedRule: PlaylistRule = this.getNewRuleFromComparatorChange(value, this.props.rule);
 
         this.props.formik.setFieldValue(this.props.treeId, modifiedRule);
-    }
+    };
 
     private getNewRuleFromComparatorChange(newComparator: RuleComparator, prevRule: PlaylistRule): PlaylistRule {
         const modifiedRule: PlaylistRule = {

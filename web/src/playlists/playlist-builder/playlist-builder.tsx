@@ -97,7 +97,7 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
         }
 
         this.transitionToBrowse(result);
-    }
+    };
 
     private mapPlaylistBuilderFormValuesToPlaylist(values: PlaylistBuilderFormValues): Partial<Playlist> {
         return {

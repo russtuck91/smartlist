@@ -82,13 +82,13 @@ export class RawAutocompleteInput extends React.Component<FullProps, Autocomplet
         }
 
         this.props.setFieldValue(this.props.id, value);
-    }
+    };
 
     private onTextFieldChange = (e: React.ChangeEvent<any>) => {
         const value = e.target.value;
         this.setState({ textFieldValue: value });
         this.searchByText(value);
-    }
+    };
 
     private searchByText = debounce(async (text: string) => {
         this.setState({

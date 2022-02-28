@@ -43,19 +43,19 @@ class ShakeFeedback extends React.Component<unknown, ShakeFeedbackState> {
 
     private handleShake = () => {
         this.openFeedbackDialog();
-    }
+    };
 
     private openFeedbackDialog = () => {
         this.setState({
             showFeedbackDialog: true,
         });
-    }
+    };
 
     private closeFeedbackDialog = () => {
         this.setState({
             showFeedbackDialog: false,
         });
-    }
+    };
 }
 
 export default ShakeFeedback;

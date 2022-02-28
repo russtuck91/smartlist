@@ -63,6 +63,6 @@ export function asFormField<T extends FormFieldProps>(
             if (required && (value === undefined || value === null || value === '')) {
                 return 'Field is required';
             }
-        }
+        };
     };
 }

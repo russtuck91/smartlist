@@ -132,7 +132,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
             logger.error('Problem populating list for playlist', e);
             this.setState({ listPreview: null });
         }
-    }
+    };
 
     resetToOneRule() {
         const { setFieldValue } = this.props.formik;
@@ -268,7 +268,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 treeId={thisItemTreeId}
             />
         );
-    }
+    };
 
     private renderPreviewArea() {
         return (
@@ -292,7 +292,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         this.setState({
             selectedTab: newValue,
         });
-    }
+    };
 
     private areRulesValid(): boolean {
         return isEmpty(this.props.formik.errors.rules);

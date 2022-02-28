@@ -63,7 +63,7 @@ export class RawToggleButtonInput extends React.Component<FullProps> {
         if (value) {
             this.props.setFieldValue?.(this.props.id, value);
         }
-    }
+    };
 }
 
 export const ToggleButtonInput = withStyles(useStyles)(RawToggleButtonInput);

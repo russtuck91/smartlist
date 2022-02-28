@@ -33,7 +33,7 @@ export class YearPickerInput extends React.Component<YearPickerInputProps> {
         }
 
         this.props.setFieldValue(this.props.id, value);
-    }
+    };
 }
 
 export const YearPickerField = asFormField<YearPickerInputProps & FormFieldProps>(YearPickerInput);

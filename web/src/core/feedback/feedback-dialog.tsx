@@ -89,7 +89,7 @@ class FeedbackDialog extends React.Component<FeedbackDialogProps, FeedbackDialog
                 submitSuccess: false,
             });
         });
-    }
+    };
 }
 
 export default FeedbackDialog;

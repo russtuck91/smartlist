@@ -62,7 +62,7 @@ export class RawRowRenderer extends React.Component<FullProps, RowRendererState>
         this.setState((prevState) => ({
             expanded: !prevState.expanded,
         }));
-    }
+    };
 }
 
 export const RowRenderer = withStyles(useStyles)(RawRowRenderer);

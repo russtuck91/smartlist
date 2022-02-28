@@ -35,7 +35,7 @@ class MemCacheService<Resource extends CacheableResource> {
 
         logger.debug('<<<< Exiting MemCacheService.getItems()');
         return result;
-    }
+    };
 }
 
 export default MemCacheService;

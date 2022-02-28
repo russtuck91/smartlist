@@ -131,7 +131,7 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
         function TableBodyComponent(props: ListProps, ref: React.Ref<HTMLDivElement>){
             return <TableBody {...props} ref={ref} />;
         },
-    )
+    );
 
     private renderTableRowComponent(props: ItemProps) {
         return <TableRow {...props} />;
@@ -164,7 +164,7 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                 )}
             </TableRow>
         );
-    }
+    };
 
     private renderHeadColumn = (column: ColumnConfig, index: number) => {
         return (
@@ -176,7 +176,7 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                 )}
             </TableCell>
         );
-    }
+    };
 
     private renderItemContent = (index: number, datum: any) => {
         if (datum.isExpansionRow) {
@@ -202,7 +202,7 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                 onToggleExpanded={() => this.handleToggleRowExpansion(index)}
             />
         );
-    }
+    };
 
     private renderFooter() {
         const { classes, data, footerLabel } = this.props;
@@ -242,7 +242,7 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                 rowsExpanded: newRowsExpanded,
             };
         });
-    }
+    };
 }
 
 export const VirtualTableRenderer = withStyles(useStyles)(RawVirtualTableRenderer);

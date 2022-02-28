@@ -107,7 +107,7 @@ class RawPlaylistPreviewArea extends React.Component<FullProps> {
                 </Grid>
             );
         }
-    }
+    };
 
     private renderExpandedRow(rowData: Track) {
         return (

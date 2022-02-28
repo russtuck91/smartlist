@@ -47,7 +47,7 @@ class DbCacheService<Resource extends CacheableResource> {
 
         logger.debug(`<<<< Exiting DbCacheService.getItems() after fetching ${fetchedItems.length} items`);
         return [ ...resourceItemsFromDb, ...fetchedItems ];
-    }
+    };
 
     private async revalidateCacheItems(cacheItems: SavedCacheRecord<Resource>[], accessToken: string|undefined) {
         logger.debug('>>>> Entering DbCacheService.revalidateCacheItems()');
@@ -76,7 +76,7 @@ class DbCacheService<Resource extends CacheableResource> {
         logger.debug('>>>> Entering DbCacheService.setItems()');
         await this.repo.bulkUpdateResources(items);
         logger.debug(`<<<< Exiting DbCacheService.setItems after setting ${items.length} items`);
-    }
+    };
 }
 
 export default DbCacheService;

@@ -30,5 +30,5 @@ export class LoginError extends React.Component<any, LoginErrorState> {
         this.setState({
             open: false,
         });
-    }
+    };
 }

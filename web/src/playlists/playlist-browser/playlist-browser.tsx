@@ -210,7 +210,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
                 </Box>
             </ListItem>
         );
-    }
+    };
 
     private renderLastPublishedValue(playlist: Playlist) {
         const isPublishInProgress: boolean = this.state.publishInProgress[playlist.id];
@@ -290,13 +290,13 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
             showDeleteDialog: true,
             activeItem: playlist,
         });
-    }
+    };
 
     private closeDeleteDialog = () => {
         this.setState({
             showDeleteDialog: false,
         });
-    }
+    };
 
     private onConfirmDelete = async (options: PlaylistDeleteOptions) => {
         if (!this.state.activeItem) { return; }
@@ -306,7 +306,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         this.closeDeleteDialog();
 
         this.loadPlaylists(true);
-    }
+    };
 
     private async deletePlaylist(playlist: Playlist, options: PlaylistDeleteOptions) {
         await requests.delete(`${PlaylistContainer.requestUrl}/${playlist.id}`, options);
@@ -317,14 +317,14 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
             activeItem: playlist,
             showPublishDialog: true,
         });
-    }
+    };
 
     private closePublishDialog = () => {
         this.setState({
             activeItem: undefined,
             showPublishDialog: false,
         });
-    }
+    };
 
     private onConfirmPublish = () => {
         if (!this.state.activeItem) { return; }
@@ -332,7 +332,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         this.publishPlaylist(this.state.activeItem);
 
         this.closePublishDialog();
-    }
+    };
 
     private async publishPlaylist(playlist: Playlist) {
         this.setPublishInProgress(playlist.id, true);
@@ -359,7 +359,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
                 showJustCreatedDialog: false,
             },
         });
-    }
+    };
 
     private onConfirmPublishJustCreated = () => {
         const { activeItem } = this.props.location.state || {};
@@ -368,7 +368,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         this.publishPlaylist(activeItem);
 
         this.closeJustCreatedDialog();
-    }
+    };
 }
 
 export const PlaylistBrowser = withStyles(useStyles)(RawPlaylistBrowser);

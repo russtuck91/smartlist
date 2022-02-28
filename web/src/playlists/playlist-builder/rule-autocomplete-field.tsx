@@ -41,7 +41,7 @@ export class RuleAutocompleteField extends React.Component<RuleAutocompleteField
                 <ListItemText primary={option.name} />
             </ListItem>
         );
-    }
+    };
 
     private getOptionLabel(option?: SearchItem): string {
         return option?.name || '';
@@ -49,5 +49,5 @@ export class RuleAutocompleteField extends React.Component<RuleAutocompleteField
 
     private getSearchUrl = (text: string) => {
         return `${baseRequestUrl}/search?type=${this.props.rule.param}&text=${encodeURIComponent(text)}`;
-    }
+    };
 }
