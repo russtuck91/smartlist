@@ -9,8 +9,8 @@
     "prebuild": "npm run lint",
     "build": "npm run build:android",
     "build:android": "cd android && ./gradlew bundleRelease",
-    "test": "jest",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "jest"
   },
   "dependencies": {
     "react": "16.13.1",

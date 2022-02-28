@@ -2,6 +2,35 @@
   "name": "smartlist",
   "version": "0.6.16",
   "private": true,
+  "scripts": {
+    "postinstall": "run-p install:api install:web install:native",
+    "install:api": "cd api && npm install",
+    "install:web": "cd web && npm install",
+    "install:native": "cd native && npm install",
+    "start": "npm run start:api",
+    "start:api": "npm run start --prefix api",
+    "start:web": "npm run start --prefix web",
+    "dev": "run-p dev:api dev:web",
+    "dev:api": "npm run dev --prefix api",
+    "dev:web": "npm run start --prefix web",
+    "build": "run-p build:api build:web",
+    "build:api": "cd api && npm run build",
+    "build:web": "cd web && npm run build",
+    "dbupgrade": "cd api && npm run dbupgrade",
+    "lint": "run-p -c lint:api lint:web lint:native",
+    "lint:api": "cd api && npm run lint",
+    "lint:web": "cd web && npm run lint",
+    "lint:native": "cd native && npm run lint",
+    "test": "run-p test:api test:web",
+    "test:api": "cd api && npm run test",
+    "test:web": "cd web && npm run test"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
   "dependencies": {
     "@types/spotify-api": "0.0.2",
     "express": "^4.16.4",
@@ -20,35 +49,6 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-simple-import-sort": "^7.0.0"
   },
-  "scripts": {
-    "postinstall": "run-p install:api install:web install:native",
-    "install:api": "cd api && npm install",
-    "install:web": "cd web && npm install",
-    "install:native": "cd native && npm install",
-    "start": "npm run start:api",
-    "start:api": "npm run start --prefix api",
-    "start:web": "npm run start --prefix web",
-    "dev": "run-p dev:api dev:web",
-    "dev:api": "npm run dev --prefix api",
-    "dev:web": "npm run start --prefix web",
-    "build": "run-p build:api build:web",
-    "build:api": "cd api && npm run build",
-    "build:web": "cd web && npm run build",
-    "dbupgrade": "cd api && npm run dbupgrade",
-    "test": "run-p test:api test:web",
-    "test:api": "cd api && npm run test",
-    "test:web": "cd web && npm run test",
-    "lint": "run-p -c lint:api lint:web lint:native",
-    "lint:api": "cd api && npm run lint",
-    "lint:web": "cd web && npm run lint",
-    "lint:native": "cd native && npm run lint"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
   "engines": {
     "node": "^14.0.0",
     "npm": "6.4.x"
