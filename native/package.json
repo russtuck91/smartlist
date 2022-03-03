@@ -16,11 +16,13 @@
     "react": "17.0.1",
     "react-native": "0.64.3",
     "react-native-splash-screen": "^3.2.0",
-    "react-native-webview": "^11.4.4"
+    "react-native-webview": "^11.4.4",
+    "ts-node": "^8.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
     "@babel/runtime": "^7.8.4",
+    "@jest/types": "^26.6.2",
     "@react-native-community/eslint-config": "^3.0.1",
     "@types/jest": "^25.2.3",
     "@types/react-native": "^0.64.3",
@@ -37,16 +39,5 @@
   },
   "resolutions": {
     "@types/react": "^17"
-  },
-  "jest": {
-    "preset": "react-native",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
   }
 }
