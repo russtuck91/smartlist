@@ -10,9 +10,6 @@ const config: Config.InitialOptions = {
         'json',
         'node',
     ],
-    transformIgnorePatterns: [
-        'node_modules/(?!(@react-native|react-native|react-native-splash-screen|react-native-webview)/)',
-    ],
     setupFiles: [
         './testSetup.tsx',
     ],
