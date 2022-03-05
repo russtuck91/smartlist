@@ -1,7 +1,4 @@
 {
-    "env": {
-        "jest": true
-    },
     "extends": [
         "../.eslintrc.json",
         "@react-native-community"
