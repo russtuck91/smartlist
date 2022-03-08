@@ -29,6 +29,7 @@ class DbCacheService<Resource extends CacheableResource> {
         const resourceItemsFromDb = retrievedFromDB.map((record) => record.item);
 
         // donotawait - send stored items to check for revalidation - stale-while-revalidate
+        // TODO: this is executing too soon; should use a job or setInterval
         this.revalidateCacheItems(retrievedFromDB, accessToken);
 
         // Any IDs not present in retrieved items need to be fetched
