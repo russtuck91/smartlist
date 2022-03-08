@@ -6,10 +6,12 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { teal } from '@material-ui/core/colors';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import React, { Component } from 'react';
+import { Provider } from 'react-redux';
 import { Router } from 'react-router';
 
 import { ErrorBoundary } from './core/errors/error-boundary';
 import { history } from './core/history/history';
+import { store } from './core/redux/stores';
 
 import { AppContents } from './app-contents';
 
@@ -64,13 +66,15 @@ export class App extends Component {
         return (
             <div className="app">
                 <ErrorBoundary>
-                    <ThemeProvider theme={theme}>
-                        <MuiPickersUtilsProvider utils={MomentUtils}>
-                            <Router history={history}>
-                                <AppContents />
-                            </Router>
-                        </MuiPickersUtilsProvider>
-                    </ThemeProvider>
+                    <Provider store={store}>
+                        <ThemeProvider theme={theme}>
+                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                <Router history={history}>
+                                    <AppContents />
+                                </Router>
+                            </MuiPickersUtilsProvider>
+                        </ThemeProvider>
+                    </Provider>
                 </ErrorBoundary>
             </div>
         );
