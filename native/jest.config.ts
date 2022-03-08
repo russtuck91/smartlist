@@ -10,7 +10,7 @@ const config: Config.InitialOptions = {
         'json',
         'node',
     ],
-    setupFiles: [
+    setupFilesAfterEnv: [
         './setupTests.tsx',
     ],
 };
