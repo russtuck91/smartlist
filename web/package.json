@@ -6,7 +6,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "start:ssl": "HTTPS=true SSL_CRT_FILE=../localhost.pem SSL_KEY_FILE=../localhost-key.pem react-app-rewired start",
-    "prebuild": "npm run lint",
+    "prebuild": "npm run lint && npm run test",
     "build": "react-app-rewired build",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "react-app-rewired test --watchAll=false",

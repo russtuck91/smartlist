@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node build/api/src/start.js",
     "dev": "nodemon",
-    "prebuild": "npm run lint",
+    "prebuild": "npm run lint && npm run test",
     "build": "rm -rf ./build/ && npm run dbupgrade && tsc",
     "lint": "eslint src --ext .ts",
     "test": "jest",

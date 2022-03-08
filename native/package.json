@@ -6,7 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "prebuild": "npm run lint",
+    "prebuild": "npm run lint && npm run test",
     "build": "npm run build:android",
     "build:android": "cd android && ./gradlew bundleRelease",
     "lint": "eslint . --ext .ts,.tsx",
