@@ -132,8 +132,8 @@ android {
         applicationId "com.smartlistmusic.smartlist"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 053
-        versionName "0.5.3"
+        versionCode 071
+        versionName "0.7.1"
     }
     splits {
         abi {
