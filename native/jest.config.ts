@@ -11,7 +11,7 @@ const config: Config.InitialOptions = {
         'node',
     ],
     setupFiles: [
-        './testSetup.tsx',
+        './setupTests.tsx',
     ],
 };
 

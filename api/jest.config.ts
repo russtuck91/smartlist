@@ -4,7 +4,7 @@ const config: Config.InitialOptions = {
     preset: 'ts-jest',
     testEnvironment: 'node',
     setupFiles: [
-        './testSetup.ts',
+        './setupTests.ts',
     ],
     testPathIgnorePatterns: [
         'build/',
