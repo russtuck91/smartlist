@@ -9,7 +9,7 @@
     "prebuild": "npm run lint",
     "build": "react-app-rewired build",
     "lint": "eslint src --ext .ts,.tsx",
-    "test": "react-app-rewired test",
+    "test": "react-app-rewired test --watchAll=false",
     "eject": "react-scripts eject"
   },
   "browserslist": [
