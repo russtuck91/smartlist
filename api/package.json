@@ -9,7 +9,7 @@
     "prebuild": "npm run lint && npm run test",
     "build": "rm -rf ./build/ && npm run dbupgrade && tsc",
     "lint": "eslint src --ext .ts",
-    "test": "jest",
+    "test": "jest --debug",
     "dbupgrade": "ts-node ./scripts/dbupgrade-wrapper.ts",
     "restoredb": "ts-node ./scripts/restore-database-wrapper.ts"
   },
