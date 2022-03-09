@@ -3,6 +3,10 @@ import { albumContainsRuleFactory, trackFactory } from '../../core/test-data';
 import filterListOfSongs from './filter-list-of-songs';
 
 
+console.log('>>>> Entering filterListOfSongs test file');
+console.log('global ::');
+console.log(global);
+
 describe('filter by album', () => {
     it('should filter list by Album/Contains rule', async () => {
         // Arrange
