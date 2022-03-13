@@ -1,5 +1,5 @@
 import logger from '../../../core/logger/logger';
-import { Album, SavedCacheRecord } from '../../../core/shared-models';
+import { Album, Artist, SavedCacheRecord } from '../../../core/shared-models';
 
 import albumRepo from '../../../repositories/cache/spotify/album-repository';
 import artistRepo from '../../../repositories/cache/spotify/artist-repository';
@@ -12,7 +12,7 @@ async function searchForGenre(text: string) {
     const matchedArtists = await artistRepo.find({ conditions: findConditions });
     const matchedAlbums = await albumRepo.find({ conditions: findConditions });
 
-    const recordToGenreMapReducer = (agg: Record<string, number>, record: SavedCacheRecord<SpotifyApi.ArtistObjectFull|Album>) => {
+    const recordToGenreMapReducer = (agg: Record<string, number>, record: SavedCacheRecord<Artist|Album>) => {
         record.item.genres
             .filter((genre) => genre.toLowerCase().includes(text.toLowerCase()))
             .map((genre) => {

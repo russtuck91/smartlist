@@ -16,14 +16,14 @@ import {
 } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
-import { Album } from '../../core/shared-models';
+import { Album, Artist } from '../../core/shared-models';
 
 import spotifyCacheService from '../cache/spotify/spotify-cache-service';
 
 
 async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], accessToken: string|undefined) {
     let albumMap: Record<string, Album> = {};
-    let artistMap = {};
+    let artistMap: Record<string, Artist> = {};
     let audioFeaturesMap = {};
 
     // Resources only needed if Genre filter is set
@@ -121,7 +121,7 @@ function filterTrackByTrack(track: Track, thisFilter: TrackRule) {
     }
 }
 
-function filterTrackByGenre(track: Track, thisFilter: GenreRule, albumMap: Record<string, Album>, artistMap: Record<string, SpotifyApi.ArtistObjectFull>) {
+function filterTrackByGenre(track: Track, thisFilter: GenreRule, albumMap: Record<string, Album>, artistMap: Record<string, Artist>) {
     const fullAlbum = albumMap[track.albumId];
     const fullArtists = track.artistIds.map((id) => artistMap[id]);
 
