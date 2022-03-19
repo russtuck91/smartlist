@@ -2,7 +2,6 @@ import {
     Box, Button, CircularProgress,
     Container, Grid, IconButton, List,
     StyleRules,
-    Tab, Tabs,
     Theme, Typography,
     WithStyles, withStyles, WithWidth, withWidth,
 } from '@material-ui/core';
@@ -27,7 +26,7 @@ import { PlaylistContainer } from '../playlist-container';
 import { DEFAULT_NEW_CONDITION, PlaylistBuilderFormValues } from './models';
 import PlaylistPreviewArea from './playlist-preview-area';
 import { RuleGroup } from './rule-group';
-import TabPanel from './tab-panel';
+import TabSet from './tab-set';
 
 
 export interface PlaylistBuilderFormProps {
@@ -38,7 +37,6 @@ export interface PlaylistBuilderFormProps {
 
 interface PlaylistBuilderFormState {
     listPreview?: Nullable<Track[]>;
-    selectedTab: number;
 }
 
 const useStyles = (theme: Theme): StyleRules => ({
@@ -57,9 +55,6 @@ const useStyles = (theme: Theme): StyleRules => ({
         flex: '1 1 auto',
         flexDirection: 'column',
         paddingTop: theme.spacing(1),
-    },
-    tabBar: {
-        backgroundColor: theme.palette.background.default,
     },
     contentColumns: {
         overflowY: 'auto',
@@ -91,7 +86,6 @@ type FullProps = PlaylistBuilderFormProps & WithStyles<typeof useStyles> & WithW
 export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistBuilderFormState> {
     state: PlaylistBuilderFormState = {
         listPreview: [],
-        selectedTab: 0,
     };
 
     async componentDidMount() {
@@ -207,29 +201,13 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     }
 
     private renderContentAsTabs() {
-        const { selectedTab } = this.state;
-
         return (
-            <>
-                <Tabs
-                    className={this.props.classes.tabBar}
-                    value={selectedTab}
-                    onChange={this.onTabChange}
-                    indicatorColor="primary"
-                    centered
-                >
-                    <Tab label="Rules" />
-                    <Tab label="Songs" />
-                </Tabs>
-                <TabPanel value={selectedTab} index={0}>
-                    <Box py={1} flexGrow={1}>
-                        {this.renderFormArea()}
-                    </Box>
-                </TabPanel>
-                <TabPanel value={selectedTab} index={1}>
-                    {this.renderPreviewArea()}
-                </TabPanel>
-            </>
+            <TabSet
+                tabs={[
+                    { label: 'Rules', render: this.renderFormArea },
+                    { label: 'Songs', render: this.renderPreviewArea },
+                ]}
+            />
         );
     }
 
@@ -248,15 +226,17 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         );
     }
 
-    private renderFormArea() {
+    private renderFormArea = () => {
         const { formik: { values }, classes } = this.props;
 
         return (
-            <List disablePadding className={classes.formAreaList}>
-                {values.rules.map((rule, index) => this.renderRuleGroup(rule, index))}
-            </List>
+            <Box py={1} flexGrow={1}>
+                <List disablePadding className={classes.formAreaList}>
+                    {values.rules.map((rule, index) => this.renderRuleGroup(rule, index))}
+                </List>
+            </Box>
         );
-    }
+    };
 
     private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number, treeIdPrefix = '') => {
         const thisItemTreeId = `${treeIdPrefix ? `${treeIdPrefix }.` : ''}rules[${groupIndex}]`;
@@ -270,7 +250,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         );
     };
 
-    private renderPreviewArea() {
+    private renderPreviewArea = () => {
         return (
             <ErrorBoundary>
                 <PlaylistPreviewArea
@@ -278,7 +258,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 />
             </ErrorBoundary>
         );
-    }
+    };
 
     private onClickBackButton() {
         if (history.location.key) {
@@ -287,12 +267,6 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
             history.push(RouteLookup.playlists.base);
         }
     }
-
-    private onTabChange = (event: React.ChangeEvent, newValue: number) => {
-        this.setState({
-            selectedTab: newValue,
-        });
-    };
 
     private areRulesValid(): boolean {
         return isEmpty(this.props.formik.errors.rules);
