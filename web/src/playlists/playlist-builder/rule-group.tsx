@@ -8,6 +8,7 @@ import * as React from 'react';
 import { isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup, RuleGroupType } from '../../../../shared';
 import { convertEnumToArray } from '../../../../shared/src/util/object-util';
 
+import IconButton from './icon-button';
 import { DEFAULT_NEW_CONDITION, PlaylistBuilderFormValues } from './models';
 import { RuleField } from './rule-field';
 
@@ -51,18 +52,6 @@ const useStyles = (theme: Theme): StyleRules => ({
     buttonContainer: {
         '&:first-child': {
             paddingTop: theme.spacing(1),
-        },
-    },
-    buttonGroup: {
-        '& .MuiButton-root': {
-            paddingLeft: theme.spacing(3),
-            paddingRight: theme.spacing(3),
-
-            '& .MuiSvgIcon-root': {
-                fontSize: '1rem',
-                marginRight: theme.spacing(1),
-                marginTop: -2,
-            },
         },
     },
 });
@@ -151,23 +140,17 @@ export class RawRuleGroup extends React.Component<FullProps> {
     private renderButtons() {
         return (
             <Box key="buttons" display="flex" justifyContent="center" className={this.props.classes.buttonContainer}>
-                <ButtonGroup className={this.props.classes.buttonGroup}>
-                    <Button
-                        variant="outlined"
-                        onClick={this.addCondition}
-                    >
+                <ButtonGroup>
+                    <IconButton onClick={this.addCondition}>
                         <AddCircle />
                         {' '}
                         rule
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        onClick={this.addGroup}
-                    >
+                    </IconButton>
+                    <IconButton onClick={this.addGroup}>
                         <AddCircle />
                         {' '}
                         group
-                    </Button>
+                    </IconButton>
                 </ButtonGroup>
             </Box>
         );
