@@ -156,12 +156,12 @@ export class RawRuleGroup extends React.Component<FullProps> {
         );
     }
 
-    private renderRuleGroup(rule, index) {
+    private renderRuleGroup(ruleGroup: PlaylistRuleGroup, index: number) {
         return (
             <RuleGroup
                 key={index}
                 formik={this.props.formik}
-                ruleGroup={rule}
+                ruleGroup={ruleGroup}
                 treeId={this.getChildRuleTreeId(index)}
             />
         );

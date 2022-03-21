@@ -232,14 +232,14 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         return (
             <Box py={1} flexGrow={1}>
                 <List disablePadding className={classes.formAreaList}>
-                    {values.rules.map((rule, index) => this.renderRuleGroup(rule, index))}
+                    {values.rules.map(this.renderRuleGroup)}
                 </List>
             </Box>
         );
     };
 
-    private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number, treeIdPrefix = '') => {
-        const thisItemTreeId = `${treeIdPrefix ? `${treeIdPrefix }.` : ''}rules[${groupIndex}]`;
+    private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number) => {
+        const thisItemTreeId = `rules[${groupIndex}]`;
         return (
             <RuleGroup
                 key={groupIndex}
