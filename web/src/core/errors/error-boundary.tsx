@@ -1,3 +1,5 @@
+import { Box } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React from 'react';
 
 import logger from '../logger/logger';
@@ -26,7 +28,11 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
     render() {
         if (this.state.error) {
-            return <h2>Something went wrong. Please try again.</h2>;
+            return (
+                <Box>
+                    <Alert severity="error">Something went wrong. Please try again.</Alert>
+                </Box>
+            );
         }
         return this.props.children;
     }

@@ -29,12 +29,14 @@ async function setNewVersion(newVersion: string, filename: string) {
 }
 
 async function backupDatabase() {
+    logger.debug('>>>> Entering backupDatabase()');
     const info = mongoutils.parseMongoUrl(MONGODB_URI);
     const command = mongoutils.createDumpCommand(info, BACKUP_DIRECTORY);
     await mongoutils.executeCommand(command);
 }
 
 function deleteBackup() {
+    logger.debug('>>>> Entering deleteBackup()');
     rimraf.sync(BACKUP_DIRECTORY);
 }
 
@@ -73,7 +75,9 @@ async function dbUpgradeWrapper() {
             // Update db version info
             await setNewVersion(newVersion, currentUpgradeScript);
 
-            deleteBackup();
+            if (process.env.NODE_ENV !== 'development') {
+                deleteBackup();
+            }
 
         } catch (e) {
             // Error handling

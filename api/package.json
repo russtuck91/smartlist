@@ -44,6 +44,7 @@
     "mongoist": "^2.4.0",
     "mongtype": "^6.0.1",
     "morgan": "~1.9.0",
+    "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "spotify-web-api-node": "^5.0.0",
     "ts-node": "^8.6.1",
