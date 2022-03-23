@@ -61,9 +61,9 @@ export class PlaylistsController {
     @Wrapper(expressAsyncHandler)
     async populatePlaylist(req: Request, res: Response) {
         await doAndRetryWithCurrentUser(async (accessToken) => {
-            const rules: PlaylistRuleGroup[] = req.body;
+            const playlist: Playlist = req.body;
 
-            const list = await playlistService.populateListByRules(rules, accessToken);
+            const list = await playlistService.populateList(playlist, accessToken);
 
             res.send(list);
         });

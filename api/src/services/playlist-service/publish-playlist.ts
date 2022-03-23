@@ -4,14 +4,14 @@ import logger from '../../core/logger/logger';
 
 import spotifyService from '../spotify-service/spotify-service';
 
-import populateListByRules from './populate-list-by-rules';
+import populateList from './populate-list';
 import updatePlaylist from './update-playlist';
 
 
 async function publishPlaylist(playlist: Playlist, accessToken: string) {
     logger.info(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
 
-    const list = await populateListByRules(playlist.rules, accessToken);
+    const list = await populateList(playlist, accessToken);
 
     let spotifyPlaylistId = playlist.spotifyPlaylistId;
     if (spotifyPlaylistId && !playlist.deleted) {

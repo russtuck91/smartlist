@@ -117,7 +117,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         this.setState({ listPreview: undefined });
 
         try {
-            const list = await requests.post(`${PlaylistContainer.requestUrl}/populateList`, values.rules);
+            const list = await requests.post(`${PlaylistContainer.requestUrl}/populateList`, values);
 
             this.setState({
                 listPreview: list,
