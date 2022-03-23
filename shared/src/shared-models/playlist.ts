@@ -7,6 +7,7 @@ export interface Playlist extends SimpleDBObject {
     name: string;
 
     rules: PlaylistRuleGroup[];
+    exceptions: PlaylistRule[];
 
     userId: ObjectId;
     spotifyPlaylistId?: string;
