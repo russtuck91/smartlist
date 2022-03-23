@@ -81,6 +81,7 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
                     ],
                 },
             ],
+            exceptions: [],
         };
     }
 

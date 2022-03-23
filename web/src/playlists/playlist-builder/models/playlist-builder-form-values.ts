@@ -1,6 +1,6 @@
 import { Playlist, PlaylistRule, RuleComparator, RuleParam } from '../../../../../shared';
 
-export interface PlaylistBuilderFormValues extends Pick<Playlist, 'name'|'rules'> {
+export interface PlaylistBuilderFormValues extends Pick<Playlist, 'name'|'rules'|'exceptions'> {
 
 }
 
