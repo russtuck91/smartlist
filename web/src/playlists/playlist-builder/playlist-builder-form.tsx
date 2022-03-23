@@ -23,6 +23,7 @@ import { Nullable } from '../../core/shared-models/types';
 
 import { PlaylistContainer } from '../playlist-container';
 
+import ExceptionList from './exception-list';
 import { DEFAULT_NEW_CONDITION, PlaylistBuilderFormValues } from './models';
 import PlaylistPreviewArea from './playlist-preview-area';
 import { RuleGroup } from './rule-group';
@@ -205,6 +206,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
             <TabSet
                 tabs={[
                     { label: 'Rules', render: this.renderFormArea },
+                    { label: 'Except', render: this.renderExceptList },
                     { label: 'Songs', render: this.renderPreviewArea },
                 ]}
             />
@@ -216,13 +218,26 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
             <div className={this.props.classes.contentColumns}>
                 <Grid container spacing={0}>
                     <Grid item xs>
-                        {this.renderFormArea()}
+                        {this.renderDesktopTabsArea()}
                     </Grid>
                     <Grid item xs>
                         {this.renderPreviewArea()}
                     </Grid>
                 </Grid>
             </div>
+        );
+    }
+
+    private renderDesktopTabsArea() {
+        return (
+            <Box flex="1 1 auto">
+                <TabSet
+                    tabs={[
+                        { label: 'Rules', render: this.renderFormArea },
+                        { label: 'Except', render: this.renderExceptList },
+                    ]}
+                />
+            </Box>
         );
     }
 
@@ -250,6 +265,19 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         );
     };
 
+    private renderExceptList = () => {
+        return (
+            <ErrorBoundary>
+                <Box py={1} flexGrow={1}>
+                    <ExceptionList
+                        formik={this.props.formik}
+                        exceptions={this.props.formik.values.exceptions}
+                    />
+                </Box>
+            </ErrorBoundary>
+        );
+    };
+
     private renderPreviewArea = () => {
         return (
             <ErrorBoundary>
@@ -269,7 +297,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     }
 
     private areRulesValid(): boolean {
-        return isEmpty(this.props.formik.errors.rules);
+        return isEmpty(this.props.formik.errors.rules) && isEmpty(this.props.formik.errors.exceptions);
     }
 }
 
