@@ -18,6 +18,63 @@ describe('filter by album', () => {
 
         // Assert
         expect(result).toHaveLength(1);
+        expect(result.every((t) => t.albumName === expectedAlbumName)).toBeTruthy();
+    });
+
+    it('should filter list by multiple Album/Contains rule', async () => {
+        // Arrange
+        const expectedAlbumOne = 'foo';
+        const expectedAlbumTwo = 'bar';
+        const tracks = trackFactory.buildList(10);
+        tracks.map((track, index) => {
+            let name = '';
+            if (index % 2 === 0) name += expectedAlbumOne;
+            if (index % 3 === 0) name += expectedAlbumTwo;
+            if (name) track.albumName = name;
+        });
+        const rules = [
+            albumContainsRuleFactory.build({ value: expectedAlbumOne }),
+            albumContainsRuleFactory.build({ value: expectedAlbumTwo }),
+        ];
+
+        // Act
+        const result = await filterListOfSongs(tracks, rules, undefined);
+
+        // Assert
+        expect(result).toHaveLength(2);
+        expect(result.every(({ albumName }) => {
+            return albumName.indexOf(expectedAlbumOne) > -1 && albumName.indexOf(expectedAlbumTwo) > -1;
+        })).toBeTruthy();
+    });
+});
+
+describe('filterOut mode', () => {
+    describe('filter by album', () => {
+        it('should filter list by multiple Album/Contains rule', async () => {
+            // Arrange
+            const expectedAlbumOne = 'foo';
+            const expectedAlbumTwo = 'bar';
+            const tracks = trackFactory.buildList(10);
+            tracks.map((track, index) => {
+                let name = '';
+                if (index % 2 === 0) name += expectedAlbumOne;
+                if (index % 3 === 0) name += expectedAlbumTwo;
+                if (name) track.albumName = name;
+            });
+            const rules = [
+                albumContainsRuleFactory.build({ value: expectedAlbumOne }),
+                albumContainsRuleFactory.build({ value: expectedAlbumTwo }),
+            ];
+
+            // Act
+            const result = await filterListOfSongs(tracks, rules, undefined, true);
+
+            // Assert
+            expect(result).toHaveLength(3);
+            expect(result.every(({ albumName }) => {
+                return albumName.indexOf(expectedAlbumOne) === -1 && albumName.indexOf(expectedAlbumTwo) === -1;
+            })).toBeTruthy();
+        });
     });
 });
 

@@ -21,7 +21,9 @@ import { Album, Artist } from '../../core/shared-models';
 import spotifyCacheService from '../cache/spotify/spotify-cache-service';
 
 
-async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], accessToken: string|undefined) {
+async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], accessToken: string|undefined, filterOut: boolean = false) {
+    if (rules.length === 0) return trackList;
+
     let albumMap: Record<string, Album> = {};
     let artistMap: Record<string, Artist> = {};
     let audioFeaturesMap = {};
@@ -53,39 +55,39 @@ async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], acce
     }
 
     const filteredList = trackList.filter((track) => {
-        return rules.reduce<boolean>((agg, thisFilter) => {
-            if (!agg) { return agg; }
-
-            if (isArtistRule(thisFilter)) {
-                return !!filterTrackByArtist(track, thisFilter);
-            }
-
-            if (isAlbumRule(thisFilter)) {
-                return !!filterTrackByAlbum(track, thisFilter);
-            }
-
-            if (isTrackRule(thisFilter)) {
-                return !!filterTrackByTrack(track, thisFilter);
-            }
-
-            if (isGenreRule(thisFilter)) {
-                return filterTrackByGenre(track, thisFilter, albumMap, artistMap);
-            }
-
-            if (isYearRule(thisFilter)) {
-                return !!filterTrackByYear(track, thisFilter);
-            }
-
-            if (isTempoRule(thisFilter)) {
-                const thisAudioFeatures = audioFeaturesMap[track.id];
-                return filterTrackByTempo(track, thisFilter, thisAudioFeatures);
-            }
-
-            return true;
-        }, true);
+        return filterOut ?
+            !rules.some((thisFilter) => filterTrack(track, thisFilter, { albumMap, artistMap, audioFeaturesMap })) :
+            rules.every((thisFilter) => filterTrack(track, thisFilter, { albumMap, artistMap, audioFeaturesMap }));
     });
 
     return filteredList;
+}
+
+function filterTrack(track: Track, thisFilter: PlaylistRule, { albumMap, artistMap, audioFeaturesMap }) {
+    if (isArtistRule(thisFilter)) {
+        return !!filterTrackByArtist(track, thisFilter);
+    }
+
+    if (isAlbumRule(thisFilter)) {
+        return !!filterTrackByAlbum(track, thisFilter);
+    }
+
+    if (isTrackRule(thisFilter)) {
+        return !!filterTrackByTrack(track, thisFilter);
+    }
+
+    if (isGenreRule(thisFilter)) {
+        return filterTrackByGenre(track, thisFilter, albumMap, artistMap);
+    }
+
+    if (isYearRule(thisFilter)) {
+        return !!filterTrackByYear(track, thisFilter);
+    }
+
+    if (isTempoRule(thisFilter)) {
+        const thisAudioFeatures = audioFeaturesMap[track.id];
+        return filterTrackByTempo(track, thisFilter, thisAudioFeatures);
+    }
 }
 
 function filterTrackByArtist(track: Track, thisFilter: ArtistRule) {
