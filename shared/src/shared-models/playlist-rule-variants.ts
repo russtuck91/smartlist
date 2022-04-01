@@ -1,6 +1,14 @@
 import { BetweenValue, PlaylistRule, RuleComparator, RuleParam, SearchItem } from './playlist-rule';
 
 
+export interface SavedRule extends PlaylistRule {
+    param: RuleParam.Saved;
+    value: boolean;
+}
+export function isSavedRule(rule: PlaylistRule): rule is SavedRule {
+    return rule.param === RuleParam.Saved;
+}
+
 export interface ArtistRule extends PlaylistRule {
     param: RuleParam.Artist;
     value: string|SearchItem;
@@ -111,4 +119,20 @@ export interface TempoRule extends PlaylistRule {
 }
 export function isTempoRule(rule: PlaylistRule): rule is TempoRule {
     return rule.param === RuleParam.Tempo;
+}
+
+export interface EnergyRule extends PlaylistRule {
+    param: RuleParam.Energy;
+    value: BetweenValue;
+}
+export function isEnergyRule(rule: PlaylistRule): rule is EnergyRule {
+    return rule.param === RuleParam.Energy;
+}
+
+export interface InstrumentalRule extends PlaylistRule {
+    param: RuleParam.Instrumental;
+    value: boolean;
+}
+export function isInstrumentalRule(rule: PlaylistRule): rule is InstrumentalRule {
+    return rule.param === RuleParam.Instrumental;
 }
