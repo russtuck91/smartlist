@@ -1,4 +1,4 @@
-import { isAlbumIsRule, isArtistIsRule, isPlaylistTypeRule, PlaylistRule, RuleParam, Track } from '../../../../shared';
+import { isAlbumIsRule, isArtistIsRule, isPlaylistTypeRule, isSavedRule, PlaylistRule, Track } from '../../../../shared';
 
 import { mapToTrack } from '../../mappers/spotify/track-object-full-mapper';
 
@@ -7,7 +7,7 @@ import spotifyService from '../spotify-service/spotify-service';
 
 
 async function getTracksForRule(rule: PlaylistRule, accessToken: string): Promise<(Track[] | null)> {
-    if (rule.param === RuleParam.Saved) {
+    if (isSavedRule(rule)) {
         return await spotifyCacheService.getFullMySavedTracks(accessToken);
     }
     if (isPlaylistTypeRule(rule)) {

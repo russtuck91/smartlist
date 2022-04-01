@@ -2,10 +2,13 @@ import { keyBy } from 'lodash';
 import moment from 'moment';
 
 import {
-    AlbumRule, ArtistRule, GenreRule,
+    AlbumRule, ArtistRule, EnergyRule, GenreRule,
+    InstrumentalRule,
     isAlbumContainsRule, isAlbumIsRule, isAlbumRule,
     isArtistContainsRule, isArtistIsRule, isArtistRule,
+    isEnergyRule,
     isGenreRule,
+    isInstrumentalRule,
     isTempoRule,
     isTrackContainsRule, isTrackIsRule, isTrackRule,
     isYearBetweenRule, isYearIsRule, isYearRule,
@@ -45,7 +48,7 @@ async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], acce
         artistMap = keyBy(artists, 'id');
     }
 
-    if (rules.find((rule) => isTempoRule(rule))) {
+    if (rules.find((rule) => isTempoRule(rule) || isEnergyRule(rule) || isInstrumentalRule(rule))) {
         const allTrackIds: string[] = [];
         trackList.map((track) => {
             allTrackIds.push(track.id);
@@ -87,6 +90,16 @@ function filterTrack(track: Track, thisFilter: PlaylistRule, { albumMap, artistM
     if (isTempoRule(thisFilter)) {
         const thisAudioFeatures = audioFeaturesMap[track.id];
         return filterTrackByTempo(track, thisFilter, thisAudioFeatures);
+    }
+
+    if (isEnergyRule(thisFilter)) {
+        const thisAudioFeatures = audioFeaturesMap[track.id];
+        return filterTrackByEnergy(track, thisFilter, thisAudioFeatures);
+    }
+
+    if (isInstrumentalRule(thisFilter)) {
+        const thisAudioFeatures = audioFeaturesMap[track.id];
+        return filterTrackByInstrumental(track, thisFilter, thisAudioFeatures);
     }
 }
 
@@ -161,6 +174,16 @@ function filterTrackByYear(track: Track, thisFilter: YearRule) {
 function filterTrackByTempo(track: Track, thisFilter: TempoRule, audioFeatures: SpotifyApi.AudioFeaturesObject) {
     const { start, end } = thisFilter.value;
     return (!start || audioFeatures.tempo > parseFloat(start)) && (!end || audioFeatures.tempo < parseFloat(end));
+}
+
+function filterTrackByEnergy(track: Track, rule: EnergyRule, audioFeatures: SpotifyApi.AudioFeaturesObject) {
+    const { start, end } = rule.value;
+    return (!start || audioFeatures.energy > parseFloat(start)) && (!end || audioFeatures.energy < parseFloat(end));
+}
+
+function filterTrackByInstrumental(track: Track, rule: InstrumentalRule, audioFeatures: SpotifyApi.AudioFeaturesObject) {
+    const threshold = 0.5;
+    return rule.value ? audioFeatures.instrumentalness >= threshold : audioFeatures.instrumentalness < threshold;
 }
 
 export default filterListOfSongs;
