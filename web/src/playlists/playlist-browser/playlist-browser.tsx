@@ -1,4 +1,7 @@
-import { Box, Button, CircularProgress, Container, Grid, Link, List, ListItem, ListItemText, Paper, StyleRules, Theme, Tooltip, Typography, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Box, Button, CircularProgress, Container, Grid, Link, List, ListItem, ListItemText, Paper,
+    StyleRules, Theme, Typography, WithStyles, withStyles,
+} from '@material-ui/core';
 import { Delete, Publish } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
@@ -8,6 +11,7 @@ import { Playlist, PlaylistDeleteOptions } from '../../../../shared';
 
 import { DialogControl } from '../../core/components/modals/dialog-control';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
+import SmTooltip from '../../core/components/tooltips/sm-tooltip';
 import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
@@ -220,18 +224,18 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
 
         if (playlist.deleted) {
             const title = (
-                <div style={{ textAlign: 'center' }}>
+                <div>
                     Playlist was deleted from Spotify.
                     <br />
                     Re-publish to resume automatic updates.
                 </div>
             );
             return (
-                <Tooltip title={title}>
-                    <Alert severity="error" style={{ display: 'inline-flex' }}>
+                <SmTooltip title={title}>
+                    <Alert severity="error">
                         Deleted
                     </Alert>
-                </Tooltip>
+                </SmTooltip>
             );
         }
 

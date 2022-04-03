@@ -15,6 +15,7 @@ const useStyles = (): StyleRules => ({
     },
     iconButton: {
         padding: 0,
+        fontSize: 'inherit',
     },
 });
 
@@ -42,21 +43,19 @@ const RawSmTooltip: React.FC<FullProps> = ({
 
     return (
         <ClickAwayListener onClickAway={handleTooltipClose}>
-            <div>
-                <Tooltip
-                    open={open}
-                    onOpen={handleTooltipOpen}
-                    onClose={handleTooltipClose}
-                    title={title}
-                    classes={{
-                        tooltip: classes.tooltip,
-                    }}
-                >
-                    <IconButton onClick={handleTooltipToggle} size="small" className={classes.iconButton}>
-                        {children}
-                    </IconButton>
-                </Tooltip>
-            </div>
+            <Tooltip
+                open={open}
+                onOpen={handleTooltipOpen}
+                onClose={handleTooltipClose}
+                title={title}
+                classes={{
+                    tooltip: classes.tooltip,
+                }}
+            >
+                <IconButton onClick={handleTooltipToggle} className={classes.iconButton}>
+                    {children}
+                </IconButton>
+            </Tooltip>
         </ClickAwayListener>
     );
 };
