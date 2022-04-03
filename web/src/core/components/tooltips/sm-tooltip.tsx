@@ -1,5 +1,6 @@
 import { ClickAwayListener, IconButton, StyleRules, Tooltip, WithStyles, withStyles } from '@material-ui/core';
 import React from 'react';
+import { isMobile } from 'react-device-detect';
 
 
 interface SmTooltipProps {
@@ -48,6 +49,8 @@ const RawSmTooltip: React.FC<FullProps> = ({
                 onOpen={handleTooltipOpen}
                 onClose={handleTooltipClose}
                 title={title}
+                disableHoverListener={isMobile}
+                disableTouchListener={isMobile}
                 classes={{
                     tooltip: classes.tooltip,
                 }}
