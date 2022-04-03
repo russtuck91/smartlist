@@ -226,6 +226,9 @@ export class RawRuleField extends React.Component<FullProps> {
 
     private onChangeRuleType = (e: React.ChangeEvent<any>) => {
         const value: RuleParam = e.target.value;
+        if (value === this.props.rule.param) {
+            return;
+        }
         const newCondition = getNewConditionByParam(value);
 
         this.props.formik.setFieldValue(this.props.treeId, newCondition);
