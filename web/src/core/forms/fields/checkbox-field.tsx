@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import { Checkbox, FormControlLabel, WithStyles, withStyles } from '@material-ui/core';
 import { FormikProps } from 'formik';
 import * as React from 'react';
 
@@ -11,10 +11,19 @@ interface CheckboxInputProps extends Partial<FormFieldProps> {
     label?: string;
 }
 
-export class CheckboxInput extends React.Component<CheckboxInputProps> {
+const useStyles = () => ({
+    root: {
+        marginRight: 0,
+    },
+});
+
+type FullProps = CheckboxInputProps & WithStyles<typeof useStyles>;
+
+export class RawCheckboxInput extends React.Component<FullProps> {
     render() {
         return (
             <FormControlLabel
+                classes={this.props.classes}
                 label={this.props.label}
                 control={(
                     <Checkbox
@@ -28,5 +37,7 @@ export class CheckboxInput extends React.Component<CheckboxInputProps> {
         );
     }
 }
+
+const CheckboxInput = withStyles(useStyles)(RawCheckboxInput);
 
 export const CheckboxField = asFormField<CheckboxInputProps & FormFieldProps>(CheckboxInput);

@@ -141,7 +141,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     render() {
         return (
-            <Box display="flex" flex="1 1 auto" flexDirection="column">
+            <Box display="flex" flex="1 1 auto" flexDirection="column" overflow="auto">
                 <SecondaryAppBar>
                     <IconButton onClick={this.onClickBackButton}>
                         <ArrowBack />
