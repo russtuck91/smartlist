@@ -23,6 +23,7 @@ export class YearPickerInput extends React.Component<YearPickerInputProps> {
                 disableFuture
                 minDate={this.props.minDate ? moment.utc(this.props.minDate) : undefined}
                 maxDate={this.props.maxDate ? moment.utc(this.props.maxDate) : undefined}
+                style={{ width: '100%' }}
             />
         );
     }

@@ -1,4 +1,4 @@
-import { Grid, IconButton, ListItem, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { Box, Grid, IconButton, ListItem, Theme, WithStyles, withStyles, WithWidth, withWidth } from '@material-ui/core';
 import { Info, RemoveCircleOutline } from '@material-ui/icons';
 import { FormikProps } from 'formik';
 import * as React from 'react';
@@ -48,7 +48,7 @@ const useStyles = (theme: Theme) => ({
     },
 });
 
-type FullProps = RuleFieldProps & WithStyles<typeof useStyles>;
+type FullProps = RuleFieldProps & WithStyles<typeof useStyles> & WithWidth;
 
 export class RawRuleField extends React.Component<FullProps> {
     render() {
@@ -73,10 +73,10 @@ export class RawRuleField extends React.Component<FullProps> {
                             container
                             alignItems="center"
                             spacing={2}
-                            wrap={this.isOneLineRule(rule) ? 'nowrap' : undefined}
+                            wrap={this.props.width === 'xs' && !this.isOneLineRule(rule) ? 'wrap' : 'nowrap'}
                             className={classes.inputsContainer}
                         >
-                            <Grid item xs={6} sm={3}>
+                            <Grid item xs={6} sm="auto">
                                 <DropdownField
                                     id={`${treeId}.param`}
                                     value={rule.param}
@@ -85,7 +85,7 @@ export class RawRuleField extends React.Component<FullProps> {
                                     customOptionRenderer={this.ruleParamRenderer}
                                 />
                             </Grid>
-                            <Grid item xs={6} sm={3}>
+                            <Grid item xs={6} sm="auto">
                                 <DropdownField
                                     id={`${treeId}.comparator`}
                                     value={rule.comparator || (comparators.length === 1 ? comparators[0] : rule.comparator)}
@@ -94,7 +94,7 @@ export class RawRuleField extends React.Component<FullProps> {
                                     onChange={this.onChangeComparator}
                                 />
                             </Grid>
-                            <Grid item xs={this.isOneLineRule(rule) ? true : 12} sm={6}>
+                            <Grid item xs={this.isOneLineRule(rule) ? true : 12} sm={true}>
                                 {this.renderRuleValueField()}
                             </Grid>
                         </Grid>
@@ -122,9 +122,11 @@ export class RawRuleField extends React.Component<FullProps> {
                 </Grid>
                 <Grid item>
                     {helperText && (
-                        <SmTooltip title={helperText}>
-                            <Info fontSize="small" />
-                        </SmTooltip>
+                        <Box pl={0.5}>
+                            <SmTooltip title={helperText}>
+                                <Info fontSize="small" />
+                            </SmTooltip>
+                        </Box>
                     )}
                 </Grid>
             </Grid>
@@ -270,4 +272,4 @@ export class RawRuleField extends React.Component<FullProps> {
     }
 }
 
-export const RuleField = withStyles(useStyles)(RawRuleField);
+export const RuleField = withWidth()( withStyles(useStyles)(RawRuleField) );
