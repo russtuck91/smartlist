@@ -4,21 +4,40 @@ import * as React from 'react';
 
 import { asFormField, FormFieldProps } from '../as-form-field';
 
+type CustomOptionRenderer = (props: CustomOptionRendererProps) => React.ReactNode;
+
+export interface CustomOptionRendererProps {
+    option: string;
+    index: number;
+}
+
 interface DropdownInputProps extends FormFieldProps {
     id: string;
     value: any;
     options: string[];
+    customOptionRenderer?: CustomOptionRenderer;
 }
 
 const useStyles = (theme: Theme) => ({
     select: {
-        padding: '8px',
+        padding: theme.spacing(1),
+    },
+    menuItem: {
+        minHeight: 0,
     },
 });
 
 type FullProps = DropdownInputProps & WithStyles<typeof useStyles>;
 
-export class RawDropdownInput extends React.Component<FullProps> {
+interface DropdownInputState {
+    open: boolean;
+}
+
+export class RawDropdownInput extends React.Component<FullProps, DropdownInputState> {
+    state = {
+        open: false,
+    };
+
     render() {
         return (
             <Select
@@ -26,9 +45,14 @@ export class RawDropdownInput extends React.Component<FullProps> {
                 name={this.props.id}
                 value={this.props.value}
                 onChange={this.props.onChange}
-                classes={this.props.classes}
+                classes={{
+                    select: this.props.classes.select,
+                }}
                 disabled={this.props.disabled}
                 variant="outlined"
+                open={this.state.open}
+                onOpen={this.handleOpen}
+                onClose={this.handleClose}
             >
                 {this.renderMenuItems()}
             </Select>
@@ -43,12 +67,52 @@ export class RawDropdownInput extends React.Component<FullProps> {
                 <MenuItem
                     key={index}
                     value={opt}
+                    className={this.props.classes.menuItem}
                 >
-                    {opt}
+                    {this.optionRenderer(opt, index)}
                 </MenuItem>
             );
         });
     }
+
+    private optionRenderer(option: string, index: number) {
+        if (this.props.customOptionRenderer) {
+            const customRenderResult = this.props.customOptionRenderer({
+                option,
+                index,
+            });
+            if (customRenderResult != null) {
+                return customRenderResult;
+            }
+        }
+
+        return option;
+    }
+
+    private handleOpen = (e: React.ChangeEvent) => {
+        if (this.hasButtonAncestor(e.target)) {
+            return;
+        }
+        this.setState({
+            open: true,
+        });
+    };
+
+    private hasButtonAncestor(node: Element): boolean {
+        if (node.classList.contains('MuiButtonBase-root')) {
+            return true;
+        }
+        if (node.parentElement) {
+            return this.hasButtonAncestor(node.parentElement);
+        }
+        return false;
+    }
+
+    private handleClose = () => {
+        this.setState({
+            open: false,
+        });
+    };
 }
 
 export const DropdownInput = withStyles(useStyles)(RawDropdownInput);
