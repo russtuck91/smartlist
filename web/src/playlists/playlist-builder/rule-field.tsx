@@ -1,15 +1,20 @@
 import { Grid, IconButton, ListItem, Theme, WithStyles, withStyles } from '@material-ui/core';
-import { RemoveCircleOutline } from '@material-ui/icons';
+import { Info, RemoveCircleOutline } from '@material-ui/icons';
 import { FormikProps } from 'formik';
 import * as React from 'react';
 
-import { getComparatorsForParam, isGenreRule, isTempoRule, isYearBetweenRule, isYearIsRule, isYearRule, PlaylistRule, RuleComparator, RuleParam } from '../../../../shared';
+import {
+    getComparatorsForParam,
+    isGenreRule, isInstrumentalRule, isSavedRule, isTempoRule, isYearBetweenRule, isYearIsRule, isYearRule,
+    PlaylistRule, RuleComparator, RuleParam,
+} from '../../../../shared';
 import { convertEnumToArray } from '../../../../shared/src/util/object-util';
 
-import { CheckboxField, DropdownField, TextField, YearPickerField } from '../../core/forms/fields';
+import SmTooltip from '../../core/components/tooltips/sm-tooltip';
+import { CheckboxField, CustomOptionRendererProps, DropdownField, TextField, YearPickerField } from '../../core/forms/fields';
 
 import { GenreRuleAutocompleteField } from './genre-rule-autocomplete-field';
-import { getNewConditionByParam, PlaylistBuilderFormValues } from './models';
+import { getNewConditionByParam, PlaylistBuilderFormValues, ruleParamHelperText } from './models';
 import { RuleAutocompleteField } from './rule-autocomplete-field';
 
 
@@ -68,7 +73,7 @@ export class RawRuleField extends React.Component<FullProps> {
                             container
                             alignItems="center"
                             spacing={2}
-                            wrap={rule.param === RuleParam.Saved ? 'nowrap' : undefined}
+                            wrap={this.isOneLineRule(rule) ? 'nowrap' : undefined}
                             className={classes.inputsContainer}
                         >
                             <Grid item xs={6} sm={3}>
@@ -77,6 +82,7 @@ export class RawRuleField extends React.Component<FullProps> {
                                     value={rule.param}
                                     options={ruleParams}
                                     onChange={this.onChangeRuleType}
+                                    customOptionRenderer={this.ruleParamRenderer}
                                 />
                             </Grid>
                             <Grid item xs={6} sm={3}>
@@ -88,18 +94,40 @@ export class RawRuleField extends React.Component<FullProps> {
                                     onChange={this.onChangeComparator}
                                 />
                             </Grid>
-                            <Grid item xs={rule.param === RuleParam.Saved ? true : 12} sm={6}>
+                            <Grid item xs={this.isOneLineRule(rule) ? true : 12} sm={6}>
                                 {this.renderRuleValueField()}
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs>
-                        <IconButton onClick={this.props.removeCondition}>
+                        <IconButton onClick={this.props.removeCondition} size="small">
                             <RemoveCircleOutline color="error" fontSize="small" />
                         </IconButton>
                     </Grid>
                 </Grid>
             </ListItem>
+        );
+    }
+
+    private isOneLineRule(rule: PlaylistRule) {
+        return isSavedRule(rule) || isInstrumentalRule(rule);
+    }
+
+    private ruleParamRenderer({ option }: CustomOptionRendererProps) {
+        const helperText = ruleParamHelperText.get(option);
+        return (
+            <Grid container alignItems="center" wrap="nowrap">
+                <Grid item xs>
+                    {option}
+                </Grid>
+                <Grid item>
+                    {helperText && (
+                        <SmTooltip title={helperText}>
+                            <Info fontSize="small" />
+                        </SmTooltip>
+                    )}
+                </Grid>
+            </Grid>
         );
     }
 
@@ -144,12 +172,12 @@ export class RawRuleField extends React.Component<FullProps> {
     private renderRuleValueField() {
         const { rule, treeId } = this.props;
 
-        if (rule.param === RuleParam.Saved) {
+        if (isSavedRule(rule) || isInstrumentalRule(rule)) {
             return (
                 <CheckboxField
                     id={`${treeId}.value`}
                     value={Boolean(rule.value)}
-                    disabled
+                    disabled={isSavedRule(rule)}
                 />
             );
         }
