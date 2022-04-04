@@ -4,3 +4,5 @@ export * from './checkbox-field';
 export * from './autocomplete-field';
 export * from './year-picker-field';
 export * from './toggle-button-field';
+export * from './range-field';
+export * from './year-range-field';
