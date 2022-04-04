@@ -23,7 +23,7 @@ export class TextInput extends React.Component<TextInputProps> {
                 label={this.props.label}
                 required={this.props.required}
                 error={!!this.props.error}
-                helperText={this.props.error}
+                helperText={typeof this.props.error === 'boolean' ? null : this.props.error}
 
                 variant={this.props.variant as any}
                 multiline={this.props.multiline}
