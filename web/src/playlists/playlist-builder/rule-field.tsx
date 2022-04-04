@@ -11,7 +11,10 @@ import {
 import { convertEnumToArray } from '../../../../shared/src/util/object-util';
 
 import SmTooltip from '../../core/components/tooltips/sm-tooltip';
-import { CheckboxField, CustomOptionRendererProps, DropdownField, TextField, YearPickerField } from '../../core/forms/fields';
+import {
+    CheckboxField, CustomOptionRendererProps, DefaultRangeField, DropdownField, TextField,
+    YearPickerField, YearRangeField,
+} from '../../core/forms/fields';
 
 import { GenreRuleAutocompleteField } from './genre-rule-autocomplete-field';
 import { getNewConditionByParam, PlaylistBuilderFormValues, ruleParamHelperText } from './models';
@@ -136,38 +139,19 @@ export class RawRuleField extends React.Component<FullProps> {
     private renderBetweenValueFields() {
         const { rule, treeId } = this.props;
 
+        if (isYearBetweenRule(rule)) {
+            return (
+                <YearRangeField
+                    id={`${treeId}.value`}
+                    value={rule.value}
+                />
+            );
+        }
+
         return (
-            <Grid container wrap="nowrap" alignItems="center" spacing={1}>
-                <Grid item xs={6}>
-                    {isYearBetweenRule(rule) ? (
-                        <YearPickerField
-                            id={`${treeId}.value.start`}
-                            required
-                            maxDate={rule.value.end}
-                        />
-                    ): (
-                        <TextField
-                            id={`${treeId}.value.start`}
-                            required
-                        />
-                    )}
-                </Grid>
-                <Grid item>to</Grid>
-                <Grid item xs={6}>
-                    {isYearBetweenRule(rule) ? (
-                        <YearPickerField
-                            id={`${treeId}.value.end`}
-                            required
-                            minDate={rule.value.start}
-                        />
-                    ) : (
-                        <TextField
-                            id={`${treeId}.value.end`}
-                            required
-                        />
-                    )}
-                </Grid>
-            </Grid>
+            <DefaultRangeField
+                id={`${treeId}.value`}
+            />
         );
     }
 
