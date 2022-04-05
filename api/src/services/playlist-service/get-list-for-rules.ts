@@ -2,14 +2,20 @@ import { PlaylistRule, RuleParam, Track } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
 
-import { mapToTrack } from '../../mappers/spotify/track-object-full-mapper';
-
-import spotifyService from '../spotify-service/spotify-service';
-
+import fetchTracksForRules from './fetch-tracks-for-rules';
 import filterListOfSongs from './filter-list-of-songs';
-import getIntersectionOfTrackLists from './get-intersection-of-track-lists';
-import getTracksForRule from './get-tracks-for-rule';
 
+
+const rulesThatCanBeFiltered = [
+    RuleParam.Artist, RuleParam.Album, RuleParam.Track, RuleParam.Genre, RuleParam.Year,
+    RuleParam.Tempo, RuleParam.Energy, RuleParam.Instrumental,
+];
+
+const rulesThatCanBeFetched = [
+    RuleParam.Saved,
+    RuleParam.Playlist,
+    RuleParam.Artist, RuleParam.Album, RuleParam.Track, RuleParam.Genre, RuleParam.Year,
+];
 
 async function getListForRules(
     rules: PlaylistRule[],
@@ -18,62 +24,36 @@ async function getListForRules(
 ): Promise<Track[]> {
     logger.debug('>>>> Entering getListForRules()');
 
-    // Separate rules by those that can optionally be filtered from a list (Artist, Album, Genre, etc)
-    // vs those that require their own fetch (My Saved, a Playlist)
-    const canBeFilteredFromABatch: PlaylistRule[] = [];
-    const requiresOwnFetch: PlaylistRule[] = [];
+    // Separate rules by fetch-able and filter-able status, i.e.:
+    // - can be filtered (Artist, Album, Genre, etc)
+    // - must be fetched (Saved, Playlist)
+    // - must be filtered (Tempo, Energy)
+    const canBeFiltered: PlaylistRule[] = [];
+    const mustBeFetched: PlaylistRule[] = [];
+    const canBeFetched: PlaylistRule[] = [];
+    const mustBeFiltered: PlaylistRule[] = [];
     rules.map((rule) => {
-        if ([
-            RuleParam.Artist, RuleParam.Album, RuleParam.Track, RuleParam.Genre, RuleParam.Year,
-            RuleParam.Tempo, RuleParam.Energy, RuleParam.Instrumental,
-        ].includes(rule.param)) {
-            canBeFilteredFromABatch.push(rule);
+        if (rulesThatCanBeFiltered.includes(rule.param)) {
+            canBeFiltered.push(rule);
         } else {
-            requiresOwnFetch.push(rule);
+            mustBeFetched.push(rule);
+        }
+        if (rulesThatCanBeFetched.includes(rule.param)) {
+            canBeFetched.push(rule);
+        } else {
+            mustBeFiltered.push(rule);
         }
     });
 
-    // If there are none that require a fetch
-    if (requiresOwnFetch.length === 0) {
-        // If working from a batch of songs
-        if (currentBatchOfSongs) {
-            // Filter list of songs by filterable rules
-            const filteredBatch = await filterListOfSongs(currentBatchOfSongs, canBeFilteredFromABatch, accessToken);
-            return filteredBatch;
-        }
+    // If there are none that require a fetch AND not working from a batch of songs
+    // Then do fetchEager mode - perform fetch for rules that could be either fetched or filtered
+    const fetchEager = mustBeFetched.length === 0 && !currentBatchOfSongs;
+    const rulesToFetch = fetchEager ? canBeFetched : mustBeFetched;
+    const rulesToFilter = fetchEager ? mustBeFiltered : canBeFiltered;
 
-        // Else, we are NOT working from a batch, then fetch tracks
-        const listsOfTrackResults: (Track[])[] = [];
-
-        // Send special rules through specific APIs, others through getFullSearchResults
-        for (let i = rules.length - 1; i >= 0; i--) {
-            const rule = rules[i];
-            const ruleResults = await getTracksForRule(rule, accessToken);
-            if (ruleResults) {
-                listsOfTrackResults.push(ruleResults);
-                rules.splice(i, 1);
-            }
-        }
-
-        const searchResults = await spotifyService.getFullSearchResults(rules, accessToken);
-        if (searchResults) {
-            listsOfTrackResults.push(searchResults.items.map(mapToTrack));
-        }
-
-        // Union the results
-        return getIntersectionOfTrackLists(listsOfTrackResults);
-
-    } else {
-        // Else, do fetch for each fetch-required rule
-        const listsOfTrackResults: (Track[])[] = (await Promise.all(
-            requiresOwnFetch.map((rule) => getTracksForRule(rule, accessToken)),
-        )).filter((list): list is Track[] => !!list);
-        // Union the results
-        const unionOfTrackResults = getIntersectionOfTrackLists(listsOfTrackResults);
-        // And filter by the filter-able rules
-        const filteredUnion = await filterListOfSongs(unionOfTrackResults, canBeFilteredFromABatch, accessToken);
-        return filteredUnion;
-    }
+    const fetchBaseList = currentBatchOfSongs || await fetchTracksForRules(rulesToFetch, accessToken);
+    const filteredList = await filterListOfSongs(fetchBaseList, rulesToFilter, accessToken);
+    return filteredList;
 }
 
 export default getListForRules;
