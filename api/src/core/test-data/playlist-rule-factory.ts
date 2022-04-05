@@ -1,6 +1,6 @@
 import * as Factory from 'factory.ts';
 
-import { AlbumContainsRule, RuleComparator, RuleParam, SavedRule } from '../../../../shared';
+import { AlbumContainsRule, InstrumentalRule, RuleComparator, RuleParam, SavedRule } from '../../../../shared';
 
 
 export const savedRuleFactory = Factory.Sync.makeFactory<SavedRule>({
@@ -13,4 +13,10 @@ export const albumContainsRuleFactory = Factory.Sync.makeFactory<AlbumContainsRu
     param: RuleParam.Album,
     comparator: RuleComparator.Contains,
     value: '',
+});
+
+export const instrumentalRuleFactory = Factory.Sync.makeFactory<InstrumentalRule>({
+    param: RuleParam.Instrumental,
+    comparator: RuleComparator.Is,
+    value: false,
 });

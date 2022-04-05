@@ -1,5 +1,5 @@
 import { albumContainsRuleFactory, trackFactory } from '../../core/test-data';
-import { savedRuleFactory } from '../../core/test-data/playlist-rule-factory';
+import { instrumentalRuleFactory, savedRuleFactory } from '../../core/test-data/playlist-rule-factory';
 
 import getListForRules from './get-list-for-rules';
 
@@ -48,6 +48,26 @@ describe('getListForRules', () => {
         expect(fetchTracksForRulesSpy).toHaveBeenCalledWith([savedRule], '');
         expect(filterListOfSongsSpy).toHaveBeenCalled();
         expect(filterListOfSongsSpy).toHaveBeenCalledWith(expect.anything(), [albumRule], '');
+    });
+
+    it('given 1 AlbumContains rule and 1 Instrumental rule, should call fetchTracksForRules with AlbumContains rule and filterListOfSongs with other', async () => {
+        // Arrange
+        const expectedAlbumOne = 'foo';
+        const albumRule = albumContainsRuleFactory.build({ value: expectedAlbumOne });
+        const instrumentalRule = instrumentalRuleFactory.build();
+        const rules = [
+            albumRule,
+            instrumentalRule,
+        ];
+
+        // Act
+        await getListForRules(rules, '', undefined);
+
+        // Assert
+        expect(fetchTracksForRulesSpy).toHaveBeenCalled();
+        expect(fetchTracksForRulesSpy).toHaveBeenCalledWith([albumRule], '');
+        expect(filterListOfSongsSpy).toHaveBeenCalled();
+        expect(filterListOfSongsSpy).toHaveBeenCalledWith(expect.anything(), [instrumentalRule], '');
     });
 
     it('given 1 AlbumContains rule, should call fetchTracksForRules with rule', async () => {
