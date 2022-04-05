@@ -20,7 +20,7 @@ const rulesThatCanBeFetched = [
 async function getListForRules(
     rules: PlaylistRule[],
     accessToken: string,
-    currentBatchOfSongs: Track[]|undefined,
+    currentBatchOfSongs: Track[] | undefined,
 ): Promise<Track[]> {
     logger.debug('>>>> Entering getListForRules()');
 
@@ -51,7 +51,7 @@ async function getListForRules(
     const rulesToFetch = fetchEager ? canBeFetched : mustBeFetched;
     const rulesToFilter = fetchEager ? mustBeFiltered : canBeFiltered;
 
-    const fetchBaseList = currentBatchOfSongs || await fetchTracksForRules(rulesToFetch, accessToken);
+    const fetchBaseList = mustBeFetched.length === 0 && currentBatchOfSongs ? currentBatchOfSongs : await fetchTracksForRules(rulesToFetch, accessToken);
     const filteredList = await filterListOfSongs(fetchBaseList, rulesToFilter, accessToken);
     return filteredList;
 }
