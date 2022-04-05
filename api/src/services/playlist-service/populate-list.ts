@@ -4,8 +4,9 @@ import { Playlist, Track } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
 
-import filterListOfSongs from './filter-list-of-songs';
+import getDifferenceOfTrackLists from './get-difference-of-track-lists';
 import getListForRuleGroup from './get-list-for-rule-group';
+import getListForRules from './get-list-for-rules';
 
 
 async function populateList(playlist: Playlist, accessToken: string): Promise<Track[]> {
@@ -19,7 +20,15 @@ async function populateList(playlist: Playlist, accessToken: string): Promise<Tr
 
     const unionResult = union(...results);
 
-    const filteredForExceptions = await filterListOfSongs(unionResult, playlist.exceptions, accessToken, true);
+    // Send exceptions separately through getListForRules with a currentBatchOfSongs
+    const listOfTrackExclusions = await Promise.all(
+        playlist.exceptions.map((rule) => {
+            return getListForRules([ rule ], accessToken, unionResult);
+        }),
+    );
+
+    // Difference each of them from the main batch of songs
+    const filteredForExceptions = getDifferenceOfTrackLists(unionResult, listOfTrackExclusions);
 
     logger.debug(`<<<< Exiting populateList(), the playlist will have ${filteredForExceptions.length} songs`);
     return filteredForExceptions;
