@@ -218,6 +218,7 @@ export class RawRuleField extends React.Component<FullProps> {
         const newCondition = getNewConditionByParam(value);
 
         this.props.formik.setFieldValue(this.props.treeId, newCondition);
+        this.props.formik.setFieldTouched(`${this.props.treeId}.value`, false);
     };
 
     private onChangeComparator = (e: React.ChangeEvent<any>) => {
