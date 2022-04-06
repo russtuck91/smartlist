@@ -63,13 +63,17 @@ export class RawAutocompleteInput extends React.Component<FullProps, Autocomplet
                 getOptionLabel={this.props.getOptionLabel}
                 renderOption={this.props.renderOption}
                 onChange={this.onChange}
+                onBlur={this.props.onBlur}
                 classes={this.props.classes}
+
                 freeSolo={this.props.freeSolo}
                 renderInput={(params) => (
                     <MUITextField
                         {...params}
                         value={this.state.textFieldValue}
                         onChange={this.onTextFieldChange}
+                        error={!!this.props.error}
+                        helperText={typeof this.props.error === 'boolean' ? null : this.props.error}
                     />
                 )}
             />
