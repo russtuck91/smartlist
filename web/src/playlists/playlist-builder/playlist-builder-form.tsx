@@ -230,7 +230,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     private renderDesktopTabsArea() {
         return (
-            <Box flex="1 1 auto">
+            <Box display="flex" flex="1 1 auto" flexDirection="column">
                 <TabSet
                     tabs={[
                         { label: 'Rules', render: this.renderFormArea },
