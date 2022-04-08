@@ -6,7 +6,8 @@ import * as React from 'react';
 
 import {
     getComparatorsForParam,
-    isGenreRule, isInstrumentalRule, isSavedRule, isTempoRule, isYearBetweenRule, isYearIsRule, isYearRule,
+    isBetweenValue,
+    isGenreRule, isInstrumentalRule, isSavedRule, isSearchItem, isYearBetweenRule, isYearIsRule, isYearRule,
     PlaylistRule, RuleComparator, RuleParam,
 } from '../../../../shared';
 import { convertEnumToArray } from '../../../../shared/src/util/object-util';
@@ -234,6 +235,9 @@ export class RawRuleField extends React.Component<FullProps> {
         const modifiedRule: PlaylistRule = this.getNewRuleFromComparatorChange(value, this.props.rule);
 
         this.props.formik.setFieldValue(this.props.treeId, modifiedRule);
+        if (isBetweenValue(modifiedRule.value) && !isBetweenValue(this.props.rule.value)) {
+            this.props.formik.setFieldTouched(`${this.props.treeId}.value`, false);
+        }
     };
 
     private getNewRuleFromComparatorChange(newComparator: RuleComparator, prevRule: PlaylistRule): PlaylistRule {
@@ -241,6 +245,14 @@ export class RawRuleField extends React.Component<FullProps> {
             ...prevRule,
             comparator: newComparator,
         };
+
+        if (isSearchItem(prevRule.value) && newComparator === RuleComparator.Contains) {
+            modifiedRule.value = prevRule.value.name;
+        }
+
+        if (prevRule.comparator === RuleComparator.Contains && newComparator === RuleComparator.Is) {
+            modifiedRule.value = '';
+        }
 
         if (isYearRule(prevRule)) {
             if (newComparator === RuleComparator.Between && isYearIsRule(prevRule)) {
@@ -252,13 +264,6 @@ export class RawRuleField extends React.Component<FullProps> {
             if (newComparator === RuleComparator.Is && isYearBetweenRule(prevRule)) {
                 modifiedRule.value = prevRule.value.start || prevRule.value.end;
             }
-        }
-
-        if (isTempoRule(modifiedRule) && !isTempoRule(prevRule)) {
-            modifiedRule.value = {
-                start: '',
-                end: '',
-            };
         }
 
         return modifiedRule;

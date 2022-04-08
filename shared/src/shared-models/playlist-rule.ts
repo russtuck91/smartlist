@@ -53,8 +53,18 @@ export type SearchItemBase = SpotifyApi.ArtistObjectFull | SpotifyApi.AlbumObjec
 export type SearchItem = SearchItemBase & {
     images?: SpotifyApi.ImageObject[];
 }
+export function isSearchItem(value: PlaylistRule['value']): value is SearchItem {
+    if (typeof value !== 'object' || value === null) return false;
+    const cast = value as SearchItem;
+    return cast.id !== undefined && cast.name !== undefined && cast.type !== undefined;
+}
 
 export interface BetweenValue {
     start: string;
     end: string;
+}
+export function isBetweenValue(value: PlaylistRule['value']): value is BetweenValue {
+    if (typeof value !== 'object' || value == null) return false;
+    const cast = value as BetweenValue;
+    return cast.start !== undefined && cast.end !== undefined;
 }
