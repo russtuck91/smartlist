@@ -1,4 +1,4 @@
-import { IconButton, StyleRules, TableCell, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { IconButton, StyleRules, TableCell, WithStyles, withStyles } from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import classNames from 'classnames';
@@ -23,7 +23,7 @@ interface RowContentRendererProps {
     onToggleExpanded: () => void;
 }
 
-const useStyles = (theme: Theme): StyleRules => ({
+const useStyles = (): StyleRules => ({
     hasExpandableRows: {
         borderBottom: 'unset',
     },

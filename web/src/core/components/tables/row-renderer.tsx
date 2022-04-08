@@ -1,4 +1,4 @@
-import { TableRow, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { TableRow, WithStyles, withStyles } from '@material-ui/core';
 import React from 'react';
 
 import { ExpansionRowContentRenderer } from './expansion-row-content-renderer';
@@ -20,7 +20,7 @@ interface RowRendererState {
     expanded: boolean;
 }
 
-const useStyles = (theme: Theme) => ({
+const useStyles = () => ({
 });
 
 type FullProps = RowRendererProps & WithStyles<typeof useStyles>;

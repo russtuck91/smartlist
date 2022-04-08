@@ -1,11 +1,11 @@
-import { StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { StyleRules, WithStyles, withStyles } from '@material-ui/core';
 import React from 'react';
 
 
 interface EllipsisProps {
 }
 
-const useStyles = (theme: Theme): StyleRules => ({
+const useStyles = (): StyleRules => ({
     root: {
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',

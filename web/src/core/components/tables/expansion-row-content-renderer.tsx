@@ -1,4 +1,4 @@
-import { Collapse, TableCell, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { Collapse, TableCell, WithStyles, withStyles } from '@material-ui/core';
 import React from 'react';
 
 import { ExpandableRowOptions } from './models';
@@ -10,7 +10,7 @@ interface ExpansionRowContentRendererProps {
     expanded: boolean;
 }
 
-const useStyles = (theme: Theme) => ({
+const useStyles = () => ({
     expansionRowContent: {
         paddingTop: 0,
         paddingBottom: 0,
