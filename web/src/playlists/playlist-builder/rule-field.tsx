@@ -1,5 +1,6 @@
-import { Box, Grid, IconButton, ListItem, Theme, WithStyles, withStyles, WithWidth, withWidth } from '@material-ui/core';
+import { Box, Grid, IconButton, ListItem, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { Info, RemoveCircleOutline } from '@material-ui/icons';
+import classNames from 'classnames';
 import { FormikProps } from 'formik';
 import * as React from 'react';
 
@@ -31,7 +32,7 @@ interface RuleFieldProps {
     divider: boolean;
 }
 
-const useStyles = (theme: Theme) => ({
+const useStyles = (theme: Theme): StyleRules => ({
     root: {
         '&:last-child': {
             borderBottom: 0,
@@ -49,9 +50,12 @@ const useStyles = (theme: Theme) => ({
             paddingTop: 0,
         },
     },
+    inputsContainerOneLine: {
+        flexWrap: 'nowrap',
+    },
 });
 
-type FullProps = RuleFieldProps & WithStyles<typeof useStyles> & WithWidth;
+type FullProps = RuleFieldProps & WithStyles<typeof useStyles>;
 
 export class RawRuleField extends React.Component<FullProps> {
     render() {
@@ -76,8 +80,9 @@ export class RawRuleField extends React.Component<FullProps> {
                             container
                             alignItems="center"
                             spacing={2}
-                            wrap={this.props.width === 'xs' && !this.isOneLineRule(rule) ? 'wrap' : 'nowrap'}
-                            className={classes.inputsContainer}
+                            className={classNames(classes.inputsContainer, {
+                                [classes.inputsContainerOneLine]: this.isOneLineRule(rule),
+                            })}
                         >
                             <Grid item xs={6} sm="auto">
                                 <DropdownField
@@ -257,4 +262,4 @@ export class RawRuleField extends React.Component<FullProps> {
     }
 }
 
-export const RuleField = withWidth()( withStyles(useStyles)(RawRuleField) );
+export const RuleField = withStyles(useStyles)(RawRuleField);
