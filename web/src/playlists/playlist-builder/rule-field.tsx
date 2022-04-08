@@ -49,6 +49,10 @@ const useStyles = (theme: Theme): StyleRules => ({
             paddingBottom: 0,
             paddingTop: 0,
         },
+        '& .MuiCheckbox-root.MuiIconButton-root': {
+            marginTop: theme.spacing(-1),
+            marginBottom: theme.spacing(-1),
+        },
     },
     inputsContainerOneLine: {
         flexWrap: 'nowrap',
@@ -78,7 +82,6 @@ export class RawRuleField extends React.Component<FullProps> {
                     <Grid item xs={12}>
                         <Grid
                             container
-                            alignItems="center"
                             spacing={2}
                             className={classNames(classes.inputsContainer, {
                                 [classes.inputsContainerOneLine]: this.isOneLineRule(rule),
@@ -102,7 +105,7 @@ export class RawRuleField extends React.Component<FullProps> {
                                     onChange={this.onChangeComparator}
                                 />
                             </Grid>
-                            <Grid item xs={this.isOneLineRule(rule) ? true : 12} sm={true}>
+                            <Grid item xs={this.isOneLineRule(rule) ? true : 12} sm={true} style={{ alignSelf: 'center' }}>
                                 {this.renderRuleValueField()}
                             </Grid>
                         </Grid>
