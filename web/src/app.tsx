@@ -1,3 +1,4 @@
+import 'setimmediate';
 import './app.scss';
 import './core/analytics/google-analytics';
 
