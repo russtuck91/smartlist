@@ -109,7 +109,6 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
     private transitionToBrowse(playlist: Playlist) {
         const locState: PlaylistBrowserLocationState = {
             activeItem: playlist,
-            showJustCreatedDialog: !this.isEditMode(),
         };
         history.push(RouteLookup.playlists.base, locState);
     }

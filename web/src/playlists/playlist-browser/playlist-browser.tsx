@@ -34,7 +34,6 @@ interface PlaylistBrowserState {
 }
 export interface PlaylistBrowserLocationState {
     activeItem?: Playlist;
-    showJustCreatedDialog?: boolean;
 }
 
 const useStyles = (theme: Theme) => {
@@ -92,6 +91,8 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
 
     componentDidMount() {
         this.loadPlaylists();
+
+        this.publishJustUpdatedPlaylist();
     }
 
     async loadPlaylists(reload?: boolean) {
@@ -129,7 +130,6 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
                     {this.renderPlaylistList()}
                     {this.renderDeleteDialog()}
                     {this.renderPublishDialog()}
-                    {this.renderJustCreatedDialog()}
                 </Container>
             </Box>
         );
@@ -271,20 +271,6 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         );
     }
 
-    private renderJustCreatedDialog() {
-        const { showJustCreatedDialog } = this.props.location.state || {};
-
-        return (
-            <DialogControl
-                open={!!showJustCreatedDialog}
-                onClose={this.closeJustCreatedDialog}
-                onConfirm={this.onConfirmPublishJustCreated}
-                title="Playlist successfully created!"
-                body={<p>Would you like to publish it to Spotify now? If not, it will be published at the next regular update.</p>}
-            />
-        );
-    }
-
     private transitionToEdit(item: Playlist) {
         history.push(generatePath(RouteLookup.playlists.edit, { id: item.id }));
     }
@@ -341,10 +327,12 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     private async publishPlaylist(playlist: Playlist) {
         this.setPublishInProgress(playlist.id, true);
 
-        await requests.post(`${PlaylistContainer.requestUrl}/publish/${playlist.id}`);
-        await this.loadPlaylists();
-
-        this.setPublishInProgress(playlist.id, false);
+        try {
+            await requests.post(`${PlaylistContainer.requestUrl}/publish/${playlist.id}`);
+            await this.loadPlaylists();
+        } finally {
+            this.setPublishInProgress(playlist.id, false);
+        }
     }
 
     private setPublishInProgress(id: string, value: boolean) {
@@ -356,22 +344,12 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         }));
     }
 
-    private closeJustCreatedDialog = () => {
-        this.props.history.replace({
-            state: {
-                activeItem: undefined,
-                showJustCreatedDialog: false,
-            },
-        });
-    };
-
-    private onConfirmPublishJustCreated = () => {
+    private publishJustUpdatedPlaylist = () => {
         const { activeItem } = this.props.location.state || {};
         if (!activeItem) { return; }
+        if (activeItem.deleted) { return; }
 
         this.publishPlaylist(activeItem);
-
-        this.closeJustCreatedDialog();
     };
 }
 

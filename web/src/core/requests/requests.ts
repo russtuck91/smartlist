@@ -55,7 +55,7 @@ async function makeDirectRequest(method: string, url: string, body?: any, header
     try {
         return await response.json();
     } catch (e) {
-        logger.debug('Error getting JSON response from HTTP request', method, url, response.status);
+        logger.debug(`Error getting JSON response from HTTP request: ${method} ${url} ${response.status}`);
         // return;
     }
 }
