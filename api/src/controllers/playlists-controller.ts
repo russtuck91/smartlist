@@ -2,7 +2,7 @@ import { Controller, Delete, Get, Post, Put, Wrapper } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 
-import { Playlist, PlaylistDeleteOptions, PlaylistRuleGroup } from '../../../shared';
+import { Playlist, PlaylistDeleteOptions } from '../../../shared';
 
 import { playlistCreatedEvent, playlistPublishedEvent, playlistUpdatedEvent } from '../core/analytics/analytics-utils';
 import { doAndRetryWithCurrentUser } from '../core/session/session-util';
@@ -53,7 +53,7 @@ export class PlaylistsController {
         const deleteOptions: PlaylistDeleteOptions = req.body;
         await playlistService.deletePlaylist(req.params.id, deleteOptions);
 
-        res.send();
+        res.send({});
     }
 
 
@@ -74,10 +74,14 @@ export class PlaylistsController {
     @Wrapper(expressAsyncHandler)
     async publishPlaylist(req: Request, res: Response) {
         await doAndRetryWithCurrentUser(async (accessToken) => {
-            await playlistService.publishPlaylistById(req.params.id, accessToken);
+            const playlistId = req.params.id;
+
+            await playlistService.publishPlaylistById(playlistId, accessToken);
             playlistPublishedEvent();
 
-            res.send();
+            res.send({
+                publishedPlaylistId: playlistId,
+            });
         });
     }
 }
