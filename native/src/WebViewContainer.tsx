@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
     webview: {
         flex: 1,
         minHeight: 400,
+        backgroundColor: 'transparent',
     },
 });
 
