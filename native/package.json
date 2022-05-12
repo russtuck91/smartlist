@@ -15,6 +15,7 @@
   "dependencies": {
     "react": "17.0.1",
     "react-native": "0.64.3",
+    "react-native-bootsplash": "^4.1.4",
     "react-native-splash-screen": "^3.2.0",
     "react-native-webview": "^11.4.4",
     "ts-node": "^8.6.1"
