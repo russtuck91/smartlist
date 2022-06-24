@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { BackHandler, StyleSheet } from 'react-native';
 import RNBootSplash from 'react-native-bootsplash';
-// import SplashScreen from 'react-native-splash-screen';
 import WebView from 'react-native-webview';
 import { WebViewProgressEvent } from 'react-native-webview/lib/WebViewTypes';
 
@@ -32,12 +31,7 @@ const WebViewContainer = () => {
     }, []);
 
     async function onLoadEnd() {
-        // console.log('in WebViewContainer onLoadEnd #1');
-        // SplashScreen.hide();
-        console.log('in WebViewContainer onLoadEnd #2');
-
         await RNBootSplash.hide({ fade: true });
-        console.log('in WebViewContainer onLoadEnd #3');
     }
 
     const onLoadProgress = (event: WebViewProgressEvent) => {

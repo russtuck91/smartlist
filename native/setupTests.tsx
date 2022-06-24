@@ -17,8 +17,6 @@ jest.mock('react-native', () => ({
     SafeAreaView: ({ children }: ViewProps) => <>{children}</>,
 }));
 
-jest.mock('react-native-splash-screen', () => ({
-    hide: jest.fn(),
-}));
+jest.mock('react-native-bootsplash', () => ({}));
 
 jest.mock('react-native-webview', () => 'WebView');
