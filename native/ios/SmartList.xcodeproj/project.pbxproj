@@ -12,7 +12,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		386035380A36394FC7096843 /* libPods-SmartList-SmartListTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E0FD580BE32AFD344246322B /* libPods-SmartList-SmartListTests.a */; };
 		40A912E928663F9C003EABF6 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40A912E828663F9C003EABF6 /* AppDelegate.mm */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		40E0A5EA28666B9B001B7807 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40E0A5E928666B9B001B7807 /* BootSplash.storyboard */; };
 		CC50D1F7002BB46BABDD5F02 /* libPods-SmartList.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2785B4DAA3E65A71DB1EA08 /* libPods-SmartList.a */; };
 /* End PBXBuildFile section */
 
@@ -37,9 +37,9 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SmartList/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SmartList/main.m; sourceTree = "<group>"; };
 		40A912E828663F9C003EABF6 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = SmartList/AppDelegate.mm; sourceTree = "<group>"; };
+		40E0A5E928666B9B001B7807 /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = SmartList/BootSplash.storyboard; sourceTree = "<group>"; };
 		4CA6A5CECA0053FE6AE150FD /* Pods-SmartList-SmartListTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SmartList-SmartListTests.debug.xcconfig"; path = "Target Support Files/Pods-SmartList-SmartListTests/Pods-SmartList-SmartListTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6F2AD21049775CB6B959F4C9 /* Pods-SmartList-SmartListTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SmartList-SmartListTests.release.xcconfig"; path = "Target Support Files/Pods-SmartList-SmartListTests/Pods-SmartList-SmartListTests.release.xcconfig"; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SmartList/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9137009CA37BD0CEFABE1738 /* Pods-SmartList.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SmartList.release.xcconfig"; path = "Target Support Files/Pods-SmartList/Pods-SmartList.release.xcconfig"; sourceTree = "<group>"; };
 		C2785B4DAA3E65A71DB1EA08 /* libPods-SmartList.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SmartList.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0FD580BE32AFD344246322B /* libPods-SmartList-SmartListTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SmartList-SmartListTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -103,7 +103,7 @@
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
+				40E0A5E928666B9B001B7807 /* BootSplash.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
 			name = SmartList;
@@ -244,7 +244,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				40E0A5EA28666B9B001B7807 /* BootSplash.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
