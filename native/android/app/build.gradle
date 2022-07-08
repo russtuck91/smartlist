@@ -138,8 +138,8 @@ android {
         applicationId "com.smartlistmusic.smartlist"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 071
-        versionName "0.7.1"
+        versionCode 90
+        versionName "0.9.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
