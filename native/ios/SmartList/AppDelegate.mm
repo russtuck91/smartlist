@@ -45,9 +45,9 @@
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"SmartList", nil);
 
   if (@available(iOS 13.0, *)) {
-    rootView.backgroundColor = [UIColor systemBackgroundColor];
+    rootView.backgroundColor = appBg;
   } else {
-    rootView.backgroundColor = [UIColor whiteColor];
+    rootView.backgroundColor = appBg;
   }
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
