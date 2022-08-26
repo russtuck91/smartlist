@@ -1,6 +1,6 @@
 {
   "name": "smartlist",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "private": true,
   "scripts": {
     "postinstall": "run-p install:api install:web install:native",
