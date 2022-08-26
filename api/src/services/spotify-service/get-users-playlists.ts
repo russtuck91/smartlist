@@ -20,7 +20,7 @@ async function getUsersPlaylists(id: string, accessToken: string|undefined): Pro
         }),
     );
 
-    logger.debug(`<<<< Exiting getUsersPlaylists() after finding user has ${result.length} playlists`);
+    logger.debug(`<<<< Exiting getUsersPlaylists() after finding user has ${result.items.length} playlists`);
     return result;
 }
 
