@@ -1,15 +1,25 @@
-import { MongoRepository } from 'mongtype';
+import { CollectionProps, DBSource, MongoRepository } from 'mongtype';
 
 import { CacheableResource, SavedCacheRecord } from '../../core/shared-models';
 
 
 class CacheRepository<Resource extends CacheableResource> extends MongoRepository<SavedCacheRecord<Resource>> {
+    constructor(dbSource: DBSource, opts?: CollectionProps) {
+        super(dbSource, opts);
+        this.ensureIndexes();
+    }
+
+    private async ensureIndexes() {
+        const collection = await this.collection;
+        await collection.createIndex('item.id');
+    }
+
     async insertManyResources(resources: Resource[]) {
         const cacheRecords = this.createCacheRecordsFromResources(resources);
         await this.insertMany(cacheRecords);
     }
 
-    async insertMany(items: SavedCacheRecord<Resource>[]) {
+    private async insertMany(items: SavedCacheRecord<Resource>[]) {
         const collection = await this.collection;
 
         const result = await collection.insertMany(items);
@@ -21,7 +31,7 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
         await this.bulkUpdate(cacheRecords);
     }
 
-    async bulkUpdate(cacheItems: SavedCacheRecord<Resource>[]) {
+    private async bulkUpdate(cacheItems: SavedCacheRecord<Resource>[]) {
         const collection = await this.collection;
 
         const operations = cacheItems.map((cacheItem) => ({
