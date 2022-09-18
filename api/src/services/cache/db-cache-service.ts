@@ -7,8 +7,6 @@ import CacheRepository from '../../repositories/cache/cache-repository';
 
 import { SourceMethod } from './types';
 
-// TODO ensureIndex on item.id
-
 
 class DbCacheService<Resource extends CacheableResource> {
     repo: CacheRepository<Resource>;
