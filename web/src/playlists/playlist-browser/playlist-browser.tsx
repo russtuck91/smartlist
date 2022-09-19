@@ -2,16 +2,19 @@ import {
     Box, Button, CircularProgress, Container, Grid, Link, List, ListItem, ListItemText, Paper,
     StyleRules, Theme, Typography, WithStyles, withStyles,
 } from '@material-ui/core';
-import { Delete, Publish } from '@material-ui/icons';
+import { Delete, FilterList, Publish, Search } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
+import { FormikProps, withFormik } from 'formik';
+import moment from 'moment';
 import * as React from 'react';
 import { generatePath, Link as RouterLink, RouteComponentProps } from 'react-router-dom';
 
-import { Playlist, PlaylistDeleteOptions } from '../../../../shared';
+import { convertEnumToArray, Playlist, PlaylistDeleteOptions } from '../../../../shared';
 
 import { DialogControl } from '../../core/components/modals/dialog-control';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
 import SmTooltip from '../../core/components/tooltips/sm-tooltip';
+import { DropdownField, TextField } from '../../core/forms/fields';
 import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
@@ -34,6 +37,16 @@ interface PlaylistBrowserState {
 }
 export interface PlaylistBrowserLocationState {
     activeItem?: Playlist;
+}
+
+interface PlaylistBrowserFormValues {
+    search: string;
+    sort: PlaylistBrowserSortOptions;
+}
+enum PlaylistBrowserSortOptions {
+    alphabetical = 'Alphabetical',
+    newestFirst = 'Newest First',
+    oldestFirst = 'Oldest First',
 }
 
 const useStyles = (theme: Theme) => {
@@ -80,7 +93,7 @@ const useStyles = (theme: Theme) => {
     return rules;
 };
 
-type FullProps = PlaylistBrowserProps & WithStyles<typeof useStyles>;
+type FullProps = PlaylistBrowserProps & WithStyles<typeof useStyles> & FormikProps<PlaylistBrowserFormValues>;
 
 export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrowserState> {
     state: PlaylistBrowserState = {
@@ -117,7 +130,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
                     </Typography>
                 </SecondaryAppBar>
                 <Container className={this.props.classes.container}>
-                    <Box my={3}>
+                    <Box mt={3}>
                         <Grid container alignItems="flex-end">
                             <Grid item xs />
                             <Grid item>
@@ -127,10 +140,35 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
                             </Grid>
                         </Grid>
                     </Box>
+                    {this.renderFormArea()}
                     {this.renderPlaylistList()}
                     {this.renderDeleteDialog()}
                     {this.renderPublishDialog()}
                 </Container>
+            </Box>
+        );
+    }
+
+    private renderFormArea() {
+        return (
+            <Box my={1}>
+                <Grid container spacing={1} alignItems="flex-end">
+                    <Grid item xs={12} sm="auto" style={{ flexGrow: 1 }}>
+                        <TextField
+                            id="search"
+                            label="Search"
+                            startAdornment={<Search />}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm="auto">
+                        <DropdownField
+                            id="sort"
+                            options={convertEnumToArray(PlaylistBrowserSortOptions)}
+                            IconComponent={FilterList}
+                            variant="filled"
+                        />
+                    </Grid>
+                </Grid>
             </Box>
         );
     }
@@ -161,12 +199,34 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
                     </Box>
                 ) : (
                     <List>
-                        {playlists.map(this.renderPlaylistItem)}
+                        {playlists
+                            .filter(this.filterPlaylist)
+                            .sort(this.sortPlaylists)
+                            .map(this.renderPlaylistItem)}
                     </List>
                 )}
             </Paper>
         );
     }
+
+    private filterPlaylist = (playlist: Playlist) => {
+        const { values: { search } } = this.props;
+        return playlist.name.toLowerCase().includes(search.toLowerCase());
+    };
+
+    private sortPlaylists = (a: Playlist, b: Playlist): number => {
+        const { values: { sort } } = this.props;
+        if (sort === PlaylistBrowserSortOptions.alphabetical) {
+            return a.name.localeCompare(b.name);
+        }
+        if (sort === PlaylistBrowserSortOptions.newestFirst) {
+            return moment(b.createdAt).diff(a.createdAt);
+        }
+        if (sort === PlaylistBrowserSortOptions.oldestFirst) {
+            return moment(a.createdAt).diff(b.createdAt);
+        }
+        return 0;
+    };
 
     private renderPlaylistItem = (playlist: Playlist, index: number, playlists: Playlist[]) => {
         return (
@@ -353,4 +413,12 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     };
 }
 
-export const PlaylistBrowser = withStyles(useStyles)(RawPlaylistBrowser);
+export const PlaylistBrowser = withStyles(useStyles)( withFormik({
+    handleSubmit() {},
+    mapPropsToValues(): PlaylistBrowserFormValues {
+        return {
+            search: '',
+            sort: PlaylistBrowserSortOptions.newestFirst,
+        };
+    },
+})(RawPlaylistBrowser) );

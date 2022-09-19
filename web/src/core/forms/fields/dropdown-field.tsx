@@ -13,9 +13,12 @@ export interface CustomOptionRendererProps {
 
 interface DropdownInputProps extends FormFieldProps {
     id: string;
-    value: any;
+    value?: any;
     options: string[];
+
     customOptionRenderer?: CustomOptionRenderer;
+    IconComponent?: React.ElementType;
+    variant?: 'standard'|'filled'|'outlined';
 }
 
 const useStyles = (theme: Theme) => ({
@@ -49,10 +52,11 @@ export class RawDropdownInput extends React.Component<FullProps, DropdownInputSt
                     select: this.props.classes.select,
                 }}
                 disabled={this.props.disabled}
-                variant="outlined"
+                variant={this.props.variant || 'outlined'}
                 open={this.state.open}
                 onOpen={this.handleOpen}
                 onClose={this.handleClose}
+                IconComponent={this.props.IconComponent}
             >
                 {this.renderMenuItems()}
             </Select>
