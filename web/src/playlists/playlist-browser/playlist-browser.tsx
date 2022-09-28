@@ -1,9 +1,8 @@
 import {
-    Box, Button, CircularProgress, Container, Grid, Link, List, ListItem, ListItemText, Paper,
+    Box, Button, Container, Grid, Link,
     StyleRules, Theme, Typography, WithStyles, withStyles,
 } from '@material-ui/core';
-import { Delete, FilterList, Publish, Search } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
+import { FilterList, Search } from '@material-ui/icons';
 import { FormikProps, withFormik } from 'formik';
 import moment from 'moment';
 import * as React from 'react';
@@ -13,16 +12,15 @@ import { convertEnumToArray, Playlist, PlaylistDeleteOptions } from '../../../..
 
 import { DialogControl } from '../../core/components/modals/dialog-control';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
-import SmTooltip from '../../core/components/tooltips/sm-tooltip';
 import { DropdownField, TextField } from '../../core/forms/fields';
 import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
-import { toDateTimeFormat } from '../../core/utils';
 
 import { PlaylistContainer } from '../playlist-container';
 
 import { DeleteDialogContainer } from './delete-dialog/delete-dialog-container';
+import { PlaylistBrowserListRenderer } from './playlist-browser-list-renderer';
 
 interface PlaylistBrowserProps extends RouteComponentProps<any, any, PlaylistBrowserLocationState> {
 }
@@ -57,37 +55,6 @@ const useStyles = (theme: Theme) => {
             flex: '1 1 auto',
             overflowY: 'auto',
             paddingBottom: theme.spacing(2),
-        },
-        listContainer: {
-            display: 'flex',
-            flex: '1 1 auto',
-            flexDirection: 'column',
-            overflowY: 'auto',
-
-            '& .MuiAlert-root': {
-                fontSize: 'inherit',
-                paddingLeft: theme.spacing(1),
-                paddingRight: theme.spacing(1),
-                '& .MuiAlert-icon': {
-                    padding: 0,
-                    marginRight: theme.spacing(1),
-                    fontSize: '1.3em',
-                },
-                '& .MuiAlert-message': {
-                    padding: 0,
-                },
-            },
-
-            '& .MuiButton-root': {
-                margin: theme.spacing(0.5),
-            },
-        },
-        actionArea: {
-            display: 'flex',
-
-            [theme.breakpoints.down('xs')]: {
-                flexDirection: 'column',
-            },
         },
     };
     return rules;
@@ -174,38 +141,15 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
     }
 
     private renderPlaylistList() {
-        const { playlists } = this.state;
-
-        if (!playlists) {
-            return (
-                <Box display="flex" justifyContent="center">
-                    <CircularProgress size={60} />
-                </Box>
-            );
-        }
-
         return (
-            <Paper className={this.props.classes.listContainer}>
-                {playlists.length === 0 ? (
-                    <Box
-                        display="flex"
-                        flex="1 1 auto"
-                        alignItems="center"
-                        justifyContent="center"
-                        textAlign="center"
-                        p={4}
-                    >
-                        You have no playlists. Create a new playlist and it will show up here.
-                    </Box>
-                ) : (
-                    <List>
-                        {playlists
-                            .filter(this.filterPlaylist)
-                            .sort(this.sortPlaylists)
-                            .map(this.renderPlaylistItem)}
-                    </List>
-                )}
-            </Paper>
+            <PlaylistBrowserListRenderer
+                playlists={(this.state.playlists?.filter(this.filterPlaylist).sort(this.sortPlaylists)) || []}
+                isLoading={this.state.playlists === undefined}
+                publishInProgress={this.state.publishInProgress}
+                onClickListItem={this.transitionToEdit}
+                onClickPublishBtn={this.openPublishDialog}
+                onClickDeleteBtn={this.openDeleteDialog}
+            />
         );
     }
 
@@ -227,83 +171,6 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         }
         return 0;
     };
-
-    private renderPlaylistItem = (playlist: Playlist, index: number, playlists: Playlist[]) => {
-        return (
-            <ListItem
-                key={index}
-                divider={index < playlists.length - 1}
-                button
-                onClick={() => this.transitionToEdit(playlist)}
-            >
-                <ListItemText
-                    primary={playlist.name}
-                    secondary={(
-                        <>
-                            Last Published:
-                            {' '}
-                            {this.renderLastPublishedValue(playlist)}
-                        </>
-                    )}
-                />
-                <Box className={this.props.classes.actionArea}>
-                    <Button
-                        variant="contained"
-                        size="small"
-                        onClick={(event) => {
-                            this.openPublishDialog(playlist);
-                            event.stopPropagation();
-                            event.preventDefault();
-                        }}
-                        startIcon={<Publish fontSize="small" />}
-                    >
-                        Publish
-                    </Button>
-                    <Button
-                        variant="contained"
-                        size="small"
-                        onClick={(event) => {
-                            this.openDeleteDialog(playlist);
-                            event.stopPropagation();
-                            event.preventDefault();
-                        }}
-                        startIcon={<Delete fontSize="small" />}
-                    >
-                        Delete
-                    </Button>
-                </Box>
-            </ListItem>
-        );
-    };
-
-    private renderLastPublishedValue(playlist: Playlist) {
-        const isPublishInProgress: boolean = this.state.publishInProgress[playlist.id];
-        if (isPublishInProgress) {
-            return <CircularProgress size={20} />;
-        }
-
-        if (playlist.deleted) {
-            const title = (
-                <div>
-                    Playlist was deleted from Spotify.
-                    <br />
-                    Re-publish to resume automatic updates.
-                </div>
-            );
-            return (
-                <SmTooltip title={title}>
-                    <Alert severity="error">
-                        Deleted
-                    </Alert>
-                </SmTooltip>
-            );
-        }
-
-        if (!playlist.lastPublished) {
-            return '--';
-        }
-        return toDateTimeFormat(playlist.lastPublished);
-    }
 
     private renderDeleteDialog() {
         const { activeItem, showDeleteDialog } = this.state;
