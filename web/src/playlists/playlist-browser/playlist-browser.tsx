@@ -90,7 +90,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
 
     render() {
         return (
-            <Box display="flex" flex="1 1 auto" flexDirection="column">
+            <Box display="flex" flex="1 1 auto" flexDirection="column" overflow="auto">
                 <SecondaryAppBar>
                     <Typography variant="h6">
                         Playlists

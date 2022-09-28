@@ -1,6 +1,8 @@
 import { Box, Button, CircularProgress, List, ListItem, ListItemText, Paper, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { Delete, Publish } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
+import { Alert, Skeleton } from '@material-ui/lab';
+import classNames from 'classnames';
+import { random } from 'lodash';
 import React from 'react';
 
 import { Playlist } from '../../../../shared';
@@ -43,12 +45,18 @@ const useStyles = (theme: Theme): StyleRules => ({
             margin: theme.spacing(0.5),
         },
     },
+    listContainerLoading: {
+        overflow: 'hidden',
+    },
     actionArea: {
         display: 'flex',
 
         [theme.breakpoints.down('xs')]: {
             flexDirection: 'column',
         },
+    },
+    actionAreaLoading: {
+        visibility: 'hidden',
     },
 });
 
@@ -58,17 +66,13 @@ export class RawPlaylistBrowserListRenderer extends React.Component<FullProps> {
     render() {
         const { playlists } = this.props;
 
-        if (this.props.isLoading) {
-            return (
-                <Box display="flex" justifyContent="center">
-                    <CircularProgress size={60} />
-                </Box>
-            );
-        }
-
         return (
-            <Paper className={this.props.classes.listContainer}>
-                {playlists.length === 0 ? (
+            <Paper
+                className={classNames(this.props.classes.listContainer, {
+                    [this.props.classes.listContainerLoading]: this.props.isLoading,
+                })}
+            >
+                {!this.props.isLoading && playlists.length === 0 ? (
                     <Box
                         display="flex"
                         flex="1 1 auto"
@@ -81,7 +85,10 @@ export class RawPlaylistBrowserListRenderer extends React.Component<FullProps> {
                     </Box>
                 ) : (
                     <List>
-                        {playlists.map(this.renderPlaylistItem)}
+                        {(this.props.isLoading ?
+                            Array(100).fill({}) :
+                            playlists
+                        ).map(this.renderPlaylistItem)}
                     </List>
                 )}
             </Paper>
@@ -93,12 +100,12 @@ export class RawPlaylistBrowserListRenderer extends React.Component<FullProps> {
             <ListItem
                 key={index}
                 divider={index < playlists.length - 1}
-                button
-                onClick={() => this.props.onClickListItem(playlist)}
+                button={!this.props.isLoading as any}
+                onClick={this.props.isLoading ? undefined : () => this.props.onClickListItem(playlist)}
             >
                 <ListItemText
-                    primary={playlist.name}
-                    secondary={(
+                    primary={this.props.isLoading ? <Skeleton width={`${random(4, 9)}em`} /> : playlist.name}
+                    secondary={this.props.isLoading ? <Skeleton width="16em" /> : (
                         <>
                             Last Published:
                             {' '}
@@ -106,7 +113,11 @@ export class RawPlaylistBrowserListRenderer extends React.Component<FullProps> {
                         </>
                     )}
                 />
-                <Box className={this.props.classes.actionArea}>
+                <Box
+                    className={classNames(this.props.classes.actionArea, {
+                        [this.props.classes.actionAreaLoading]: this.props.isLoading,
+                    })}
+                >
                     <Button
                         variant="contained"
                         size="small"
