@@ -1,4 +1,7 @@
-import { isAlbumIsRule, isArtistIsRule, isPlaylistTypeRule, isSavedRule, PlaylistRule, Track } from '../../../../shared';
+import {
+    isAlbumIsRule, isArtistIsRule, isPlaylistTypeRule, isSavedRule,
+    PlaylistRule, Track,
+} from '../../../../shared';
 
 import { mapToTrack } from '../../mappers/spotify/track-object-full-mapper';
 

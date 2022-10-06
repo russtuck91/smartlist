@@ -1,4 +1,7 @@
-import { Modal, Paper, Theme, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Modal, Paper,
+    Theme, WithStyles, withStyles,
+} from '@material-ui/core';
 import * as React from 'react';
 
 interface ModalControlProps {

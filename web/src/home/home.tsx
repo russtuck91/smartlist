@@ -1,4 +1,9 @@
-import { Button, Container, Grid, Link, StyleRules, Theme, Typography, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Button, Container, Grid, Link,
+    StyleRules, Theme,
+    Typography,
+    WithStyles, withStyles,
+} from '@material-ui/core';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Link as RouterLink } from 'react-router-dom';

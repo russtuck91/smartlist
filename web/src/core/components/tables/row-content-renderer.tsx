@@ -1,4 +1,6 @@
-import { IconButton, StyleRules, TableCell, WithStyles, withStyles } from '@material-ui/core';
+import {
+    IconButton, StyleRules, TableCell, WithStyles, withStyles,
+} from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import classNames from 'classnames';
@@ -9,7 +11,9 @@ import { toDateTimeFormat } from '../../utils';
 
 import Ellipsis from '../ellipsis';
 
-import { ColumnConfig, ColumnFormatType, ColumnSet, CustomCellFormatter, ExpandableRowOptions } from './models';
+import {
+    ColumnConfig, ColumnFormatType, ColumnSet, CustomCellFormatter, ExpandableRowOptions,
+} from './models';
 
 
 interface RowContentRendererProps {

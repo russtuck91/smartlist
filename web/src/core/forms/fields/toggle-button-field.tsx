@@ -1,4 +1,7 @@
-import { FormControl, FormLabel, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
+import {
+    FormControl, FormLabel,
+    StyleRules, Theme, WithStyles, withStyles,
+} from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import React from 'react';
 

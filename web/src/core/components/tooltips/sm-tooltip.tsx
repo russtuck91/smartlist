@@ -1,4 +1,7 @@
-import { ClickAwayListener, IconButton, StyleRules, Tooltip, WithStyles, withStyles } from '@material-ui/core';
+import {
+    ClickAwayListener, IconButton, StyleRules, Tooltip,
+    WithStyles, withStyles,
+} from '@material-ui/core';
 import React from 'react';
 import { isMobile } from 'react-device-detect';
 

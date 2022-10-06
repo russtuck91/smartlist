@@ -1,4 +1,7 @@
-import { Tab, Tabs, Theme, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Tab, Tabs,
+    Theme, WithStyles, withStyles,
+} from '@material-ui/core';
 import React, { useState } from 'react';
 
 import TabPanel from './tab-panel';

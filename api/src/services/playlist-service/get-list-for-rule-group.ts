@@ -1,6 +1,10 @@
 import { union } from 'lodash';
 
-import { isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup, RuleGroupType, Track } from '../../../../shared';
+import {
+    isPlaylistRuleGroup, PlaylistRule, PlaylistRuleGroup,
+    RuleGroupType,
+    Track,
+} from '../../../../shared';
 
 import logger from '../../core/logger/logger';
 

@@ -1,6 +1,10 @@
 import * as Factory from 'factory.ts';
 
-import { AlbumContainsRule, InstrumentalRule, RuleComparator, RuleParam, SavedRule } from '../../../../shared';
+import {
+    AlbumContainsRule, InstrumentalRule,
+    RuleComparator, RuleParam,
+    SavedRule,
+} from '../../../../shared';
 
 
 export const savedRuleFactory = Factory.Sync.makeFactory<SavedRule>({

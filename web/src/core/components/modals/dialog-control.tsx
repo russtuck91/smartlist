@@ -1,4 +1,7 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle } from '@material-ui/core';
+import {
+    Button,
+    Dialog, DialogActions, DialogContent, DialogProps, DialogTitle,
+} from '@material-ui/core';
 import * as React from 'react';
 
 interface DialogControlProps {
@@ -20,11 +23,11 @@ export class DialogControl extends React.Component<DialogControlProps> {
     };
 
     render() {
-        const { open, onClose, onConfirm, body, title } = this.props;
+        const { onClose, onConfirm, title } = this.props;
 
         return (
             <Dialog
-                open={open}
+                open={this.props.open}
                 onClose={onClose}
                 fullWidth={this.props.fullWidth}
                 maxWidth={this.props.maxWidth}
@@ -35,7 +38,7 @@ export class DialogControl extends React.Component<DialogControlProps> {
                     </DialogTitle>
                 ) : null}
                 <DialogContent>
-                    {body}
+                    {this.props.body}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose}>

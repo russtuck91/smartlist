@@ -1,4 +1,7 @@
-import { Box, CircularProgress, Grid, Paper, Theme, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Box, CircularProgress, Grid, Paper,
+    Theme, WithStyles, withStyles,
+} from '@material-ui/core';
 import moment from 'moment';
 import React from 'react';
 

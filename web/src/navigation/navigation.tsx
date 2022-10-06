@@ -1,4 +1,9 @@
-import { AppBar, Button, StyleRules, Theme, Toolbar, Typography, WithStyles, withStyles } from '@material-ui/core';
+import {
+    AppBar, Button,
+    StyleRules, Theme,
+    Toolbar, Typography,
+    WithStyles, withStyles,
+} from '@material-ui/core';
 import { AccountCircle, Home, PlayCircleFilled } from '@material-ui/icons';
 import classNames from 'classnames';
 import * as React from 'react';

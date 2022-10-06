@@ -46,6 +46,10 @@
         "no-prototype-builtins": 0,
         "no-trailing-spaces": 2,
         "no-useless-catch": 0,
+        "object-curly-newline": [2, {
+            "minProperties": 5,
+            "consistent": true
+        }],
         "prefer-template": 2,
         "quotes": [
             "error",

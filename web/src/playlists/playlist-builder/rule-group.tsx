@@ -1,4 +1,7 @@
-import { Box, Button, ButtonGroup, Grid, List, ListItem, Paper, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Box, Button, ButtonGroup, Grid, List, ListItem, Paper,
+    StyleRules, Theme, WithStyles, withStyles,
+} from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import classNames from 'classnames';
 import { FormikProps } from 'formik';

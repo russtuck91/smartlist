@@ -1,4 +1,7 @@
-import { Avatar, Box, Grid, StyleRules, Theme, Typography, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Avatar, Box, Grid, StyleRules, Theme, Typography,
+    WithStyles, withStyles,
+} from '@material-ui/core';
 import { Alert, Skeleton } from '@material-ui/lab';
 import React from 'react';
 import LazyLoad from 'react-lazyload';

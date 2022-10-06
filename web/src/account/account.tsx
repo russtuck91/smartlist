@@ -1,4 +1,6 @@
-import { Box, Button, CircularProgress, Container, Link, Typography } from '@material-ui/core';
+import {
+    Box, Button, CircularProgress, Container, Link, Typography,
+} from '@material-ui/core';
 import * as React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 

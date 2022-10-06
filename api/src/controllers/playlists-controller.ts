@@ -1,4 +1,6 @@
-import { Controller, Delete, Get, Post, Put, Wrapper } from '@overnightjs/core';
+import {
+    Controller, Delete, Get, Post, Put, Wrapper,
+} from '@overnightjs/core';
 import { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 

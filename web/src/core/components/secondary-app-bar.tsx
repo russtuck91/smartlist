@@ -1,4 +1,7 @@
-import { AppBar, Theme, Toolbar, WithStyles, withStyles } from '@material-ui/core';
+import {
+    AppBar, Theme, Toolbar,
+    WithStyles, withStyles,
+} from '@material-ui/core';
 import React from 'react';
 import { isBrowser } from 'react-device-detect';
 

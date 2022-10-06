@@ -1,4 +1,9 @@
-import { Box, Button, CircularProgress, List, ListItem, ListItemText, Paper, StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Box, Button, CircularProgress,
+    List, ListItem, ListItemText,
+    Paper,
+    StyleRules, Theme, WithStyles, withStyles,
+} from '@material-ui/core';
 import { Delete, Publish } from '@material-ui/icons';
 import { Alert, Skeleton } from '@material-ui/lab';
 import classNames from 'classnames';
