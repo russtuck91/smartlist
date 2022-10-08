@@ -11,7 +11,7 @@ class ChronoCacheRepository extends MongoRepository<ChronoCacheRecord> {
 
     private async ensureIndexes() {
         const collection = await this.collection;
-        await collection.createIndex('userId');
+        await collection?.createIndex('userId');
     }
 
     async updateTracksForUserId(userId: string, tracks: ChronoCacheRecord['tracks']) {

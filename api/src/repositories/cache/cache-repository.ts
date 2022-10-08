@@ -11,7 +11,7 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
 
     private async ensureIndexes() {
         const collection = await this.collection;
-        await collection.createIndex('item.id');
+        await collection?.createIndex('item.id');
     }
 
     async insertManyResources(resources: Resource[]) {
