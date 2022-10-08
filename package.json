@@ -35,7 +35,6 @@
     "@types/jest": "^27.4.1",
     "@types/spotify-api": "0.0.2",
     "express": "^4.16.4",
-    "mongtype": "^6.0.1",
     "npm-run-all": "^4.0.2",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
