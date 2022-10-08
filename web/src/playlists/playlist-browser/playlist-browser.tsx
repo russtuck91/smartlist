@@ -1,12 +1,12 @@
 import {
-    Box, Button, Container, Grid, Link,
+    Box, Container, Grid,
     StyleRules, Theme, Typography, WithStyles, withStyles,
 } from '@material-ui/core';
 import { FilterList, Search } from '@material-ui/icons';
 import { FormikProps, withFormik } from 'formik';
 import moment from 'moment';
 import * as React from 'react';
-import { generatePath, Link as RouterLink, RouteComponentProps } from 'react-router-dom';
+import { generatePath, RouteComponentProps } from 'react-router-dom';
 
 import { convertEnumToArray, Playlist, PlaylistDeleteOptions } from '../../../../shared';
 
@@ -19,6 +19,7 @@ import { RouteLookup } from '../../core/routes/route-lookup';
 
 import { PlaylistContainer } from '../playlist-container';
 
+import CreatePlaylistButton from './create-playlist-button';
 import { DeleteDialogContainer } from './delete-dialog/delete-dialog-container';
 import { PlaylistBrowserListRenderer } from './playlist-browser-list-renderer';
 
@@ -90,23 +91,16 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
 
     render() {
         return (
-            <Box display="flex" flex="1 1 auto" flexDirection="column" overflow="auto">
+            <Box position="relative" display="flex" flex="1 1 auto" flexDirection="column" overflow="auto">
                 <SecondaryAppBar>
                     <Typography variant="h6">
                         Playlists
                     </Typography>
+                    <Typography style={{ flexGrow: 10 }} />
+                    <CreatePlaylistButton iosVersion />
                 </SecondaryAppBar>
                 <Container className={this.props.classes.container}>
-                    <Box mt={3}>
-                        <Grid container alignItems="flex-end">
-                            <Grid item xs />
-                            <Grid item>
-                                <Link to={RouteLookup.playlists.create} component={RouterLink} underline="none">
-                                    <Button variant="contained">Create New Playlist</Button>
-                                </Link>
-                            </Grid>
-                        </Grid>
-                    </Box>
+                    <CreatePlaylistButton />
                     {this.renderFormArea()}
                     {this.renderPlaylistList()}
                     {this.renderDeleteDialog()}
@@ -118,7 +112,7 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
 
     private renderFormArea() {
         return (
-            <Box my={1}>
+            <Box my={2}>
                 <Grid container spacing={1} alignItems="flex-end">
                     <Grid item xs={12} sm="auto" style={{ flexGrow: 1 }}>
                         <TextField
