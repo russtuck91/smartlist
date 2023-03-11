@@ -8,7 +8,7 @@ const analytics = Analytics({
     app: 'smartlist',
     plugins: [
         googleAnalytics({
-            trackingId: trackingId,
+            measurementIds: [trackingId],
         }),
     ],
 });

@@ -1,2 +1,2 @@
 
-export const trackingId = 'UA-188450923-1';
+export const trackingId = 'G-PYJK4Y3GGZ';

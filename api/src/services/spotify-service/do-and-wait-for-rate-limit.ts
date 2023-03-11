@@ -4,7 +4,6 @@ import logger from '../../core/logger/logger';
 
 
 async function doAndWaitForRateLimit(bodyFn: () => Promise<any>) {
-    logger.debug('>>>> Entering doAndWaitForRateLimit()');
     try {
         return await bodyFn();
     } catch (e) {
