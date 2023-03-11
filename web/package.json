@@ -37,7 +37,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "node-polyfill-webpack-plugin": "^1.1.4",
-    "node-sass": "^7.0.1",
+    "node-sass": "^7.0.3",
     "react": "^16.8.0",
     "react-app-polyfill": "3.0.0",
     "react-app-rewired": "^2.1.5",
