@@ -24,7 +24,7 @@
     "@types/spotify-web-api-node": "^5.0.0",
     "agenda": "^3.0.0",
     "analytics": "^0.7.13",
-    "body-parser": "1.18.3",
+    "body-parser": "^1.20.1",
     "connect-mongo": "^3.2.0",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
