@@ -15,7 +15,8 @@ class ShakeFeedback extends React.Component<unknown, ShakeFeedbackState> {
     };
 
     shakeEvent = new Shake({
-        threshold: 4,
+        threshold: 10,
+        timeout: 30000,
     });
 
     componentDidMount() {
