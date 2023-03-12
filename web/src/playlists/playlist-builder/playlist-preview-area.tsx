@@ -104,7 +104,7 @@ class RawPlaylistPreviewArea extends React.Component<FullProps> {
                         )}
                     </Grid>
                     <Grid item xs style={{ overflow: 'hidden' }}>
-                        {isLoading ? <Skeleton /> : <Typography color="textPrimary"><Ellipsis>{cellValue}</Ellipsis></Typography>}
+                        {isLoading ? <Skeleton /> : <Typography color="textPrimary" component="div"><Ellipsis>{cellValue}</Ellipsis></Typography>}
                         {isLoading ? <Skeleton /> : <Ellipsis>{rowData.artistNames[0]}</Ellipsis>}
                     </Grid>
                 </Grid>

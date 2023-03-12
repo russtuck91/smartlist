@@ -6,7 +6,7 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import classNames from 'classnames';
 import { cloneDeep } from 'lodash';
-import React from 'react';
+import React, { ComponentPropsWithRef } from 'react';
 import { ItemProps, ListProps, TableProps, TableVirtuoso } from 'react-virtuoso';
 
 import { ExpansionRowContentRenderer } from './expansion-row-content-renderer';
@@ -46,15 +46,7 @@ const useStyles = (theme: Theme) => ({
             },
         },
     },
-    footer: {
-        // TODO: following block is only temporary, will not be needed after: https://github.com/petyosi/react-virtuoso/issues/570
-        '& .MuiTableRow-footer': {
-            display: 'block',
-            '& .MuiTableCell-footer': {
-                display: 'block',
-            },
-        },
-        // END
+    footerContent: {
         '& .MuiTablePagination-toolbar': {
             paddingRight: theme.spacing(3),
             paddingTop: theme.spacing(0.75),
@@ -62,8 +54,6 @@ const useStyles = (theme: Theme) => ({
             minHeight: 0,
         },
         '& .MuiTableCell-footer': {
-            position: 'sticky',
-            bottom: 0,
             backgroundColor: theme.palette.background.default,
 
             '& .MuiTablePagination-actions': {
@@ -91,19 +81,20 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                     data={this.getData()}
                     components={{
                         Table: this.renderTableComponent,
-                        TableHead: TableHead,
+                        TableHead: this.renderHeaderComponent,
+                        TableFoot: this.renderFooterComponent,
                         TableBody: this.renderTableBodyComponent,
                         TableRow: this.renderTableRowComponent,
                         EmptyPlaceholder: this.renderEmptyPlaceholder,
                     }}
                     fixedHeaderContent={this.renderFixedHeaderContent}
+                    fixedFooterContent={this.renderFooterContent}
                     itemContent={this.renderItemContent}
                     increaseViewportBy={{
                         top: 10000,
                         bottom: 2000,
                     }}
                 />
-                {this.renderFooter()}
             </Box>
         );
     }
@@ -127,7 +118,19 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
         return <Table {...props} size="small" />;
     }
 
-    private renderTableBodyComponent = React.forwardRef(
+    private renderHeaderComponent = React.forwardRef(
+        function TableHeaderComponent(props: ComponentPropsWithRef<'thead'>, ref: React.Ref<HTMLTableSectionElement>) {
+            return <TableHead {...props} ref={ref} />;
+        },
+    );
+
+    private renderFooterComponent = React.forwardRef<HTMLTableSectionElement>(
+        function TableFooterComponent(props: ComponentPropsWithRef<'tfoot'>, ref: React.Ref<HTMLTableSectionElement>) {
+            return <TableFooter {...props} ref={ref} />;
+        },
+    );
+
+    private renderTableBodyComponent = React.forwardRef<HTMLTableSectionElement>(
         function TableBodyComponent(props: ListProps, ref: React.Ref<HTMLDivElement>){
             return <TableBody {...props} ref={ref} />;
         },
@@ -204,35 +207,33 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
         );
     };
 
-    private renderFooter() {
+    private renderFooterContent = () => {
         const { classes, data, footerLabel } = this.props;
 
         return (
-            <TableFooter className={classes.footer}>
-                <TableRow>
-                    <TablePagination
-                        count={data.length}
-                        rowsPerPage={-1}
-                        rowsPerPageOptions={[]}
-                        page={0}
-                        onChangePage={() => {}}
-                        labelDisplayedRows={(paginationInfo: LabelDisplayedRowsArgs) => {
-                            if (this.props.isLoading) {
-                                return <Skeleton width="5em" />;
-                            }
-                            return (
-                                <>
-                                    {paginationInfo.count}
-                                    {' '}
-                                    {footerLabel}
-                                </>
-                            );
-                        }}
-                    />
-                </TableRow>
-            </TableFooter>
+            <TableRow className={classes.footerContent}>
+                <TablePagination
+                    count={data.length}
+                    rowsPerPage={-1}
+                    rowsPerPageOptions={[]}
+                    page={0}
+                    onChangePage={() => {}}
+                    labelDisplayedRows={(paginationInfo: LabelDisplayedRowsArgs) => {
+                        if (this.props.isLoading) {
+                            return <Skeleton width="5em" />;
+                        }
+                        return (
+                            <>
+                                {paginationInfo.count}
+                                {' '}
+                                {footerLabel}
+                            </>
+                        );
+                    }}
+                />
+            </TableRow>
         );
-    }
+    };
 
     private handleToggleRowExpansion = (rowIndex: number) => {
         this.setState((prevState) => {

@@ -55,9 +55,11 @@ const RawCreatePlaylistButton: React.FC<FullProps> = ({
         );
     }
 
+    const buttonContents = renderButton();
+    if (!buttonContents) { return null; }
     return (
         <Link to={RouteLookup.playlists.create} component={RouterLink} underline="none">
-            {renderButton()}
+            {buttonContents}
         </Link>
     );
 };
