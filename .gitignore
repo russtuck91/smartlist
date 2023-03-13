@@ -90,7 +90,6 @@ typings/
 /web/coverage
 
 # production
-/api/build
 /web/build
 /shared/build
 

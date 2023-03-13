@@ -6,7 +6,7 @@ import randomStringFactory from './random-string-factory';
 
 
 export const trackFactory = Factory.Sync.makeFactory<Track>({
-    id: randomStringFactory(22),
+    id: Factory.each(() => randomStringFactory(22)),
     name: 'Test track name',
     uri: `spotify:track:${randomStringFactory(22)}`,
 
