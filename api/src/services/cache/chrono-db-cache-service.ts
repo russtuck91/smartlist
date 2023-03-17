@@ -27,18 +27,6 @@ class ChronoDbCacheService {
     getFullList = async (accessToken: string): Promise<Track[]> => {
         logger.debug('>>>> Entering ChronoDbCacheService.getFullList()');
 
-        // Get user id from access token
-        const user = await getUserByAccessToken(accessToken);
-
-        // FEATURE FLAG: suppressNewCacheFeature
-        // This block should be removed when feature is ready. Also move user block back down below freshFirstPage.length === 0
-        if (!user || user.suppressNewCacheFeature) {
-            const freshResults = await this.sourceMethod(accessToken);
-            logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after user does not have feature enabled and fetching fresh list');
-            return freshResults.map(mapToTrack);
-        }
-        // END FEATURE FLAG
-
         // Get first page from sourceMethod
         const freshFirstPage = await this.sourceMethod(accessToken, 1);
         if (freshFirstPage.length === 0) {
@@ -46,8 +34,9 @@ class ChronoDbCacheService {
             return freshFirstPage.map(mapToTrack);
         }
 
+        // Get user id from access token
+        const userId = (await getUserByAccessToken(accessToken))?.id;
         // Get cached list from DB
-        const userId = user.id;
         const cachedList = await this.repo.findOne({
             userId: userId,
         });
@@ -70,7 +59,7 @@ class ChronoDbCacheService {
         const freshResults = await this.sourceMethod(accessToken);
 
         // donotawait - save new results to cache
-        this.storeFreshResultsInCache(userId, freshResults);
+        this.storeFreshResultsInCache(userId!, freshResults);
 
         logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after fetching fresh list');
         return freshResults.map(mapToTrack);
