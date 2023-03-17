@@ -32,7 +32,7 @@ describe('ChronoDbCacheService', () => {
         });
 
         // Act
-        const result = await service.getFullList('');
+        const result = await service.getFullTrackList('');
 
         // Assert
         const resultIds = result.map((t) => t.id);
@@ -50,7 +50,7 @@ describe('ChronoDbCacheService', () => {
             mockSourceMethod.mockResolvedValueOnce(freshFullResults);
 
             // Act
-            const result = await service.getFullList('');
+            const result = await service.getFullTrackList('');
 
             // Assert
             expect(result).toEqual(freshFullResults.map(mapToTrack));

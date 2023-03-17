@@ -7,7 +7,8 @@ import userSavedTracksCacheService from './user-saved-tracks-cache-service';
 
 
 class SpotifyCacheService {
-    getFullMySavedTracks = userSavedTracksCacheService.getFullList;
+    getFullMySavedTracks = userSavedTracksCacheService.getFullTrackList;
+    getFullSavedTrackReference = userSavedTracksCacheService.getFullSavedTrackReference;
 
     getTracks = trackCacheService.getItems;
     setTracks = trackCacheService.setItems!;
