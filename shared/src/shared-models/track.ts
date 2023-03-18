@@ -18,3 +18,5 @@ export interface Track {
     popularity: number;
     track_number: number;
 }
+
+export type TrackList = Track[];
