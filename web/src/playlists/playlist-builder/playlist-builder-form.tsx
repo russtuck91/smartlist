@@ -1,20 +1,24 @@
 import {
     Box, Button, CircularProgress,
-    Container, Grid, IconButton, List,
+    Container, FormLabel, Grid, IconButton, List, Paper,
     StyleRules,
     Theme, Typography,
     WithStyles, withStyles, WithWidth, withWidth,
 } from '@material-ui/core';
-import { ArrowBack } from '@material-ui/icons';
+import { ArrowBack, FilterList } from '@material-ui/icons';
 import { FormikProps } from 'formik';
 import { isEmpty, isEqual } from 'lodash';
 import * as React from 'react';
 
-import { PlaylistRuleGroup, RuleGroupType, Track } from '../../../../shared';
+import {
+    convertEnumToArray,
+    PlaylistRuleGroup, PlaylistTrackSortOption, RuleGroupType,
+    Track,
+} from '../../../../shared';
 
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
 import { ErrorBoundary } from '../../core/errors/error-boundary';
-import { TextField } from '../../core/forms/fields';
+import { CustomOptionRendererProps, DropdownField, TextField } from '../../core/forms/fields';
 import { history } from '../../core/history/history';
 import logger from '../../core/logger/logger';
 import { requests } from '../../core/requests/requests';
@@ -79,6 +83,10 @@ const useStyles = (theme: Theme): StyleRules => ({
         '& > .MuiListItem-root': {
             padding: 0,
         },
+    },
+    trackSortContainer: {
+        padding: theme.spacing(1),
+        marginBottom: theme.spacing(1),
     },
 });
 
@@ -245,13 +253,35 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         const { formik: { values }, classes } = this.props;
 
         return (
-            <Box py={1} flexGrow={1}>
+            <Box py={1} flexGrow={1} overflow="auto">
+                <Paper className={classes.trackSortContainer}>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item>
+                            <FormLabel>Sort tracks:</FormLabel>
+                        </Grid>
+                        <Grid item xs>
+                            <DropdownField
+                                id="trackSort"
+                                options={convertEnumToArray(PlaylistTrackSortOption)}
+                                IconComponent={FilterList}
+                                customOptionRenderer={this.sortOrderRenderer}
+                            />
+                        </Grid>
+                    </Grid>
+                </Paper>
                 <List disablePadding className={classes.formAreaList}>
                     {values.rules.map(this.renderRuleGroup)}
                 </List>
             </Box>
         );
     };
+
+    private sortOrderRenderer({ option }: CustomOptionRendererProps) {
+        if (option === PlaylistTrackSortOption.SavedDate) {
+            return 'Saved Date';
+        }
+        return option;
+    }
 
     private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number) => {
         const thisItemTreeId = `rules[${groupIndex}]`;

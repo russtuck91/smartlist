@@ -2,7 +2,7 @@ import { Formik, FormikProps } from 'formik';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 
-import { Playlist, RuleGroupType, RuleParam } from '../../../../shared';
+import { Playlist, PlaylistTrackSortOption, RuleGroupType, RuleParam } from '../../../../shared';
 
 import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
@@ -66,11 +66,7 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
     }
 
     private getDefaultFormValues(): PlaylistBuilderFormValues {
-        if (this.state.existingPlaylist) {
-            return this.state.existingPlaylist;
-        }
-
-        return {
+        const defaults = {
             name: '',
             rules: [
                 {
@@ -82,7 +78,17 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
                 },
             ],
             exceptions: [],
+            trackSort: PlaylistTrackSortOption.None,
         };
+
+        if (this.state.existingPlaylist) {
+            return {
+                ...defaults,
+                ...this.state.existingPlaylist,
+            };
+        }
+
+        return defaults;
     }
 
     private onSubmit = async (values: PlaylistBuilderFormValues) => {

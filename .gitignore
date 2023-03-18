@@ -86,11 +86,7 @@ typings/
 /web/.pnp
 .pnp.js
 
-# testing
-/web/coverage
-
 # production
-/web/build
 /shared/build
 
 # IntelliJ Idea
