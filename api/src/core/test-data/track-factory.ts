@@ -1,4 +1,6 @@
+import { faker } from '@faker-js/faker';
 import * as Factory from 'factory.ts';
+import { random } from 'lodash';
 
 import { Track } from '../../../../shared';
 
@@ -7,18 +9,18 @@ import randomStringFactory from './random-string-factory';
 
 export const trackFactory = Factory.Sync.makeFactory<Track>({
     id: Factory.each(() => randomStringFactory(22)),
-    name: 'Test track name',
+    name: Factory.each(() => `Test track name ${faker.word.adjective()} ${faker.word.noun()}`),
     uri: `spotify:track:${randomStringFactory(22)}`,
 
     albumId: randomStringFactory(22),
-    albumName: 'Test album name',
+    albumName: Factory.each(() => `Test album name ${faker.word.adjective()} ${faker.word.noun()}`),
     albumReleaseDate: '',
 
     artistIds: [ randomStringFactory(22) ],
-    artistNames: [ 'Test artist name' ],
+    artistNames: Factory.each(() => [ `Test artist name ${faker.word.adjective()} ${faker.word.noun()}` ]),
 
     disc_number: 1,
     duration_ms: 1000,
     popularity: 1,
-    track_number: 1,
+    track_number: Factory.each(() => random(1, 20)),
 });

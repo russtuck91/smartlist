@@ -51,6 +51,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
     "@jest/types": "^27.5.1",
     "@types/agenda": "^2.0.6",
     "@types/cookie-parser": "^1.4.2",
