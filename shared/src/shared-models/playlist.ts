@@ -8,6 +8,7 @@ export interface Playlist extends SimpleDBObject {
 
     rules: PlaylistRuleGroup[];
     exceptions: PlaylistRule[];
+    trackSort?: PlaylistTrackSortOption;
 
     userId: ObjectId;
     spotifyPlaylistId?: string;
@@ -27,4 +28,12 @@ export function isPlaylistRuleGroup(input: any): input is PlaylistRuleGroup {
 export enum RuleGroupType {
     And = 'And',
     Or = 'Or',
+}
+
+export enum PlaylistTrackSortOption {
+    None = 'None',
+    Artist = 'Artist',
+    Album = 'Album',
+    Track = 'Track',
+    SavedDate = 'SavedDate',
 }
