@@ -1,31 +1,34 @@
+import 'reflect-metadata';
+
 import mongoutils from '@seiren/mongoutils';
 import fs from 'fs';
 import rimraf from 'rimraf';
 
-import { db, MONGODB_URI } from '../src/core/db/db';
+import { MONGODB_URI } from '../src/core/db/db';
 import logger from '../src/core/logger/logger';
+import dbversionRepo from '../src/repositories/dbversion-repository';
 
 import { BACKUP_DIRECTORY } from './constants';
 import restoreDatabase from './restore-database';
 
 
 async function getCurrentVersion(): Promise<string> {
-    const dbversion = await db.dbversion.findOne();
-    return dbversion.version;
+    const dbversion = await dbversionRepo.findOne({});
+    return dbversion?.version || '1.0.0';
 }
 
 async function setNewVersion(newVersion: string, filename: string) {
-    await db.dbversion.update(
-        {},
-        {
+    await dbversionRepo.findOneAndUpdate({
+        conditions: {},
+        updates: {
             $set: {
                 version: newVersion,
                 source: filename,
                 updatedAt: new Date(),
             },
         },
-        { upsert: true },
-    );
+        upsert: true,
+    });
 }
 
 async function backupDatabase() {

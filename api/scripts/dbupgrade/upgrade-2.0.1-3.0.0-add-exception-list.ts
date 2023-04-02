@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import logger from '../../src/core/logger/logger';
 import playlistRepo from '../../src/repositories/playlist-repository';
 
