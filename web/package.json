@@ -2,7 +2,6 @@
   "name": "web",
   "version": "0.10.1",
   "private": true,
-  "proxy": "http://localhost:8080/",
   "scripts": {
     "start": "react-app-rewired start",
     "start:ssl": "HTTPS=true SSL_CRT_FILE=../localhost.pem SSL_KEY_FILE=../localhost-key.pem react-app-rewired start",
