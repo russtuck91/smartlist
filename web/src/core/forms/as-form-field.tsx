@@ -3,6 +3,9 @@ import { Field, FormikProps } from 'formik';
 import _ from 'lodash';
 import * as React from 'react';
 
+import { ErrorBoundary } from '../errors/error-boundary';
+
+
 export interface FormFieldProps {
     id: string;
     label?: React.ReactNode;
@@ -29,31 +32,33 @@ export function asFormField<T extends FormFieldProps>(
 
         render() {
             return (
-                <div className="form-field">
-                    <Field
-                        name={this.props.id}
-                        render={({ field, form }) => {
-                            const fieldTouched = _.get(form.touched, field.name);
-                            const fieldError = _.get(form.errors, field.name);
-                            return (
-                                <>
-                                    <WrappedComponent
-                                        {...field}
-                                        setFieldValue={form.setFieldValue}
-                                        setFieldTouched={form.setFieldTouched}
-                                        error={fieldTouched && fieldError}
-                                        {...this.props}
-                                    />
-                                    {this.props.renderFormHelperText && fieldTouched && fieldError && (
-                                        <FormHelperText error>{fieldError}</FormHelperText>
-                                    )}
-                                </>
-                            );
-                        }}
-                        validate={this.validate}
-                    />
-                    {this.renderError()}
-                </div>
+                <ErrorBoundary>
+                    <div className="form-field">
+                        <Field
+                            name={this.props.id}
+                            render={({ field, form }) => {
+                                const fieldTouched = _.get(form.touched, field.name);
+                                const fieldError = _.get(form.errors, field.name);
+                                return (
+                                    <>
+                                        <WrappedComponent
+                                            {...field}
+                                            setFieldValue={form.setFieldValue}
+                                            setFieldTouched={form.setFieldTouched}
+                                            error={fieldTouched && fieldError}
+                                            {...this.props}
+                                        />
+                                        {this.props.renderFormHelperText && fieldTouched && fieldError && (
+                                            <FormHelperText error>{fieldError}</FormHelperText>
+                                        )}
+                                    </>
+                                );
+                            }}
+                            validate={this.validate}
+                        />
+                        {this.renderError()}
+                    </div>
+                </ErrorBoundary>
             );
         }
 

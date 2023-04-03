@@ -286,12 +286,14 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     private renderRuleGroup = (ruleGroup: PlaylistRuleGroup, groupIndex: number) => {
         const thisItemTreeId = `rules[${groupIndex}]`;
         return (
-            <RuleGroup
-                key={groupIndex}
-                formik={this.props.formik}
-                ruleGroup={ruleGroup}
-                treeId={thisItemTreeId}
-            />
+            <ErrorBoundary>
+                <RuleGroup
+                    key={groupIndex}
+                    formik={this.props.formik}
+                    ruleGroup={ruleGroup}
+                    treeId={thisItemTreeId}
+                />
+            </ErrorBoundary>
         );
     };
 
