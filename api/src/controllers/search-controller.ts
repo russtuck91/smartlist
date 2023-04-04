@@ -17,7 +17,7 @@ export class SearchController {
 
             const result = await spotifyService.searchForItem(type.toLowerCase(), text, accessToken);
 
-            res.send(result.items);
+            res.send(result?.items);
         });
     }
 

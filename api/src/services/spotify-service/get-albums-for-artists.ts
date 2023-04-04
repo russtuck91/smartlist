@@ -15,14 +15,14 @@ async function getAlbumsForArtists(artistIds: string[], accessToken: string|unde
 
     let albums: SpotifyApi.AlbumObjectSimplified[] = [];
     for (const artistId of artistIds) {
-        const thisArtistAlbums: SpotifyApi.PagingObject<SpotifyApi.AlbumObjectSimplified> = await doAndWaitForRateLimit(
+        const thisArtistAlbums = await doAndWaitForRateLimit(
             async () => await getFullPagedResults(async (options) => {
                 const apiResponse: SpResponse<SpotifyApi.ArtistsAlbumsResponse> = await spotifyApi.getArtistAlbums(artistId, options);
 
                 return apiResponse.body;
             }),
         );
-        albums = albums.concat(thisArtistAlbums.items);
+        albums = albums.concat(thisArtistAlbums?.items || []);
     }
 
     return albums;

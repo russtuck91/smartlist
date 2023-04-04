@@ -1,15 +1,18 @@
 import logger from '../../core/logger/logger';
 
+import { isSpotifyError } from './types';
+
+
 interface SpPaginationOptions {
     offset?: number;
     limit?: number;
 }
 
-type PagedResultsSourceMethod = (options: SpPaginationOptions) => Promise<SpotifyApi.PagingObject<any>|undefined>
+type PagedResultsSourceMethod<T> = (options: SpPaginationOptions) => Promise<SpotifyApi.PagingObject<T>|undefined>
 
-async function getFullPagedResults(fn: PagedResultsSourceMethod, maxPages?: number) {
+async function getFullPagedResults<T = any>(fn: PagedResultsSourceMethod<T>, maxPages?: number) {
     logger.debug('>>>> Entering getFullPagedResults()');
-    let result: SpotifyApi.PagingObject<any>|undefined;
+    let result: SpotifyApi.PagingObject<T>|undefined;
     let offset = 0;
     const batchSize = 50;
 
@@ -36,11 +39,15 @@ async function getFullPagedResults(fn: PagedResultsSourceMethod, maxPages?: numb
 
             offset += batchSize;
         } catch (e) {
-            if (e.statusCode === 404) {
-                logger.debug('getFullPagedResults iteration received 404 error, exiting');
-                return result;
+            if (isSpotifyError(e)) {
+                if (e.statusCode === 404) {
+                    logger.debug('getFullPagedResults iteration received 404 error, exiting');
+                    return result;
+                }
+                logger.debug(`getFullPagedResults iteration error: ${e.statusCode} ${e.body.error?.message}`);
+            } else {
+                logger.debug(e);
             }
-            logger.debug(`getFullPagedResults iteration error: ${e.statusCode} ${e.body.error?.message}`);
             throw e;
         }
     }
