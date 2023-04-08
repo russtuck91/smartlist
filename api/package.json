@@ -11,6 +11,7 @@
     "lint": "eslint src --ext .ts",
     "test": "jest",
     "dbupgrade": "ts-node ./scripts/dbupgrade-wrapper.ts",
+    "backupdb": "ts-node ./scripts/backup-database-wrapper.ts",
     "restoredb": "ts-node ./scripts/restore-database-wrapper.ts"
   },
   "dependencies": {

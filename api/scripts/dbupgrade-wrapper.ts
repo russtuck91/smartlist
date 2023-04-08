@@ -1,13 +1,12 @@
 import 'reflect-metadata';
 
-import mongoutils from '@seiren/mongoutils';
 import fs from 'fs';
 import rimraf from 'rimraf';
 
-import { MONGODB_URI } from '../src/core/db/db';
 import logger from '../src/core/logger/logger';
 import dbversionRepo from '../src/repositories/dbversion-repository';
 
+import backupDatabase from './backup-database';
 import { BACKUP_DIRECTORY } from './constants';
 import restoreDatabase from './restore-database';
 
@@ -29,13 +28,6 @@ async function setNewVersion(newVersion: string, filename: string) {
         },
         upsert: true,
     });
-}
-
-async function backupDatabase() {
-    logger.debug('>>>> Entering backupDatabase()');
-    const info = mongoutils.parseMongoUrl(MONGODB_URI);
-    const command = mongoutils.createDumpCommand(info, BACKUP_DIRECTORY);
-    await mongoutils.executeCommand(command);
 }
 
 function deleteBackup() {
