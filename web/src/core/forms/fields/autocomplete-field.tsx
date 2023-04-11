@@ -73,6 +73,7 @@ export class RawAutocompleteInput extends React.Component<FullProps, Autocomplet
                 onOpen={this.handleOpen}
                 onClose={this.handleClose}
                 classes={this.props.classes}
+                filterOptions={(options) => options}
 
                 freeSolo={this.props.freeSolo}
                 renderInput={(params) => (
