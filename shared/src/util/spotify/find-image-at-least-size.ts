@@ -1,5 +1,8 @@
 function findImageAtLeastSize(images: SpotifyApi.ImageObject[], px: number) {
     return images.reduce<SpotifyApi.ImageObject|undefined>((result, curr) => {
+        if (!result) {
+            return curr;
+        }
         if (result && (
             (result.height && curr.height && result.height < curr.height) ||
             (result.width && curr.width && result.width < curr.width)
