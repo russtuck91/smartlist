@@ -1,4 +1,6 @@
-import { Avatar, ListItemAvatar, ListItemText } from '@material-ui/core';
+import {
+    Avatar, ListItem, ListItemAvatar, ListItemText,
+} from '@material-ui/core';
 import { RenderOptionState } from '@material-ui/lab';
 import React from 'react';
 import LazyLoad from 'react-lazyload';
@@ -30,7 +32,7 @@ export class RuleAutocompleteField extends React.Component<RuleAutocompleteField
 
     private renderOption = (option: SearchItem, state: RenderOptionState) => {
         return (
-            <>
+            <ListItem ContainerComponent="div" dense disableGutters>
                 <ListItemAvatar>
                     <Avatar>
                         <LazyLoad overflow offset={5000}>
@@ -39,7 +41,7 @@ export class RuleAutocompleteField extends React.Component<RuleAutocompleteField
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={option.name} />
-            </>
+            </ListItem>
         );
     };
 

@@ -27,9 +27,9 @@ interface AutocompleteInputState {
 
 const useStyles = (theme: Theme) => ({
     option: {
-        padding: theme.spacing(1),
-        '& > .MuiListItem-gutters': {
-            padding: 0,
+        padding: theme.spacing(0.5),
+        '& > .MuiListItem-container': {
+            width: '100%',
         },
         '& .MuiListItemAvatar-root': {
             minWidth: 'auto',
@@ -41,7 +41,11 @@ const useStyles = (theme: Theme) => ({
         '& .MuiListItemText-primary': {
             display: 'block',
             fontSize: 12,
-            lineHeight: 1,
+            lineHeight: 1.2,
+        },
+        '& .MuiListItemText-secondary': {
+            fontSize: 10,
+            lineHeight: 1.2,
         },
     },
 });
