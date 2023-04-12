@@ -49,10 +49,7 @@ export function getComparatorsForParam(param: RuleParam): RuleComparator[] {
     return [ RuleComparator.Is, RuleComparator.Contains ];
 }
 
-export type SearchItemBase = SpotifyApi.ArtistObjectFull | SpotifyApi.AlbumObjectSimplified | SpotifyApi.TrackObjectFull | SpotifyApi.PlaylistObjectSimplified;
-export type SearchItem = SearchItemBase & {
-    images?: SpotifyApi.ImageObject[];
-}
+export type SearchItem = SpotifyApi.ArtistObjectFull | SpotifyApi.AlbumObjectSimplified | SpotifyApi.TrackObjectFull | SpotifyApi.PlaylistObjectSimplified;
 export function isSearchItem(value: PlaylistRule['value']): value is SearchItem {
     if (typeof value !== 'object' || value === null) return false;
     const cast = value as SearchItem;
