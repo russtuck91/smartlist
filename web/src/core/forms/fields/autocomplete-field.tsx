@@ -1,7 +1,7 @@
 import { TextField as MUITextField, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { Autocomplete, RenderOptionState } from '@material-ui/lab';
 import { debounce } from 'lodash';
-import * as React from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { requests } from '../../requests/requests';
 
@@ -15,14 +15,6 @@ interface AutocompleteInputProps extends Partial<FormFieldProps> {
     renderOption?: (option: any, state: RenderOptionState) => React.ReactNode;
     getOptionLabel?: (option?: any) => string;
     freeSolo?: boolean;
-}
-
-interface AutocompleteInputState {
-    textFieldValue: string;
-    loading: boolean;
-    options: any[];
-    fetchError?: Error;
-    open: boolean;
 }
 
 const useStyles = (theme: Theme) => ({
@@ -52,107 +44,99 @@ const useStyles = (theme: Theme) => ({
 
 type FullProps = AutocompleteInputProps & WithStyles<typeof useStyles>;
 
-export class RawAutocompleteInput extends React.Component<FullProps, AutocompleteInputState> {
-    state: AutocompleteInputState = {
-        textFieldValue: '',
-        loading: false,
-        options: [],
-        open: false,
-    };
+function RawAutocompleteInput(props: FullProps) {
+    const [textFieldValue, setTextFieldValue] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [options, setOptions] = useState<any[]>([]);
+    const [fetchError, setFetchError] = useState<Error|null>(null);
+    const [open, setOpen] = useState(false);
 
-    render() {
-        return (
-            <Autocomplete
-                id={this.props.id}
-                value={this.props.value}
-                inputValue={this.state.textFieldValue}
-                onInputChange={this.handleInputChange}
-                loading={this.state.loading}
-                options={this.state.options}
-                getOptionLabel={this.props.getOptionLabel}
-                renderOption={this.props.renderOption}
-                onChange={this.onChange}
-                onBlur={this.props.onBlur}
-                open={this.state.open}
-                onOpen={this.handleOpen}
-                onClose={this.handleClose}
-                classes={this.props.classes}
-                filterOptions={(options) => options}
-
-                freeSolo={this.props.freeSolo}
-                renderInput={(params) => (
-                    <MUITextField
-                        {...params}
-                        error={!!this.getErrorText()}
-                        helperText={this.getErrorText()}
-                    />
-                )}
-            />
-        );
-    }
-
-    private getErrorText() {
-        if (this.state.loading) {
+    function getErrorText() {
+        if (loading) {
             return null;
         }
-        if (this.state.fetchError) {
+        if (fetchError) {
             return 'There was a problem fetching results. Please try again.';
         }
-        if (typeof this.props.error === 'boolean') {
+        if (typeof props.error === 'boolean') {
             return null;
         }
-        return this.props.error;
+        return props.error;
     }
 
-    private onChange = (event: React.ChangeEvent<any>, value: any) => {
-        if (!this.props.setFieldValue) {
+    function handleChange(event: React.ChangeEvent<any>, value: any) {
+        if (!props.setFieldValue) {
             return;
         }
 
-        this.props.setFieldValue(this.props.id, value);
-    };
+        props.setFieldValue(props.id, value);
+    }
 
-    private handleOpen = () => {
-        this.setState({
-            open: true,
-        });
-    };
+    function handleOpen() {
+        setOpen(true);
+    }
 
-    private handleClose = () => {
-        this.setState({
-            open: false,
-        });
-    };
+    function handleClose() {
+        setOpen(false);
+    }
 
-    private handleInputChange = (e: React.ChangeEvent<unknown>|null, newInputValue: string) => {
+    function handleInputChange(e: React.ChangeEvent<unknown>|null, newInputValue: string) {
         if (e?.type === 'blur' && !newInputValue) { return; }
-        this.setState({
-            textFieldValue: newInputValue,
-            fetchError: undefined,
-        });
-        this.searchByText(newInputValue);
-    };
+        setTextFieldValue(newInputValue);
+        setFetchError(null);
+        searchByText(newInputValue);
+    }
 
-    private searchByText = debounce(async (text: string) => {
-        this.setState({
-            loading: true,
-        });
-        try {
-            const searchUrl = this.props.getSearchUrl(text);
-            const result = await requests.get(searchUrl);
-            this.setState({
-                loading: false,
-                options: result,
-            });
-        } catch (e) {
-            console.error(e);
-            this.setState({
-                loading: false,
-                fetchError: e,
-            });
-            this.handleClose();
-        }
-    }, 500);
+    const searchByText = useCallback(debounce(
+        async (text: string) => {
+            if (!text) {
+                return;
+            }
+            setLoading(true);
+            try {
+                const searchUrl = props.getSearchUrl(text);
+                const result = await requests.get(searchUrl);
+                setLoading(false);
+                setFetchError(null);
+                setOptions(result);
+            } catch (e) {
+                console.error(e);
+                setLoading(false);
+                setFetchError(e);
+                handleClose();
+            }
+        },
+        500,
+    ), []);
+
+    return (
+        <Autocomplete
+            id={props.id}
+            value={props.value}
+            inputValue={textFieldValue}
+            onInputChange={handleInputChange}
+            loading={loading}
+            options={options}
+            getOptionLabel={props.getOptionLabel}
+            renderOption={props.renderOption}
+            onChange={handleChange}
+            onBlur={props.onBlur}
+            open={open}
+            onOpen={handleOpen}
+            onClose={handleClose}
+            classes={props.classes}
+            filterOptions={(optionsForFilter) => optionsForFilter}
+
+            freeSolo={props.freeSolo}
+            renderInput={(params) => (
+                <MUITextField
+                    {...params}
+                    error={!!getErrorText()}
+                    helperText={getErrorText()}
+                />
+            )}
+        />
+    );
 }
 
 export const AutocompleteInput = withStyles(useStyles)(RawAutocompleteInput);
