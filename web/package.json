@@ -24,6 +24,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.45",
     "@material-ui/pickers": "^3.3.10",
+    "@tanstack/react-query": "^4.29.1",
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",
     "@types/react-router": "~5.0.1",
@@ -54,6 +55,7 @@
     "setimmediate": "^1.0.5",
     "shake.js": "^1.2.2",
     "typescript": "^3.8.0",
+    "use-debounce": "^9.0.4",
     "winston": "^3.3.3",
     "winston-transport": "^4.4.0",
     "workbox-webpack-plugin": "^6.1.2"
