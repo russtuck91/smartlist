@@ -6,6 +6,7 @@ import MomentUtils from '@date-io/moment';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { teal } from '@material-ui/core/colors';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router';
@@ -30,6 +31,8 @@ declare module '@material-ui/core/styles/createPalette' {
         secondary: string;
     }
 }
+
+const queryClient = new QueryClient();
 
 export class App extends Component {
     render() {
@@ -70,9 +73,11 @@ export class App extends Component {
                     <Provider store={store}>
                         <ThemeProvider theme={theme}>
                             <MuiPickersUtilsProvider utils={MomentUtils}>
-                                <Router history={history}>
-                                    <AppContents />
-                                </Router>
+                                <QueryClientProvider client={queryClient}>
+                                    <Router history={history}>
+                                        <AppContents />
+                                    </Router>
+                                </QueryClientProvider>
                             </MuiPickersUtilsProvider>
                         </ThemeProvider>
                     </Provider>
