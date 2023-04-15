@@ -1,4 +1,6 @@
-import { BetweenValue, PlaylistRule, RuleComparator, RuleParam, SearchItem } from './playlist-rule';
+import {
+    BetweenValue, PlaylistRule, RuleComparator, RuleParam, SearchItem,
+} from './playlist-rule';
 
 
 export interface SavedRule extends PlaylistRule {
