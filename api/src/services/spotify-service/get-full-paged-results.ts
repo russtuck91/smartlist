@@ -1,3 +1,5 @@
+import { cloneDeep } from 'lodash';
+
 import logger from '../../core/logger/logger';
 
 import { isSpotifyError } from './types';
@@ -10,28 +12,39 @@ interface SpPaginationOptions {
 
 type PagedResultsSourceMethod<T> = (options: SpPaginationOptions) => Promise<SpotifyApi.PagingObject<T>|undefined>
 
+const defaultPagingObject = {
+    href: '',
+    items: [],
+    limit: 0,
+    next: '',
+    offset: 0,
+    previous: '',
+    total: -1,
+};
+
 async function getFullPagedResults<T = any>(fn: PagedResultsSourceMethod<T>, maxPages?: number) {
     logger.debug('>>>> Entering getFullPagedResults()');
-    let result: SpotifyApi.PagingObject<T>|undefined;
+    let result: SpotifyApi.PagingObject<T> = defaultPagingObject;
     let offset = 0;
     const batchSize = 50;
 
     // while number fetched is less than total reported, send request
     while (
         (!maxPages || (offset / batchSize) < maxPages) &&
-        (!result || result.total > result.items.length)
+        (result.total === -1 || result.total > result.items.length)
     ) {
         try {
+            logger.debug(`getFullPagedResults iteration #${(offset / batchSize) + 1} out of total ${result.total === -1 ? 'unknown' : result.total / batchSize}`);
             const options = { limit: batchSize, offset: offset };
             const response = await fn(options);
 
             if (!response) {
                 logger.debug('getFullPagedResults exiting because of lack of response from callback fn. Check callback fn.');
-                return;
+                return result;
             }
 
-            if (!result) {
-                result = response;
+            if (result.total === -1) {
+                result = cloneDeep(response);
             } else {
                 // take list from response and add it to result
                 result.items.push(...response.items);
