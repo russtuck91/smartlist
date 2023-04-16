@@ -34,7 +34,7 @@ async function getFullPagedResults<T = any>(fn: PagedResultsSourceMethod<T>, max
         (result.total === -1 || result.total > result.items.length)
     ) {
         try {
-            logger.debug(`getFullPagedResults iteration #${(offset / batchSize) + 1} out of total ${result.total === -1 ? 'unknown' : result.total / batchSize}`);
+            logger.debug(`getFullPagedResults iteration #${(offset / batchSize) + 1} out of total ${result.total === -1 ? 'unknown' : Math.ceil(result.total / batchSize)}`);
             const options = { limit: batchSize, offset: offset };
             const response = await fn(options);
 

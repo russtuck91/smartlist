@@ -33,7 +33,7 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
                 }
             }
 
-            logger.debug(`doAndRetry error: ${e.statusCode} ${e.body.error.message}`);
+            logger.debug(`doAndRetry error: ${e.statusCode} ${e.body.error?.message}`);
         } else {
             logger.debug(e);
         }

@@ -5,10 +5,10 @@ export interface SpResponse<T> {
 }
 
 interface SpotifyError extends SpResponse<{
-    error: SpotifyApi.ErrorObject;
+    error?: SpotifyApi.ErrorObject;
 }> {
 }
 
 export function isSpotifyError(input: any): input is SpotifyError {
-    return input.statusCode && input.body && input.body.error;
+    return input.statusCode && input.body;
 }
