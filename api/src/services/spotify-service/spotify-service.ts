@@ -17,6 +17,8 @@ import unfollowPlaylist from './unfollow-playlist';
 import updatePlaylistDetails from './update-playlist-details';
 import userHasPlaylist from './user-has-playlist';
 
+export { SearchType } from './search-for-item';
+
 class SpotifyService {
     getMe = getMe;
     getFullMySavedTracks = getFullMySavedTracks;

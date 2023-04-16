@@ -1,5 +1,6 @@
 import { Controller, Get } from '@overnightjs/core';
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { Request } from 'express-serve-static-core';
 
 import { userLoggedInEvent } from '../core/analytics/analytics-utils';
 import logger from '../core/logger/logger';
@@ -13,7 +14,7 @@ import spotifyService from '../services/spotify-service/spotify-service';
 import { removeSessionTokenFromCurrentUser, updateUser } from '../services/user-service';
 
 
-interface SessionRequest extends Request {
+interface SessionRequest extends Request<unknown, unknown, unknown, { code: string; state: string|null }> {
     sessionID: string;
 }
 
@@ -48,7 +49,7 @@ export class LoginController {
     @Get('callback')
     async processSpotifyAuth(req: SessionRequest, res: Response) {
         const { code, state } = req.query;
-        const storedState = req.cookies ? req.cookies[this.STATE_KEY] : null;
+        const storedState: string|null = req.cookies ? req.cookies[this.STATE_KEY] : null;
 
         // first do state validation
         if (state === null || state !== storedState) {
@@ -70,7 +71,7 @@ export class LoginController {
                     accessToken: access_token,
                     refreshToken: refresh_token,
                 };
-                const sessionID = req.sessionID!;
+                const sessionID = req.sessionID;
 
                 // Store in DB
                 const user = await updateUser(username, accessTokenPatch, sessionID);

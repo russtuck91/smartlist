@@ -8,8 +8,15 @@ import initSpotifyApi from './init-spotify-api';
 import { SpResponse } from './types';
 
 
-async function searchForItem(type: 'album'|'artist'|'playlist'|'track', item: string, accessToken: string|undefined) {
-    logger.debug('>>>> Entering searchForItem()');
+export enum SearchType {
+    album = 'album',
+    artist = 'artist',
+    playlist = 'playlist',
+    track = 'track',
+}
+
+async function searchForItem(type: SearchType, item: string, accessToken: string|undefined) {
+    logger.debug(`>>>> Entering searchForItem(type = ${type}, item = ${item}`);
 
     const spotifyApi = await initSpotifyApi(accessToken);
 
