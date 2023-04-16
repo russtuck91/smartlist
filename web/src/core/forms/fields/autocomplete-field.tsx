@@ -51,7 +51,7 @@ function RawAutocompleteInput(props: FullProps) {
     const [open, setOpen] = useState(false);
 
     const searchUrl = props.getSearchUrl(debouncedInputValue);
-    const query = useQuery({
+    const query = useQuery<any[]>({
         queryKey: ['autocomplete', debouncedInputValue, searchUrl],
         queryFn: async () => {
             if (!debouncedInputValue) {
@@ -59,9 +59,12 @@ function RawAutocompleteInput(props: FullProps) {
             }
             return await requests.get(searchUrl);
         },
-        placeholderData: [],
         staleTime: (60 * 60 * 1000),
         refetchOnWindowFocus: false,
+        retry: 1,
+        onError: () => {
+            handleClose();
+        },
     });
 
     function getErrorText() {
@@ -105,7 +108,7 @@ function RawAutocompleteInput(props: FullProps) {
             inputValue={inputValue}
             onInputChange={handleInputChange}
             loading={query.isFetching}
-            options={query.data}
+            options={query.data || []}
             getOptionLabel={props.getOptionLabel}
             renderOption={props.renderOption}
             onChange={handleChange}
