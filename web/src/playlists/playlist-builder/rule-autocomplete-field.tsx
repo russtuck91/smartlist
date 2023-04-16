@@ -9,7 +9,7 @@ import {
     findImageAtLeastSize,
     isAlbumObjectSimplified, isPlaylistObjectSimplified,
     isTrackObjectFull,
-    PlaylistRule, SearchItem,
+    PlaylistRule, RuleParam, SearchItem,
 } from '../../../../shared';
 
 import { AutocompleteField } from '../../core/forms/fields';
@@ -75,6 +75,10 @@ export class RuleAutocompleteField extends React.Component<RuleAutocompleteField
     }
 
     private getSearchUrl = (text: string) => {
-        return `${baseRequestUrl}/search?type=${this.props.rule.param}&text=${encodeURIComponent(text)}`;
+        const { rule: { param } } = this.props;
+        if (param === RuleParam.Playlist) {
+            return `${baseRequestUrl}/search/playlist?text=${encodeURIComponent(text)}`;
+        }
+        return `${baseRequestUrl}/search?type=${param.toLowerCase()}&text=${encodeURIComponent(text)}`;
     };
 }
