@@ -13,6 +13,7 @@ import getTracksForArtists from './get-tracks-for-artists';
 import getTracksForPlaylist from './get-tracks-for-playlist';
 import removeTracksFromPlaylist from './remove-tracks-from-playlist';
 import searchForItem from './search-for-item';
+import searchForPlaylist from './search-for-playlist';
 import unfollowPlaylist from './unfollow-playlist';
 import updatePlaylistDetails from './update-playlist-details';
 import userHasPlaylist from './user-has-playlist';
@@ -24,6 +25,7 @@ class SpotifyService {
     getFullMySavedTracks = getFullMySavedTracks;
     getFullSearchResults = getFullSearchResults;
     searchForItem = searchForItem;
+    searchForPlaylist = searchForPlaylist;
 
     userHasPlaylist = userHasPlaylist;
     createNewPlaylist = createNewPlaylist;

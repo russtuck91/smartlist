@@ -42,4 +42,19 @@ export class SearchController {
 
         res.send(result);
     }
+
+    @Get('playlist')
+    @Wrapper(expressAsyncHandler)
+    private async searchForPlaylist(
+        req: Request<unknown, unknown, unknown, { text: string }>,
+        res: Response<SpotifyApi.PlaylistObjectSimplified[]>,
+    ) {
+        await doAndRetryWithCurrentUser(async (accessToken) => {
+            const { text } = req.query;
+
+            const result = await spotifyService.searchForPlaylist(text, accessToken);
+
+            res.send(result);
+        });
+    }
 }
