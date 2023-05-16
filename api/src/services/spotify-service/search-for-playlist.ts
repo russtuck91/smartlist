@@ -22,7 +22,7 @@ async function searchForPlaylist(text: string, accessToken: string): Promise<Spo
     logger.debug(`>>>> Entering searchForPlaylist(text = ${text}`);
 
     const [usersPlaylists, searchedPlaylists] = await Promise.all([
-        getUsersPlaylists('', accessToken),
+        getUsersPlaylists(accessToken),
         handledSearchForItem(SearchType.playlist, text, accessToken),
     ]);
 

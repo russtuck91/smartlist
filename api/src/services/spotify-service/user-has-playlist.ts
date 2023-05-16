@@ -3,10 +3,10 @@ import logger from '../../core/logger/logger';
 import getUsersPlaylists from './get-users-playlists';
 
 
-async function userHasPlaylist(userId: string, playlistId: string, accessToken: string|undefined): Promise<boolean> {
+async function userHasPlaylist(playlistId: string, accessToken: string|undefined): Promise<boolean> {
     logger.info(`>>>> Entering userHasPlaylist(playlistId = ${playlistId})`);
 
-    const usersPlaylists = await getUsersPlaylists(userId, accessToken);
+    const usersPlaylists = await getUsersPlaylists(accessToken);
 
     if (!usersPlaylists) {
         logger.debug('<<<< Exiting userHasPlaylist() after getting no playlists for the user');

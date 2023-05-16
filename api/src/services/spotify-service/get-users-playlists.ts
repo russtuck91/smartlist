@@ -6,7 +6,7 @@ import getFullPagedResults from './get-full-paged-results';
 import setAccessTokenFromCurrentUser from './set-access-token-from-current-user';
 
 
-async function getUsersPlaylists(id: string, accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.PlaylistObjectSimplified>|undefined> {
+async function getUsersPlaylists(accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.PlaylistObjectSimplified>> {
     logger.debug('>>>> Entering getUsersPlaylists()');
 
     const spotifyApi = new SpotifyApi();

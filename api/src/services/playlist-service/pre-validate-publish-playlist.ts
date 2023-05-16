@@ -18,7 +18,7 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
 
     // Has been published before
     if (playlist.spotifyPlaylistId) {
-        const userHasPlaylist = await spotifyService.userHasPlaylist(playlist.userId.toString(), playlist.spotifyPlaylistId, accessToken);
+        const userHasPlaylist = await spotifyService.userHasPlaylist(playlist.spotifyPlaylistId, accessToken);
 
         // User has deleted playlist since last publish
         if (!userHasPlaylist) {
