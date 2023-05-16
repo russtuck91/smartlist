@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@analytics/google-analytics": "^0.5.3",
+    "@faker-js/faker": "^7.6.0",
     "@overnightjs/core": "^1.6.12",
     "@overnightjs/logger": "^1.1.10",
     "@seiren/mongoutils": "^1.0.2",
@@ -52,7 +53,6 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.6.0",
     "@jest/types": "^27.5.1",
     "@types/agenda": "^2.0.6",
     "@types/cookie-parser": "^1.4.2",
