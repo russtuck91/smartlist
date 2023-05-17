@@ -73,6 +73,7 @@ describe('sortTrackList', () => {
 
         // Assert
         expect(result[0].track_number).toBeLessThanOrEqual(result[result.length - 1].track_number);
+        expect(result[0].disc_number).toBeLessThanOrEqual(result[result.length - 1].disc_number);
     });
 
     it('should sort list of tracks by track name', async () => {

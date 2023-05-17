@@ -15,6 +15,8 @@ function sortReleaseDate(a: Track, b: Track): number|undefined {
 function sortAlbumBase(a: Track, b: Track): number|undefined {
     const albumNameCompare = a.albumName.localeCompare(b.albumName);
     if (albumNameCompare) return albumNameCompare;
+    const discNumberCompare = a.disc_number - b.disc_number;
+    if (discNumberCompare) return discNumberCompare;
     const trackNumberCompare = a.track_number - b.track_number;
     if (trackNumberCompare) return trackNumberCompare;
 }

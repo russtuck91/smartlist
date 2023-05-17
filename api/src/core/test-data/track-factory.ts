@@ -19,7 +19,7 @@ export const trackFactory = Factory.Sync.makeFactory<Track>({
     artistIds: [ randomStringFactory(22) ],
     artistNames: Factory.each(() => [ `Test artist name ${faker.word.adjective()} ${faker.word.noun()}` ]),
 
-    disc_number: 1,
+    disc_number: Factory.each(() => random(1, 2)),
     duration_ms: 1000,
     popularity: 1,
     track_number: Factory.each(() => random(1, 20)),
