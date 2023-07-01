@@ -15,11 +15,11 @@ async function addTracksToPlaylist(playlistId: string, trackUris: string[], acce
 
     const spotifyApi = await initSpotifyApi(accessToken);
 
-    batchedUris.map(async (uriBatch) => {
+    for (const uriBatch of batchedUris) {
         await doAndWaitForRateLimit(async () =>
             await spotifyApi.addTracksToPlaylist(playlistId, uriBatch),
         );
-    });
+    }
 }
 
 export default addTracksToPlaylist;
