@@ -15,7 +15,7 @@
     "restoredb": "ts-node ./scripts/restore-database-wrapper.ts"
   },
   "dependencies": {
-    "@analytics/google-analytics": "^0.5.3",
+    "@analytics/google-analytics": "^1.0.7",
     "@faker-js/faker": "^7.6.0",
     "@overnightjs/core": "^1.6.12",
     "@overnightjs/logger": "^1.1.10",
