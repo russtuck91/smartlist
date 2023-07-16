@@ -2,6 +2,7 @@ import {
     Box, CircularProgress, Grid, Paper,
     Theme, WithStyles, withStyles,
 } from '@material-ui/core';
+import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import React from 'react';
 
@@ -12,10 +13,6 @@ import { baseRequestUrl, requests } from '../../core/requests/requests';
 
 interface TrackRowDetailsProps {
     track: Track;
-}
-
-interface TrackRowDetailsState {
-    details?: TrackDetails;
 }
 
 const useStyles = (theme: Theme) => ({
@@ -31,32 +28,18 @@ const useStyles = (theme: Theme) => ({
 
 type FullProps = TrackRowDetailsProps & WithStyles<typeof useStyles>;
 
-export class RawTrackRowDetails extends React.Component<FullProps, TrackRowDetailsState> {
-    state: TrackRowDetailsState = {};
+function RawTrackRowDetails(props: FullProps) {
+    const query = useQuery<TrackDetails>({
+        queryKey: ['trackDetails', props.track.id],
+        queryFn: async () => {
+            return await requests.get(`${baseRequestUrl}/track/${props.track.id}/details`);
+        },
+        staleTime: (60 * 60 * 1000),
+        refetchOnWindowFocus: false,
+    });
 
-    componentDidMount() {
-        this.loadTrackDetails();
-    }
-
-    private async loadTrackDetails() {
-        const details: TrackDetails = await requests.get(`${baseRequestUrl}/track/${this.props.track.id}/details`);
-        this.setState({
-            details,
-        });
-    }
-
-    render() {
-        return (
-            <Paper className={this.props.classes.paper}>
-                {this.renderContent()}
-            </Paper>
-        );
-    }
-
-    private renderContent() {
-        const { details } = this.state;
-
-        if (!details) {
+    function renderContent() {
+        if (query.isLoading || !query.data) {
             return (
                 <Box display="flex" justifyContent="center" p={1}>
                     <CircularProgress />
@@ -69,7 +52,7 @@ export class RawTrackRowDetails extends React.Component<FullProps, TrackRowDetai
                 <Grid item>
                     <strong>Genres:</strong>
                     <Box maxHeight="6em" overflow="auto">
-                        {details.genres.map((genre, index) => (
+                        {query.data.genres.map((genre, index) => (
                             <div key={index}>{genre}</div>
                         ))}
                     </Box>
@@ -77,24 +60,30 @@ export class RawTrackRowDetails extends React.Component<FullProps, TrackRowDetai
                 <Grid item>
                     <div>
                         <strong>Year: </strong>
-                        {moment(this.props.track.albumReleaseDate).format('YYYY')}
+                        {moment(props.track.albumReleaseDate).format('YYYY')}
                     </div>
                     <div>
                         <strong>Tempo: </strong>
-                        {details.audioFeatures.tempo}
+                        {query.data.audioFeatures.tempo}
                     </div>
                     <div>
                         <strong>Energy: </strong>
-                        {details.audioFeatures.energy}
+                        {query.data.audioFeatures.energy}
                     </div>
                     <div>
                         <strong>Instrumentalness: </strong>
-                        {details.audioFeatures.instrumentalness}
+                        {query.data.audioFeatures.instrumentalness}
                     </div>
                 </Grid>
             </Grid>
         );
     }
+
+    return (
+        <Paper className={props.classes.paper}>
+            {renderContent()}
+        </Paper>
+    );
 }
 
 export const TrackRowDetails = withStyles(useStyles)(RawTrackRowDetails);
