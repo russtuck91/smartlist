@@ -25,7 +25,7 @@ export interface VirtualTableRendererProps {
 }
 
 interface VirtualTableRendererState {
-    rowsExpanded: boolean[];
+    rowsExpanded: Record<string, boolean>;
 }
 
 const useStyles = (theme: Theme) => ({
@@ -67,7 +67,7 @@ type FullProps = VirtualTableRendererProps & WithStyles<typeof useStyles>;
 
 export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualTableRendererState> {
     state = {
-        rowsExpanded: [],
+        rowsExpanded: {},
     };
 
     render() {
@@ -188,7 +188,7 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                     key={index}
                     row={datum}
                     expandableRows={this.props.expandableRows}
-                    expanded={this.state.rowsExpanded[index - 1]}
+                    expanded={this.state.rowsExpanded[datum.id]}
                 />
             );
         }
@@ -202,7 +202,7 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                 isLoading={!!this.props.isLoading}
                 customCellFormatter={this.props.customCellFormatter}
                 expandableRows={this.props.expandableRows}
-                onToggleExpanded={() => this.handleToggleRowExpansion(index)}
+                onToggleExpanded={() => this.handleToggleRowExpansion(index, datum)}
             />
         );
     };
@@ -235,10 +235,10 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
         );
     };
 
-    private handleToggleRowExpansion = (rowIndex: number) => {
+    private handleToggleRowExpansion = (rowIndex: number, datum: any) => {
         this.setState((prevState) => {
             const newRowsExpanded = cloneDeep(prevState.rowsExpanded);
-            newRowsExpanded[rowIndex] = !prevState.rowsExpanded[rowIndex];
+            newRowsExpanded[datum.id] = !prevState.rowsExpanded[datum.id];
             return {
                 rowsExpanded: newRowsExpanded,
             };
