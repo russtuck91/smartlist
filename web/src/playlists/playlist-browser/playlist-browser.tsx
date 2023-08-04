@@ -5,12 +5,11 @@ import {
 import { FilterList, Search } from '@material-ui/icons';
 import { FormikProps, withFormik } from 'formik';
 import moment from 'moment';
-import * as React from 'react';
-import { generatePath, RouteComponentProps } from 'react-router-dom';
+import React, { useState } from 'react';
+import { generatePath } from 'react-router-dom';
 
 import { convertEnumToArray, Playlist, PlaylistDeleteOptions } from '../../../../shared';
 
-import { DialogControl } from '../../core/components/modals/dialog-control';
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
 import { DropdownField, TextField } from '../../core/forms/fields';
 import { history } from '../../core/history/history';
@@ -18,24 +17,14 @@ import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
 
 import { PlaylistContainer } from '../playlist-container';
+import { useFetchPlaylists } from '../use-fetch-playlists';
 
 import CreatePlaylistButton from './create-playlist-button';
 import { DeleteDialogContainer } from './delete-dialog/delete-dialog-container';
 import { PlaylistBrowserListRenderer } from './playlist-browser-list-renderer';
+import PublishDialog from './publish-dialog';
 
-interface PlaylistBrowserProps extends RouteComponentProps<any, any, PlaylistBrowserLocationState> {
-}
-
-interface PlaylistBrowserState {
-    playlists?: Playlist[];
-
-    activeItem?: Playlist;
-    showDeleteDialog: boolean;
-    showPublishDialog: boolean;
-    publishInProgress: { [id: string]: boolean };
-}
-export interface PlaylistBrowserLocationState {
-    activeItem?: Playlist;
+interface PlaylistBrowserProps {
 }
 
 interface PlaylistBrowserFormValues {
@@ -63,54 +52,33 @@ const useStyles = (theme: Theme) => {
 
 type FullProps = PlaylistBrowserProps & WithStyles<typeof useStyles> & FormikProps<PlaylistBrowserFormValues>;
 
-export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrowserState> {
-    state: PlaylistBrowserState = {
-        showDeleteDialog: false,
-        showPublishDialog: false,
-        publishInProgress: {},
-    };
+const RawPlaylistBrowser: React.FC<FullProps> = (props) => {
+    const [activeItem, setActiveItem] = useState<Playlist|undefined>(undefined);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [showPublishDialog, setShowPublishDialog] = useState(false);
 
-    componentDidMount() {
-        this.loadPlaylists();
+    const { data: playlists, isLoading, refetch: refetchPlaylists } = useFetchPlaylists();
 
-        this.publishJustUpdatedPlaylist();
-    }
+    return (
+        <Box position="relative" display="flex" flex="1 1 auto" flexDirection="column" overflow="auto">
+            <SecondaryAppBar>
+                <Typography variant="h6">
+                    Playlists
+                </Typography>
+                <Typography style={{ flexGrow: 10 }} />
+                <CreatePlaylistButton iosVersion />
+            </SecondaryAppBar>
+            <Container className={props.classes.container}>
+                <CreatePlaylistButton />
+                {renderFormArea()}
+                {renderPlaylistList()}
+                {renderDeleteDialog()}
+                {renderPublishDialog()}
+            </Container>
+        </Box>
+    );
 
-    async loadPlaylists(reload?: boolean) {
-        if (reload) {
-            this.setState({
-                playlists: undefined,
-            });
-        }
-
-        const playlists = await requests.get(`${PlaylistContainer.requestUrl}/lists`);
-        this.setState({
-            playlists: playlists,
-        });
-    }
-
-    render() {
-        return (
-            <Box position="relative" display="flex" flex="1 1 auto" flexDirection="column" overflow="auto">
-                <SecondaryAppBar>
-                    <Typography variant="h6">
-                        Playlists
-                    </Typography>
-                    <Typography style={{ flexGrow: 10 }} />
-                    <CreatePlaylistButton iosVersion />
-                </SecondaryAppBar>
-                <Container className={this.props.classes.container}>
-                    <CreatePlaylistButton />
-                    {this.renderFormArea()}
-                    {this.renderPlaylistList()}
-                    {this.renderDeleteDialog()}
-                    {this.renderPublishDialog()}
-                </Container>
-            </Box>
-        );
-    }
-
-    private renderFormArea() {
+    function renderFormArea() {
         return (
             <Box my={2}>
                 <Grid container spacing={1} alignItems="flex-end">
@@ -134,26 +102,25 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
         );
     }
 
-    private renderPlaylistList() {
+    function renderPlaylistList() {
         return (
             <PlaylistBrowserListRenderer
-                playlists={(this.state.playlists?.filter(this.filterPlaylist).sort(this.sortPlaylists)) || []}
-                isLoading={this.state.playlists === undefined}
-                publishInProgress={this.state.publishInProgress}
-                onClickListItem={this.transitionToEdit}
-                onClickPublishBtn={this.openPublishDialog}
-                onClickDeleteBtn={this.openDeleteDialog}
+                playlists={(playlists?.filter(filterPlaylist).sort(sortPlaylists)) || []}
+                isLoading={isLoading}
+                onClickListItem={transitionToEdit}
+                onClickPublishBtn={openPublishDialog}
+                onClickDeleteBtn={openDeleteDialog}
             />
         );
     }
 
-    private filterPlaylist = (playlist: Playlist) => {
-        const { values: { search } } = this.props;
+    function filterPlaylist(playlist: Playlist) {
+        const { values: { search } } = props;
         return playlist.name.toLowerCase().includes(search.toLowerCase());
-    };
+    }
 
-    private sortPlaylists = (a: Playlist, b: Playlist): number => {
-        const { values: { sort } } = this.props;
+    function sortPlaylists(a: Playlist, b: Playlist): number {
+        const { values: { sort } } = props;
         if (sort === PlaylistBrowserSortOptions.alphabetical) {
             return a.name.localeCompare(b.name);
         }
@@ -164,115 +131,65 @@ export class RawPlaylistBrowser extends React.Component<FullProps, PlaylistBrows
             return moment(a.createdAt).diff(b.createdAt);
         }
         return 0;
-    };
+    }
 
-    private renderDeleteDialog() {
-        const { activeItem, showDeleteDialog } = this.state;
-
+    function renderDeleteDialog() {
         return (
             <DeleteDialogContainer
                 isOpen={showDeleteDialog}
-                onClose={this.closeDeleteDialog}
-                onConfirm={this.onConfirmDelete}
+                onClose={closeDeleteDialog}
+                onConfirm={onConfirmDelete}
                 playlist={activeItem}
             />
         );
     }
 
-    private renderPublishDialog() {
-        const { showPublishDialog } = this.state;
-
+    function renderPublishDialog() {
         return (
-            <DialogControl
-                open={showPublishDialog}
-                onClose={this.closePublishDialog}
-                onConfirm={this.onConfirmPublish}
-                body={<p>Publish this playlist?</p>}
+            <PublishDialog
+                showPublishDialog={showPublishDialog}
+                playlist={activeItem}
+                onClose={closePublishDialog}
             />
         );
     }
 
-    private transitionToEdit(item: Playlist) {
+    function transitionToEdit(item: Playlist) {
         history.push(generatePath(RouteLookup.playlists.edit, { id: item.id }));
     }
 
-    private openDeleteDialog = (playlist: Playlist) => {
-        this.setState({
-            showDeleteDialog: true,
-            activeItem: playlist,
-        });
-    };
+    function openDeleteDialog(playlist: Playlist) {
+        setShowDeleteDialog(true);
+        setActiveItem(playlist);
+    }
 
-    private closeDeleteDialog = () => {
-        this.setState({
-            showDeleteDialog: false,
-        });
-    };
+    function closeDeleteDialog() {
+        setShowDeleteDialog(false);
+    }
 
-    private onConfirmDelete = async (options: PlaylistDeleteOptions) => {
-        if (!this.state.activeItem) { return; }
+    async function onConfirmDelete(options: PlaylistDeleteOptions) {
+        if (!activeItem) { return; }
 
-        await this.deletePlaylist(this.state.activeItem, options);
+        await deletePlaylist(activeItem, options);
 
-        this.closeDeleteDialog();
+        closeDeleteDialog();
 
-        this.loadPlaylists(true);
-    };
+        refetchPlaylists();
+    }
 
-    private async deletePlaylist(playlist: Playlist, options: PlaylistDeleteOptions) {
+    async function deletePlaylist(playlist: Playlist, options: PlaylistDeleteOptions) {
         await requests.delete(`${PlaylistContainer.requestUrl}/${playlist.id}`, options);
     }
 
-    private openPublishDialog = (playlist: Playlist) => {
-        this.setState({
-            activeItem: playlist,
-            showPublishDialog: true,
-        });
-    };
-
-    private closePublishDialog = () => {
-        this.setState({
-            activeItem: undefined,
-            showPublishDialog: false,
-        });
-    };
-
-    private onConfirmPublish = () => {
-        if (!this.state.activeItem) { return; }
-
-        this.publishPlaylist(this.state.activeItem);
-
-        this.closePublishDialog();
-    };
-
-    private async publishPlaylist(playlist: Playlist) {
-        this.setPublishInProgress(playlist.id, true);
-
-        try {
-            await requests.post(`${PlaylistContainer.requestUrl}/publish/${playlist.id}`);
-            await this.loadPlaylists();
-        } finally {
-            this.setPublishInProgress(playlist.id, false);
-        }
+    function openPublishDialog(playlist: Playlist) {
+        setActiveItem(playlist);
+        setShowPublishDialog(true);
     }
 
-    private setPublishInProgress(id: string, value: boolean) {
-        this.setState((prevState) => ({
-            publishInProgress: {
-                ...prevState.publishInProgress,
-                [id]: value,
-            },
-        }));
+    function closePublishDialog() {
+        setShowPublishDialog(false);
     }
-
-    private publishJustUpdatedPlaylist = () => {
-        const { activeItem } = this.props.location.state || {};
-        if (!activeItem) { return; }
-        if (activeItem.deleted) { return; }
-
-        this.publishPlaylist(activeItem);
-    };
-}
+};
 
 export const PlaylistBrowser = withStyles(useStyles)( withFormik({
     handleSubmit() {},

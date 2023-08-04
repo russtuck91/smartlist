@@ -4,14 +4,12 @@ import { RouteComponentProps } from 'react-router';
 
 import { Playlist, PlaylistTrackSortOption, RuleGroupType, RuleParam } from '../../../../shared';
 
-import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
-import { RouteLookup } from '../../core/routes/route-lookup';
 
-import { PlaylistBrowserLocationState } from '../playlist-browser/playlist-browser';
 import { PlaylistContainer } from '../playlist-container';
 
 import { DEFAULT_NEW_CONDITION, getNewConditionByParam, PlaylistBuilderFormValues } from './models';
+import PlaylistAfterUpdateActions from './playlist-after-update-actions';
 import { PlaylistBuilderForm } from './playlist-builder-form';
 
 
@@ -22,6 +20,7 @@ interface PlaylistBuilderProps extends RouteComponentProps<MatchParams> {}
 
 interface PlaylistBuilderState {
     existingPlaylist?: Playlist;
+    updatedPlaylist?: Playlist;
 }
 
 export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, PlaylistBuilderState> {
@@ -45,19 +44,26 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
 
     render() {
         return (
-            <Formik
-                initialValues={this.getDefaultFormValues()}
-                enableReinitialize
-                isInitialValid={!!this.state.existingPlaylist}
-                onSubmit={this.onSubmit}
-                render={(formikProps: FormikProps<PlaylistBuilderFormValues>) => (
-                    <PlaylistBuilderForm
-                        formik={formikProps}
-                        isEditMode={this.isEditMode()}
-                        isLoading={this.isEditMode() && !this.state.existingPlaylist}
+            <>
+                <Formik
+                    initialValues={this.getDefaultFormValues()}
+                    enableReinitialize
+                    isInitialValid={!!this.state.existingPlaylist}
+                    onSubmit={this.onSubmit}
+                    render={(formikProps: FormikProps<PlaylistBuilderFormValues>) => (
+                        <PlaylistBuilderForm
+                            formik={formikProps}
+                            isEditMode={this.isEditMode()}
+                            isLoading={this.isEditMode() && !this.state.existingPlaylist}
+                        />
+                    )}
+                />
+                {this.state.updatedPlaylist && (
+                    <PlaylistAfterUpdateActions
+                        playlist={this.state.updatedPlaylist}
                     />
                 )}
-            />
+            </>
         );
     }
 
@@ -103,19 +109,14 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
             result = await requests.post(`${PlaylistContainer.requestUrl}`, playlist);
         }
 
-        this.transitionToBrowse(result);
+        this.setState({
+            updatedPlaylist: result,
+        });
     };
 
     private mapPlaylistBuilderFormValuesToPlaylist(values: PlaylistBuilderFormValues): Partial<Playlist> {
         return {
             ...values,
         };
-    }
-
-    private transitionToBrowse(playlist: Playlist) {
-        const locState: PlaylistBrowserLocationState = {
-            activeItem: playlist,
-        };
-        history.push(RouteLookup.playlists.base, locState);
     }
 }
