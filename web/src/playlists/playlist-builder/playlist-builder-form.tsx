@@ -30,6 +30,7 @@ import { PlaylistContainer } from '../playlist-container';
 import ExceptionList from './exception-list';
 import { DEFAULT_NEW_CONDITION, PlaylistBuilderFormValues } from './models';
 import PlaylistPreviewArea from './playlist-preview-area';
+import RefreshButton from './refresh-button';
 import { RuleGroup } from './rule-group';
 import TabSet from './tab-set';
 
@@ -42,6 +43,7 @@ export interface PlaylistBuilderFormProps {
 
 interface PlaylistBuilderFormState {
     listPreview?: Nullable<Track[]>;
+    justLoadedPreview: boolean;
 }
 
 const useStyles = (theme: Theme): StyleRules => ({
@@ -95,6 +97,7 @@ type FullProps = PlaylistBuilderFormProps & WithStyles<typeof useStyles> & WithW
 export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistBuilderFormState> {
     state: PlaylistBuilderFormState = {
         listPreview: [],
+        justLoadedPreview: false,
     };
 
     async componentDidMount() {
@@ -130,7 +133,13 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
             this.setState({
                 listPreview: list,
+                justLoadedPreview: true,
             });
+            setTimeout(() => {
+                this.setState({
+                    justLoadedPreview: false,
+                });
+            }, 3000);
         } catch (e) {
             logger.error('Problem populating list for playlist', e);
             this.setState({ listPreview: null });
@@ -190,9 +199,11 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                             <Grid item>
                                 <Button type="submit" variant="contained" disabled={!isValid || isSubmitting}>Save</Button>
                             </Grid>
-                            <Grid item>
-                                <Button variant="contained" disabled={!this.areRulesValid()} onClick={this.getListPreview}>Refresh</Button>
-                            </Grid>
+                            {!this.isMobileScreenSize() && (
+                                <Grid item>
+                                    {this.renderRefreshButton()}
+                                </Grid>
+                            )}
                         </Grid>
                     </Box>
                     {this.renderContentArea()}
@@ -201,8 +212,26 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
         );
     }
 
+    private renderRefreshButton() {
+        const { listPreview, justLoadedPreview } = this.state;
+        const isLoading = !listPreview;
+        return (
+            <RefreshButton
+                isMobileScreenSize={this.isMobileScreenSize()}
+                isLoading={isLoading}
+                justLoadedPreview={justLoadedPreview}
+                disabled={isLoading || !this.areRulesValid()}
+                onClick={this.getListPreview}
+            />
+        );
+    }
+
+    private isMobileScreenSize() {
+        return [ 'xs', 'sm' ].includes(this.props.width);
+    }
+
     private renderContentArea() {
-        if ([ 'xs', 'sm' ].includes(this.props.width)) {
+        if (this.isMobileScreenSize()) {
             return this.renderContentAsTabs();
         }
 
@@ -215,7 +244,15 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
                 tabs={[
                     { label: 'Rules', render: this.renderFormArea },
                     { label: 'Except', render: this.renderExceptList },
-                    { label: 'Songs', render: this.renderPreviewArea },
+                    {
+                        label: (
+                            <Box display="flex" alignItems="center">
+                                <Box mr={0.5}>Songs</Box>
+                                {this.renderRefreshButton()}
+                            </Box>
+                        ),
+                        render: this.renderPreviewArea,
+                    },
                 ]}
             />
         );

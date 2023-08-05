@@ -9,7 +9,7 @@ import TabPanel from './tab-panel';
 
 interface TabSetProps {
     tabs: ({
-        label: string;
+        label: React.ReactNode;
         render: () => React.ReactNode;
     })[];
 }
