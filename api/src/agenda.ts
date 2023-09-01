@@ -6,14 +6,12 @@ import { convertEnumToArray } from '../../shared';
 import { MONGODB_URI } from './core/db/db';
 import logger from './core/logger/logger';
 
+import JobTypes from './jobs/job-types';
+
 const connectionOpts = { db: { address: MONGODB_URI, collection: 'jobs' } };
 
 export const agenda = new Agenda(connectionOpts);
 
-export enum JobTypes {
-    playlistPublishing = 'playlistPublishing',
-    fetchResourcesForUser = 'fetchResourcesForUser',
-}
 const jobTypes = convertEnumToArray(JobTypes);
 
 jobTypes.forEach((type) => {
@@ -28,10 +26,10 @@ if (jobTypes.length) {
         logger.info('Started agenda');
 
         if (process.env.NODE_ENV !== 'development') {
-            await agenda.every('1 hour', 'playlistPublishing');
+            await agenda.every('1 hour', JobTypes.playlistPublishing);
         }
 
-        // await agenda.now('playlistPublishing');
+        // await agenda.now(JobTypes.playlistPublishing);
     })();
 }
 
