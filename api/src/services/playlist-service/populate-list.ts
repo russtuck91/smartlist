@@ -1,3 +1,4 @@
+import { startTransaction } from '@sentry/node';
 import { union } from 'lodash';
 
 import { Playlist, TrackList } from '../../../../shared';
@@ -12,6 +13,10 @@ import sortTrackList from './sort-track-list';
 
 async function populateList(playlist: Playlist, accessToken: string): Promise<TrackList> {
     logger.debug('>>>> Entering populateList()');
+    const transaction = startTransaction({
+        op: 'populateList',
+        name: 'Populate List',
+    });
 
     const results: (TrackList)[] = await Promise.all(
         playlist.rules.map((rule) => {
@@ -34,6 +39,7 @@ async function populateList(playlist: Playlist, accessToken: string): Promise<Tr
     const sortedList: TrackList = await sortTrackList(filteredForExceptions, playlist.trackSort, accessToken);
 
     logger.debug(`<<<< Exiting populateList(), the playlist will have ${sortedList.length} songs`);
+    transaction.finish();
     return sortedList;
 }
 

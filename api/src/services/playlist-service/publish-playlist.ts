@@ -1,3 +1,5 @@
+import { startTransaction } from '@sentry/node';
+
 import { Playlist } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
@@ -10,6 +12,10 @@ import updatePlaylist from './update-playlist';
 
 async function publishPlaylist(playlist: Playlist, accessToken: string) {
     logger.info(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
+    const transaction = startTransaction({
+        op: 'publishPlaylist',
+        name: 'Publish Playlist',
+    });
 
     const list = await populateList(playlist, accessToken);
 
@@ -38,6 +44,8 @@ async function publishPlaylist(playlist: Playlist, accessToken: string) {
         deleted: false,
     };
     await updatePlaylist(playlist.id, playlistUpdate);
+
+    transaction.finish();
 }
 
 export default publishPlaylist;
