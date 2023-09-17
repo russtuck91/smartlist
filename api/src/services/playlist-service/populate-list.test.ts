@@ -1,3 +1,5 @@
+import { Transaction } from '@sentry/node';
+
 import { playlistFactory, trackFactory } from '../../core/test-data';
 
 import * as getListForRuleGroup from './get-list-for-rule-group';
@@ -5,6 +7,11 @@ import * as getListForRules from './get-list-for-rules';
 import populateList from './populate-list';
 
 
+jest.mock('@sentry/node', () => ({
+    startTransaction: jest.fn((): Partial<Transaction> => ({
+        finish: jest.fn(),
+    })),
+}));
 jest.mock('../spotify-service/spotify-service');
 
 describe('populateList', () => {
