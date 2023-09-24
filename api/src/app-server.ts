@@ -77,7 +77,7 @@ class AppServer extends Server {
                 }),
                 new ProfilingIntegration(),
             ],
-            tracesSampleRate: 0.1,
+            tracesSampleRate: 0.01,
             profilesSampleRate: 1.0,
         });
     }
