@@ -31,6 +31,7 @@ export class RuleAutocompleteField extends React.Component<RuleAutocompleteField
                 renderOption={this.renderOption}
                 getOptionLabel={this.getOptionLabel}
                 required
+                freeSolo={this.props.rule.param !== RuleParam.Playlist}
             />
         );
     }

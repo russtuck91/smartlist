@@ -98,6 +98,9 @@ function RawAutocompleteInput(props: FullProps) {
 
     function handleInputChange(e: React.ChangeEvent<unknown>|null, newInputValue: string) {
         if (e?.type === 'blur' && !newInputValue) { return; }
+        // event is null when selecting an option item
+        if (!e) { return; }
+
         setInputValue(newInputValue);
         if (props.freeSolo) handleChange(e, newInputValue);
     }
