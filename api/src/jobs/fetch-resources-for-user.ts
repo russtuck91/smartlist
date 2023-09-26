@@ -2,8 +2,9 @@ import Agenda from 'agenda';
 
 import logger from '../core/logger/logger';
 
-import { JobTypes } from '../agenda';
 import { fetchResourcesForUser } from '../services/user-service';
+
+import JobTypes from './job-types';
 
 
 export interface FetchResourcesForUserParams {

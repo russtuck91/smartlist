@@ -8,8 +8,9 @@ import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
 import { SpotifyApi } from '../core/spotify/spotify-api';
 
-import { agenda, JobTypes } from '../agenda';
+import { agenda } from '../agenda';
 import { FetchResourcesForUserParams } from '../jobs/fetch-resources-for-user';
+import JobTypes from '../jobs/job-types';
 import spotifyService from '../services/spotify-service/spotify-service';
 import { removeSessionTokenFromCurrentUser, updateUser } from '../services/user-service';
 

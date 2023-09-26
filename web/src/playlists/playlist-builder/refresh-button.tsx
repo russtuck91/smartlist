@@ -37,6 +37,7 @@ const RefreshButton: React.FC<RefreshButtonIconProps> = ({
     function renderSmallScreen() {
         return (
             <IconButton
+                component="div"
                 size="small"
                 aria-label="Refresh"
                 title="Refresh"

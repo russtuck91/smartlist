@@ -214,7 +214,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
 
     private renderRefreshButton() {
         const { listPreview, justLoadedPreview } = this.state;
-        const isLoading = !listPreview;
+        const isLoading = listPreview === undefined;
         return (
             <RefreshButton
                 isMobileScreenSize={this.isMobileScreenSize()}

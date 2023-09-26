@@ -20,7 +20,6 @@ export function isArtistRule(rule: PlaylistRule): rule is ArtistRule {
 }
 export interface ArtistIsRule extends ArtistRule {
     comparator: RuleComparator.Is;
-    value: SearchItem;
 }
 export function isArtistIsRule(rule: PlaylistRule): rule is ArtistIsRule {
     return isArtistRule(rule) && rule.comparator === RuleComparator.Is;
@@ -42,7 +41,6 @@ export function isAlbumRule(rule: PlaylistRule): rule is AlbumRule {
 }
 export interface AlbumIsRule extends AlbumRule {
     comparator: RuleComparator.Is;
-    value: SearchItem;
 }
 export function isAlbumIsRule(rule: PlaylistRule): rule is AlbumIsRule {
     return isAlbumRule(rule) && rule.comparator === RuleComparator.Is;
@@ -64,7 +62,6 @@ export function isTrackRule(rule: PlaylistRule): rule is TrackRule {
 }
 export interface TrackIsRule extends TrackRule {
     comparator: RuleComparator.Is;
-    value: SearchItem;
 }
 export function isTrackIsRule(rule: PlaylistRule): rule is TrackIsRule {
     return isTrackRule(rule) && rule.comparator === RuleComparator.Is;

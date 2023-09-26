@@ -80,7 +80,7 @@ function RawAutocompleteInput(props: FullProps) {
         return props.error;
     }
 
-    function handleChange(event: React.ChangeEvent<any>, value: any) {
+    function handleChange(event: React.ChangeEvent<any>|null, value: any) {
         if (!props.setFieldValue) {
             return;
         }
@@ -98,7 +98,11 @@ function RawAutocompleteInput(props: FullProps) {
 
     function handleInputChange(e: React.ChangeEvent<unknown>|null, newInputValue: string) {
         if (e?.type === 'blur' && !newInputValue) { return; }
+        // event is null when selecting an option item
+        if (!e) { return; }
+
         setInputValue(newInputValue);
+        if (props.freeSolo) handleChange(e, newInputValue);
     }
 
     return (

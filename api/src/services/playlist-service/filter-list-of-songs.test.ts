@@ -1,7 +1,47 @@
-import { albumContainsRuleFactory, trackFactory } from '../../core/test-data';
+import {
+    albumContainsRuleFactory, artistContainsRuleFactory, artistIsRuleFactory,
+    trackFactory,
+} from '../../core/test-data';
 
 import filterListOfSongs from './filter-list-of-songs';
 
+
+describe('filter by artist', () => {
+    it('should filter list by Artist/Is rule', async () => {
+        // Arrange
+        const expectedArtistName = 'some artist';
+        const tracks = trackFactory.buildList(10);
+        tracks[0].artistNames = [expectedArtistName];
+        const playlistRule = artistIsRuleFactory.build({
+            value: expectedArtistName,
+        });
+
+        // Act
+        const result = await filterListOfSongs(tracks, [playlistRule], undefined);
+
+        // Assert
+        expect(result).toHaveLength(1);
+        expect(result.every((t) => t.artistNames.includes(expectedArtistName))).toBeTruthy();
+    });
+
+    it('should filter list by Artist/Contains rule', async () => {
+        // Arrange
+        const ruleValue = 'contains value';
+        const expectedArtistName = `some ${ruleValue} here`;
+        const tracks = trackFactory.buildList(10);
+        tracks[0].artistNames = [expectedArtistName];
+        const playlistRule = artistContainsRuleFactory.build({
+            value: ruleValue,
+        });
+
+        // Act
+        const result = await filterListOfSongs(tracks, [playlistRule], undefined);
+
+        // Assert
+        expect(result).toHaveLength(1);
+        expect(result.every((t) => t.artistNames.includes(expectedArtistName))).toBeTruthy();
+    });
+});
 
 describe('filter by album', () => {
     it('should filter list by Album/Contains rule', async () => {
