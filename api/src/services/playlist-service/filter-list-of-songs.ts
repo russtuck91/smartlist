@@ -9,6 +9,7 @@ import {
     isEnergyRule,
     isGenreRule,
     isInstrumentalRule,
+    isSearchItem,
     isTempoRule,
     isTrackContainsRule, isTrackIsRule, isTrackRule,
     isYearBetweenRule, isYearIsRule, isYearRule,
@@ -105,9 +106,18 @@ function filterTrack(track: Track, thisFilter: PlaylistRule, { albumMap, artistM
 
 function filterTrackByArtist(track: Track, thisFilter: ArtistRule) {
     if (isArtistIsRule(thisFilter)) {
-        return track.artistIds.some((id) => {
-            return id === thisFilter.value.id;
-        });
+        if (isSearchItem(thisFilter.value)) {
+            const thisFilterValue = thisFilter.value;
+            return track.artistIds.some((id) => {
+                return id === thisFilterValue.id;
+            });
+        }
+        if (typeof thisFilter.value === 'string') {
+            const thisFilterValue = thisFilter.value;
+            return track.artistNames.some((name) => {
+                return name.toLowerCase() === thisFilterValue.toLowerCase();
+            });
+        }
     }
     if (isArtistContainsRule(thisFilter)) {
         return track.artistNames.some((name) => {
@@ -120,7 +130,12 @@ function filterTrackByArtist(track: Track, thisFilter: ArtistRule) {
 
 function filterTrackByAlbum(track: Track, thisFilter: AlbumRule) {
     if (isAlbumIsRule(thisFilter)) {
-        return track.albumId === thisFilter.value.id;
+        if (isSearchItem(thisFilter.value)) {
+            return track.albumId === thisFilter.value.id;
+        }
+        if (typeof thisFilter.value === 'string') {
+            return track.albumName.toLowerCase() === thisFilter.value.toLowerCase();
+        }
     }
     if (isAlbumContainsRule(thisFilter)) {
         return track.albumName.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
@@ -129,7 +144,12 @@ function filterTrackByAlbum(track: Track, thisFilter: AlbumRule) {
 
 function filterTrackByTrack(track: Track, thisFilter: TrackRule) {
     if (isTrackIsRule(thisFilter)) {
-        return track.id === thisFilter.value.id;
+        if (isSearchItem(thisFilter.value)) {
+            return track.id === thisFilter.value.id;
+        }
+        if (typeof thisFilter.value === 'string') {
+            return track.name.toLowerCase() === thisFilter.value.toLowerCase();
+        }
     }
     if (isTrackContainsRule(thisFilter)) {
         return track.name.toLowerCase().indexOf(thisFilter.value.toLowerCase()) > -1;
