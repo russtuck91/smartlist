@@ -17,6 +17,7 @@ import logger from './core/logger/logger';
 import { setSessionTokenContext } from './core/session/session-util';
 
 import { BaseController } from './base-controller';
+import { refreshResourcesForCurrentUser } from './services/user-service';
 
 const MongoStore = connectMongo(session);
 
@@ -50,6 +51,7 @@ class AppServer extends Server {
         this.app.use(httpContext.middleware);
         this.app.use(setSessionTokenContext);
         this.app.use(this.sslRedirectHandler);
+        this.app.use(refreshResourcesForCurrentUser);
 
         this.app.use(session({
             secret: process.env.client_secret || 'defaultSecret',
