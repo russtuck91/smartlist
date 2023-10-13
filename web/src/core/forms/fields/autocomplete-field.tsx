@@ -1,7 +1,7 @@
 import { TextField as MUITextField, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { Autocomplete, RenderOptionState } from '@material-ui/lab';
 import { useQuery } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 
 import { requests } from '../../requests/requests';
@@ -46,9 +46,14 @@ const useStyles = (theme: Theme) => ({
 type FullProps = AutocompleteInputProps & WithStyles<typeof useStyles>;
 
 function RawAutocompleteInput(props: FullProps) {
-    const [inputValue, setInputValue] = useState('');
+    const defaultInputValue = props.getOptionLabel?.(props.value) || props.value || '';
+    const [inputValue, setInputValue] = useState(defaultInputValue);
     const [debouncedInputValue] = useDebounce(inputValue, 500);
     const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        setInputValue(defaultInputValue);
+    }, [defaultInputValue]);
 
     const searchUrl = props.getSearchUrl(debouncedInputValue);
     const query = useQuery<any[]>({
