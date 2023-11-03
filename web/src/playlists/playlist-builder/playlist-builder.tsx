@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router';
 
 import { Playlist, PlaylistTrackSortOption, RuleGroupType, RuleParam } from '../../../../shared';
 
+import { playlistCreatedEvent, playlistUpdatedEvent } from '../../core/analytics/analytics-utils';
 import { requests } from '../../core/requests/requests';
 
 import { PlaylistContainer } from '../playlist-container';
@@ -105,8 +106,10 @@ export class PlaylistBuilder extends React.Component<PlaylistBuilderProps, Playl
         let result: Playlist;
         if (id) {
             result = await requests.put(`${PlaylistContainer.requestUrl}/${id}`, playlist);
+            playlistUpdatedEvent();
         } else {
             result = await requests.post(`${PlaylistContainer.requestUrl}`, playlist);
+            playlistCreatedEvent();
         }
 
         this.setState({

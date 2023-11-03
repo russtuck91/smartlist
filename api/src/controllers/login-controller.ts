@@ -2,7 +2,6 @@ import { Controller, Get } from '@overnightjs/core';
 import { Response } from 'express';
 import { Request } from 'express-serve-static-core';
 
-import { userLoggedInEvent } from '../core/analytics/analytics-utils';
 import logger from '../core/logger/logger';
 import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
@@ -78,8 +77,6 @@ export class LoginController {
                 const user = await updateUser(username, accessTokenPatch, sessionID);
 
                 agenda.now<FetchResourcesForUserParams>(JobTypes.fetchResourcesForUser, { userId: user.id });
-
-                userLoggedInEvent();
 
                 // pass the token to the frontend
                 res.redirect(`${baseUiUrl}/login/callback/${sessionID}`);

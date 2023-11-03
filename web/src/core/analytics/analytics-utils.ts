@@ -1,4 +1,4 @@
-import analytics from './analytics';
+import ReactGA from 'react-ga4';
 
 
 enum EventCategory {
@@ -7,26 +7,30 @@ enum EventCategory {
 }
 
 export function userLoggedInEvent() {
-    analytics.track('User Logged In', {
+    ReactGA.event({
         category: EventCategory.User,
+        action: 'User Logged In',
     });
 }
 
 export function playlistCreatedEvent() {
-    analytics.track('Playlist Created', {
+    ReactGA.event({
         category: EventCategory.Playlist,
+        action: 'Playlist Created',
     });
 }
 
 export function playlistUpdatedEvent() {
-    analytics.track('Playlist Updated', {
+    ReactGA.event({
         category: EventCategory.Playlist,
+        action: 'Playlist Updated',
     });
 }
 
 export function playlistPublishedEvent() {
-    analytics.track('Playlist Published', {
+    ReactGA.event({
         category: EventCategory.Playlist,
+        action: 'Playlist Published',
     });
 }
 

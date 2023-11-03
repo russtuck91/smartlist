@@ -6,7 +6,6 @@ import expressAsyncHandler from 'express-async-handler';
 
 import { Playlist, PlaylistDeleteOptions } from '../../../shared';
 
-import { playlistCreatedEvent, playlistPublishedEvent, playlistUpdatedEvent } from '../core/analytics/analytics-utils';
 import { doAndRetryWithCurrentUser } from '../core/session/session-util';
 
 import * as playlistService from '../services/playlist-service';
@@ -34,7 +33,6 @@ export class PlaylistsController {
     async updatePlaylist(req: Request, res: Response) {
         const playlist: Playlist = req.body;
         const result = await playlistService.updatePlaylist(req.params.id, playlist);
-        playlistUpdatedEvent();
 
         res.send(result);
     }
@@ -44,7 +42,6 @@ export class PlaylistsController {
     async createPlaylist(req: Request, res: Response) {
         const playlist: Playlist = req.body;
         const result = await playlistService.createPlaylist(playlist);
-        playlistCreatedEvent();
 
         res.send(result);
     }
@@ -79,7 +76,6 @@ export class PlaylistsController {
             const playlistId = req.params.id;
 
             await playlistService.publishPlaylistById(playlistId, accessToken);
-            playlistPublishedEvent();
 
             res.send({
                 publishedPlaylistId: playlistId,

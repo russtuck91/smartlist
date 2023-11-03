@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Redirect, RouteComponentProps } from 'react-router';
 
+import { userLoggedInEvent } from '../core/analytics/analytics-utils';
 import { setSessionToken } from '../core/redux/actions';
 import { RouteLookup } from '../core/routes/route-lookup';
 
@@ -21,6 +22,7 @@ export class RawLoginCallback extends React.Component<FullFinalProps> {
         const { match: { params } } = this.props;
 
         this.props.setSessionToken(params.sessionToken);
+        userLoggedInEvent();
     }
 
     render() {
