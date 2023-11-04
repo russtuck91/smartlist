@@ -5,6 +5,7 @@ import { sleep } from '../../../../shared';
 
 import logger from '../logger/logger';
 import { baseRequestUrl, requests } from '../requests/requests';
+import isUserLoggedIn from '../session/is-user-logged-in';
 
 import FeedbackDialogForm from './feedback-dialog-form';
 import { FeedbackFormValues, FeedbackType } from './models';
@@ -52,6 +53,9 @@ class FeedbackDialog extends React.Component<FeedbackDialogProps, FeedbackDialog
     }
 
     private async getUserInfo() {
+        if (!isUserLoggedIn()) {
+            return;
+        }
         try {
             const url = `${baseRequestUrl}/users/me`;
             const userInfo = await requests.get(url);
