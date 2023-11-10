@@ -38,6 +38,7 @@
     "express-async-handler": "^1.1.4",
     "express-http-context": "^1.2.3",
     "express-session": "^1.17.0",
+    "express-static-gzip": "^2.1.7",
     "factory.ts": "^0.5.2",
     "heroku-ssl-redirect": "^0.1.1",
     "http-errors": "^1.6.3",

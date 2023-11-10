@@ -6,9 +6,10 @@ import * as bodyParser from 'body-parser';
 import connectMongo from 'connect-mongo';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import { NextFunction, Request, Response, static as serveStatic } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import httpContext from 'express-http-context';
 import session from 'express-session';
+import expressStaticGzip from 'express-static-gzip';
 import sslRedirect from 'heroku-ssl-redirect';
 import path from 'path';
 
@@ -124,7 +125,7 @@ class AppServer extends Server {
     public start(port: number|string): void {
         logger.info(`Starting application, environment: ${process.env.NODE_ENV}`);
         if (process.env.NODE_ENV === 'production') {
-            this.app.use(serveStatic('../web/build/'));
+            this.app.use(expressStaticGzip('../web/build/', {}));
             this.app.get('*', (req, res) => {
                 res.sendFile(path.resolve('../web/build/index.html'));
             });
