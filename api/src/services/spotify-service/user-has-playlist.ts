@@ -9,13 +9,13 @@ async function userHasPlaylist(playlistId: string, accessToken: string|undefined
     const usersPlaylists = await getUsersPlaylists(accessToken);
 
     if (!usersPlaylists) {
-        logger.debug('<<<< Exiting userHasPlaylist() after getting no playlists for the user');
-        logger.debug(usersPlaylists);
+        logger.info('<<<< Exiting userHasPlaylist() after getting no playlists for the user');
+        logger.info(usersPlaylists);
         return false;
     }
 
     const result = !!(usersPlaylists.items.find((item) => item.id === playlistId));
-    logger.debug(`<<<< Exiting userHasPlaylist() after getting user playlists. User had ${usersPlaylists.items.length} playlists and ${result ? 'DID' : 'DID NOT'} have this playlist.`);
+    logger.info(`<<<< Exiting userHasPlaylist() after getting user playlists. User had ${usersPlaylists.items.length} playlists and ${result ? 'DID' : 'DID NOT'} have this playlist.`);
     return result;
 }
 
