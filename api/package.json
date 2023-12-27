@@ -5,6 +5,7 @@
   "main": "build/api/src/start.js",
   "scripts": {
     "start": "node build/api/src/start.js",
+    "start:ssl": "HTTPS=true SSL_CRT_FILE=../localhost.pem SSL_KEY_FILE=../localhost-key.pem npm run start",
     "dev": "nodemon",
     "prebuild": "npm run lint && npm run test",
     "build": "rm -rf ./build/ && npm run dbupgrade && tsc",
@@ -17,7 +18,6 @@
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
     "@overnightjs/core": "^1.6.12",
-    "@overnightjs/logger": "^1.1.10",
     "@seiren/mongoutils": "^1.0.2",
     "@sentry/node": "~7.56.0",
     "@sentry/profiling-node": "1.1.2",

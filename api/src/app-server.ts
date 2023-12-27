@@ -1,5 +1,4 @@
 import { Server } from '@overnightjs/core';
-import { Logger } from '@overnightjs/logger';
 import * as Sentry from '@sentry/node';
 import { ProfilingIntegration } from '@sentry/profiling-node';
 import * as bodyParser from 'body-parser';
@@ -10,7 +9,9 @@ import { NextFunction, Request, Response } from 'express';
 import httpContext from 'express-http-context';
 import session from 'express-session';
 import expressStaticGzip from 'express-static-gzip';
+import fs from 'fs';
 import sslRedirect from 'heroku-ssl-redirect';
+import { createServer } from 'https';
 import path from 'path';
 
 import { MONGODB_URI } from './core/db/db';
@@ -32,8 +33,6 @@ process.on('unhandledRejection', (error: any, promise) => {
 });
 
 class AppServer extends Server {
-    private readonly SERVER_STARTED = 'Smartlist server started on port: ';
-
     constructor() {
         super(true);
 
@@ -124,15 +123,25 @@ class AppServer extends Server {
 
     public start(port: number|string): void {
         logger.info(`Starting application, environment: ${process.env.NODE_ENV}`);
+
         if (process.env.NODE_ENV === 'production') {
             this.app.use(expressStaticGzip('../web/build/', {}));
             this.app.get('*', (req, res) => {
                 res.sendFile(path.resolve('../web/build/index.html'));
             });
         }
-        this.app.listen(port, () => {
-            Logger.Imp(this.SERVER_STARTED + port);
-        });
+
+        const onListen = () => {
+            logger.info(`Smartlist server started on port: ${port}`);
+        };
+
+        if (process.env.HTTPS) {
+            const key = fs.readFileSync('../localhost-key.pem');
+            const cert = fs.readFileSync('../localhost.pem');
+            createServer({ key, cert }, this.app).listen(port, onListen);
+        } else {
+            this.app.listen(port, onListen);
+        }
     }
 }
 
