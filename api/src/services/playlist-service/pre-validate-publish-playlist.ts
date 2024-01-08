@@ -5,6 +5,7 @@ import logger from '../../core/logger/logger';
 import spotifyService from '../spotify-service/spotify-service';
 
 import publishPlaylist from './publish-playlist';
+import sendPlaylistDeletedNotification from './send-playlist-deleted-notification';
 import updatePlaylist from './update-playlist';
 
 
@@ -23,6 +24,7 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
         // User has deleted playlist since last publish
         if (!userHasPlaylist) {
             await updatePlaylist(playlist.id, { deleted: true });
+            sendPlaylistDeletedNotification(playlist.userId, playlist.name);
             return;
         }
     }
