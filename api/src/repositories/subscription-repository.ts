@@ -1,13 +1,9 @@
-import { ObjectID } from 'mongodb';
 import { MongoRepository } from 'mongtype';
-import { PushSubscription } from 'web-push';
+
+import { Subscription } from '../core/shared-models';
 
 import dbc from './dbc';
 
-
-interface Subscription extends PushSubscription {
-    userId: ObjectID;
-}
 
 const subscriptionRepo = new MongoRepository<Subscription>(dbc, { name: 'subscriptions' });
 

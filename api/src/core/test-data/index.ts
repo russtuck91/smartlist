@@ -3,6 +3,7 @@ import { albumContainsRuleFactory, artistContainsRuleFactory, artistIsRuleFactor
 import { trackFactory } from './track-factory';
 
 export * from './spotify-api-type-factory';
+export * from './subscription-factory';
 export {
     albumContainsRuleFactory,
     artistContainsRuleFactory,
