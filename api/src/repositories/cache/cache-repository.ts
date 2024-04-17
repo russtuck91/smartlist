@@ -17,6 +17,7 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
 
     async insertManyResources(resources: Resource[]) {
         logger.info(`>>>> Entering CacheRepository.insertManyResources(resources.length = ${resources.length}`);
+        if (!resources.length) return;
         const cacheRecords = this.createCacheRecordsFromResources(resources);
         await this.insertMany(cacheRecords);
     }

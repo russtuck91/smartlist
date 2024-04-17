@@ -29,7 +29,7 @@ if (jobTypes.length) {
             await agenda.every('1 hour', JobTypes.playlistPublishing);
         }
 
-        // await agenda.now(JobTypes.playlistPublishing);
+        await agenda.now(JobTypes.playlistPublishing);
     })();
 }
 
