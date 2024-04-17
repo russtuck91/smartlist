@@ -11,6 +11,10 @@ import updatePlaylist from './update-playlist';
 async function preValidatePublishPlaylist(playlist: Playlist, accessToken: string) {
     logger.info(`>>>> Entering preValidatePublishPlaylist(playlist.id = ${playlist.id})`);
 
+    if (playlist.disabled) {
+        return;
+    }
+
     // Has been published before
     if (playlist.spotifyPlaylistId) {
         const userHasPlaylist = await spotifyService.userHasPlaylist(playlist.spotifyPlaylistId, accessToken);

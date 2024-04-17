@@ -14,6 +14,7 @@ export interface Playlist extends SimpleDBObject {
     spotifyPlaylistId?: string;
     lastPublished?: Date;
     deleted?: boolean;
+    disabled?: boolean;
 }
 
 export interface PlaylistRuleGroup {
