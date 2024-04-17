@@ -1,5 +1,6 @@
 import { CollectionProps, DBSource, MongoRepository } from 'mongtype';
 
+import logger from '../../core/logger/logger';
 import { CacheableResource, SavedCacheRecord } from '../../core/shared-models';
 
 
@@ -15,6 +16,7 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
     }
 
     async insertManyResources(resources: Resource[]) {
+        logger.info(`>>>> Entering CacheRepository.insertManyResources(resources.length = ${resources.length}`);
         const cacheRecords = this.createCacheRecordsFromResources(resources);
         await this.insertMany(cacheRecords);
     }
