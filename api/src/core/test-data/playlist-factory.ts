@@ -25,4 +25,5 @@ export const playlistFactory = Factory.Sync.makeFactory<Playlist>({
         albumContainsRuleFactory.build(),
     ],
     userId: new ObjectId(),
+    spotifyPlaylistId: randomStringFactory(22),
 });

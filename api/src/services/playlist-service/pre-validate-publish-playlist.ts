@@ -11,18 +11,22 @@ import updatePlaylist from './update-playlist';
 async function preValidatePublishPlaylist(playlist: Playlist, accessToken: string) {
     logger.info(`>>>> Entering preValidatePublishPlaylist(playlist.id = ${playlist.id})`);
 
-    // User has deleted playlist. Do not publish on intervals, require user to re-publish manually
-    if (playlist.deleted) {
-        return;
-    }
-
     // Has been published before
     if (playlist.spotifyPlaylistId) {
         const userHasPlaylist = await spotifyService.userHasPlaylist(playlist.spotifyPlaylistId, accessToken);
 
+        // Was previously not deleted but now found to be deleted
         // User has deleted playlist since last publish
-        if (!userHasPlaylist) {
+        if (!playlist.deleted && !userHasPlaylist) {
             await updatePlaylist(playlist.id, { deleted: true });
+        }
+
+        // Was previously deleted but now found to be not deleted
+        if (playlist.deleted && userHasPlaylist) {
+            await updatePlaylist(playlist.id, { deleted: false });
+        }
+
+        if (!userHasPlaylist) {
             return;
         }
     }
