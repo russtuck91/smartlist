@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import logger from '../../core/logger/logger';
 import { doAndRetry } from '../../core/session/session-util';
 
@@ -13,10 +15,19 @@ async function publishAllPlaylists() {
 
     const playlists = await playlistRepo.find({
         conditions: {},
-        sort: {
-            lastPublished: 1,
-        },
     });
+    playlists.sort((a, b) => {
+        const deleteCompare = Number(a.deleted) - Number(b.deleted);
+        if (deleteCompare) return deleteCompare;
+        if (!a.deleted && !b.deleted) {
+            return moment(a.lastPublished).diff( moment(b.lastPublished) );
+        }
+        if (a.deleted && b.deleted) {
+            return moment(b.lastPublished).diff( moment(a.lastPublished) );
+        }
+        return 0;
+    });
+
     for (const playlist of playlists) {
         try {
             const user = await getUserById(playlist.userId);
