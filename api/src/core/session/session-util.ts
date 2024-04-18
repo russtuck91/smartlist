@@ -72,7 +72,7 @@ export async function refreshAccessToken(user: User) {
         if (isSpotifyError(e)) {
             if (e.statusCode === 400) {
                 if ((e.body as any).error === 'invalid_grant') {
-                    updateUser(user.username, { spotifyPermissionError: true });
+                    await updateUser(user.username, { spotifyPermissionError: true });
                 }
             }
         }
