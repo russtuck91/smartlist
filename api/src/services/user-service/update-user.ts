@@ -3,7 +3,7 @@ import { User } from '../../core/session/models';
 import userRepo from '../../repositories/user-repository';
 
 
-async function updateUser(username: string, user: Partial<User>, sessionToken: string) {
+async function updateUser(username: string, user: Partial<User>, sessionToken?: string) {
     const now = new Date();
     user.updatedAt = now;
 

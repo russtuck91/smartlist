@@ -3,6 +3,7 @@ import { Playlist } from '../../../../shared';
 import logger from '../../core/logger/logger';
 
 import spotifyService from '../spotify-service/spotify-service';
+import { getUserById } from '../user-service';
 
 import publishPlaylist from './publish-playlist';
 import updatePlaylist from './update-playlist';
@@ -12,6 +13,13 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
     logger.info(`>>>> Entering preValidatePublishPlaylist(playlist.id = ${playlist.id})`);
 
     if (playlist.disabled) {
+        logger.debug('<<<< Exiting preValidatePublishPlaylist() after finding playlist is marked disabled');
+        return;
+    }
+
+    const user = await getUserById(playlist.userId);
+    if (user.spotifyPermissionError) {
+        logger.debug('<<<< Exiting preValidatePublishPlaylist() after finding user has permission error');
         return;
     }
 

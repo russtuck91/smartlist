@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { playlistFactory, userFactory } from '../../core/test-data';
+import { playlistFactory } from '../../core/test-data';
 
 import playlistRepo from '../../repositories/playlist-repository';
 
@@ -9,9 +9,7 @@ import publishAllPlaylists from './publish-all-playlists';
 
 
 jest.mock('../spotify-service/spotify-service');
-jest.mock('../user-service', () => ({
-    getUserById: () => userFactory.build(),
-}));
+jest.mock('../user-service');
 jest.mock('./pre-validate-publish-playlist');
 
 const mockedFind = jest.mocked(playlistRepo.find);
