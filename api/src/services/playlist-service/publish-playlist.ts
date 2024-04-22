@@ -47,6 +47,7 @@ async function publishPlaylist(playlist: Playlist, accessToken: string) {
     await updatePlaylist(playlist.id, playlistUpdate);
 
     transaction.finish();
+    logger.info(`<<<< Exiting publishPlaylist(playlist.id = ${playlist.id}) after successful publish`);
 }
 
 export default publishPlaylist;

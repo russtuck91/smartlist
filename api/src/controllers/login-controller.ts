@@ -61,15 +61,19 @@ export class LoginController {
             try {
                 const spotifyApi = new SpotifyApi();
                 const data = await spotifyApi.authorizationCodeGrant(code);
-                const { expires_in, access_token, refresh_token } = data.body;
+                const { expires_in: expiresIn, access_token: accessToken, refresh_token: refreshToken } = data.body;
+                logger.info('Just got new tokens...');
+                logger.info(`refreshToken: ${refreshToken}`);
+                logger.info(`accessToken: ${accessToken}`);
+                logger.info(`expiresIn: ${expiresIn}`);
 
-                const spotifyUser = await spotifyService.getMe(access_token);
+                const spotifyUser = await spotifyService.getMe(accessToken);
 
                 const username = spotifyUser.id;
                 const accessTokenPatch: Partial<User> = {
                     username: username,
-                    accessToken: access_token,
-                    refreshToken: refresh_token,
+                    accessToken: accessToken,
+                    refreshToken: refreshToken,
                 };
                 const sessionID = req.sessionID;
 

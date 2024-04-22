@@ -23,6 +23,8 @@ async function fetchResourcesForUser(userId: string) {
 
     await spotifyCacheService.getAlbums(albumIds, accessToken);
     await spotifyCacheService.getArtists(artistIds, accessToken);
+
+    logger.debug(`<<<< Exiting fetchResourcesForUser(userId = ${userId}) after successful fetch`);
 }
 
 export default fetchResourcesForUser;
