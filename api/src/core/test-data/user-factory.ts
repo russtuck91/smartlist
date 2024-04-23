@@ -12,7 +12,7 @@ export const userFactory = Factory.Sync.makeFactory<User>({
 
     username: 'testUsername',
 
-    sessionTokens: [],
+    sessionToken: [],
 
     accessToken: 'testAccessToken',
     refreshToken: 'testRefreshToken',
