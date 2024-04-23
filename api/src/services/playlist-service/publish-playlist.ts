@@ -12,6 +12,7 @@ import updatePlaylist from './update-playlist';
 
 async function publishPlaylist(playlist: Playlist, accessToken: string) {
     logger.info(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
+    logger.info(`publishPlaylist token is: ${accessToken}`);
     const transaction = startTransaction({
         op: 'publishPlaylist',
         name: 'Publish Playlist',
