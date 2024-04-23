@@ -27,6 +27,9 @@ async function publishAllPlaylists() {
         }
         return 0;
     });
+    if (process.env.PLAYLIST_PUBLISH_LIMIT) {
+        playlists.splice(process.env.PLAYLIST_PUBLISH_LIMIT as any);
+    }
 
     for (const playlist of playlists) {
         try {

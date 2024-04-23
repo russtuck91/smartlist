@@ -10,6 +10,7 @@ async function fetchResourcesForUser(userId: string) {
     const user = await getUserById(userId);
     const { accessToken } = user;
 
+    logger.info(`fetchResourcesForUser token is: ${accessToken}`);
     const tracks = await spotifyCacheService.getFullMySavedTracks(accessToken);
 
     const albumIds: string[] = [];

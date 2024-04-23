@@ -17,6 +17,11 @@ const mockedPreValidatePublishPlaylist = jest.mocked(preValidatePublishPlaylist)
 
 
 describe('publishAllPlaylists', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        delete process.env.PLAYLIST_PUBLISH_LIMIT;
+    });
+
     it('should sort playlists by priority', async () => {
         // Arrange
         const playlist1 = playlistFactory.build({
@@ -52,5 +57,19 @@ describe('publishAllPlaylists', () => {
             [playlist3, expect.any(String)],
             [playlist4, expect.any(String)],
         ]);
+    });
+
+    it('should limit playlists to publish by env var', async () => {
+        // Arrange
+        const playlists = playlistFactory.buildList(10);
+        mockedFind.mockResolvedValue(playlists);
+        const expectedCalls = 1;
+        process.env.PLAYLIST_PUBLISH_LIMIT = String(expectedCalls);
+
+        // Act
+        await publishAllPlaylists();
+
+        // Assert
+        expect(mockedPreValidatePublishPlaylist).toHaveBeenCalledTimes(expectedCalls);
     });
 });
