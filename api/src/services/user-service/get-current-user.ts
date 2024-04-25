@@ -1,5 +1,5 @@
 import httpContext from 'express-http-context';
-import { NotFound } from 'http-errors';
+import { Unauthorized } from 'http-errors';
 
 import { User } from '../../core/session/models';
 
@@ -10,7 +10,7 @@ async function getCurrentUser(): Promise<User> {
     const sessionToken = httpContext.get('sessionToken');
     const currentUser = await userRepo.findOne({ sessionToken: sessionToken });
     if (!currentUser) {
-        throw new NotFound();
+        throw new Unauthorized();
     }
     return currentUser;
 }
