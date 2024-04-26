@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { Request } from 'express-serve-static-core';
 
 import logger from '../core/logger/logger';
+import maskToken from '../core/logger/mask-token';
 import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
 import { SpotifyApi } from '../core/spotify/spotify-api';
@@ -63,8 +64,8 @@ export class LoginController {
                 const data = await spotifyApi.authorizationCodeGrant(code);
                 const { expires_in: expiresIn, access_token: accessToken, refresh_token: refreshToken } = data.body;
                 logger.info('Just got new tokens...');
-                logger.info(`refreshToken: ${refreshToken}`);
-                logger.info(`accessToken: ${accessToken}`);
+                logger.info(`refreshToken: ${maskToken(refreshToken)}`);
+                logger.info(`accessToken: ${maskToken(accessToken)}`);
                 logger.info(`expiresIn: ${expiresIn}`);
 
                 const spotifyUser = await spotifyService.getMe(accessToken);

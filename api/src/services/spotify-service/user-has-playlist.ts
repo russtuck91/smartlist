@@ -1,10 +1,11 @@
 import logger from '../../core/logger/logger';
+import maskToken from '../../core/logger/mask-token';
 
 import getUsersPlaylists from './get-users-playlists';
 
 
-async function userHasPlaylist(playlistId: string, accessToken: string|undefined): Promise<boolean> {
-    logger.info(`>>>> Entering userHasPlaylist(playlistId = ${playlistId})`);
+async function userHasPlaylist(playlistId: string, accessToken: string): Promise<boolean> {
+    logger.info(`>>>> Entering userHasPlaylist(playlistId = ${playlistId} /// accessToken = ${maskToken(accessToken)}`);
 
     const usersPlaylists = await getUsersPlaylists(accessToken);
 

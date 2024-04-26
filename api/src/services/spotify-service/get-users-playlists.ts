@@ -1,4 +1,5 @@
 import logger from '../../core/logger/logger';
+import maskToken from '../../core/logger/mask-token';
 import { SpotifyApi } from '../../core/spotify/spotify-api';
 
 import doAndWaitForRateLimit from './do-and-wait-for-rate-limit';
@@ -6,8 +7,8 @@ import getFullPagedResults from './get-full-paged-results';
 import setAccessTokenFromCurrentUser from './set-access-token-from-current-user';
 
 
-async function getUsersPlaylists(accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.PlaylistObjectSimplified>> {
-    logger.debug('>>>> Entering getUsersPlaylists()');
+async function getUsersPlaylists(accessToken: string): Promise<SpotifyApi.PagingObject<SpotifyApi.PlaylistObjectSimplified>> {
+    logger.info(`>>>> Entering getUsersPlaylists(accessToken = ${maskToken(accessToken)}`);
 
     const spotifyApi = new SpotifyApi();
     if (accessToken) { spotifyApi.setAccessToken(accessToken); }
@@ -20,7 +21,7 @@ async function getUsersPlaylists(accessToken: string|undefined): Promise<Spotify
         }),
     );
 
-    logger.debug(`<<<< Exiting getUsersPlaylists() after finding user has ${result?.items.length} playlists`);
+    logger.info(`<<<< Exiting getUsersPlaylists() after finding user has ${result?.items.length} playlists`);
     return result;
 }
 

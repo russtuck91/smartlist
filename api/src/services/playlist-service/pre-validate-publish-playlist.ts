@@ -1,6 +1,7 @@
 import { Playlist } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
+import maskToken from '../../core/logger/mask-token';
 
 import spotifyService from '../spotify-service/spotify-service';
 import { getUserById } from '../user-service';
@@ -10,7 +11,7 @@ import updatePlaylist from './update-playlist';
 
 
 async function preValidatePublishPlaylist(playlist: Playlist, accessToken: string) {
-    logger.info(`>>>> Entering preValidatePublishPlaylist(playlist.id = ${playlist.id})`);
+    logger.info(`>>>> Entering preValidatePublishPlaylist(playlist.id = ${playlist.id} /// accessToken = ${maskToken(accessToken)}`);
 
     if (playlist.disabled) {
         logger.debug('<<<< Exiting preValidatePublishPlaylist() after finding playlist is marked disabled');
