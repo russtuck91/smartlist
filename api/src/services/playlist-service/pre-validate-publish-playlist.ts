@@ -14,13 +14,13 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
     logger.info(`>>>> Entering preValidatePublishPlaylist(playlist.id = ${playlist.id} /// accessToken = ${maskToken(accessToken)}`);
 
     if (playlist.disabled) {
-        logger.debug('<<<< Exiting preValidatePublishPlaylist() after finding playlist is marked disabled');
+        logger.info('<<<< Exiting preValidatePublishPlaylist() after finding playlist is marked disabled');
         return;
     }
 
     const user = await getUserById(playlist.userId);
     if (user.spotifyPermissionError) {
-        logger.debug('<<<< Exiting preValidatePublishPlaylist() after finding user has permission error');
+        logger.info('<<<< Exiting preValidatePublishPlaylist() after finding user has permission error');
         return;
     }
 

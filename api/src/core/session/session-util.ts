@@ -52,7 +52,7 @@ export async function refreshAccessToken(user: User) {
 
         const refreshResponse = await spotifyApi.refreshAccessToken();
         logger.info('Newly refreshed access token details...');
-        logger.info(refreshResponse);
+        logger.info(JSON.stringify(refreshResponse));
         const newAccessToken = refreshResponse.body.access_token;
 
         await userRepo.findOneByIdAndUpdate(
