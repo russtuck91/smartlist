@@ -1,18 +1,15 @@
 import logger from '../../core/logger/logger';
 import maskToken from '../../core/logger/mask-token';
-import { SpotifyApi } from '../../core/spotify/spotify-api';
 
 import doAndWaitForRateLimit from './do-and-wait-for-rate-limit';
 import getFullPagedResults from './get-full-paged-results';
-import setAccessTokenFromCurrentUser from './set-access-token-from-current-user';
+import initSpotifyApi from './init-spotify-api';
 
 
 async function getUsersPlaylists(accessToken: string): Promise<SpotifyApi.PagingObject<SpotifyApi.PlaylistObjectSimplified>> {
     logger.info(`>>>> Entering getUsersPlaylists(accessToken = ${maskToken(accessToken)}`);
 
-    const spotifyApi = new SpotifyApi();
-    if (accessToken) { spotifyApi.setAccessToken(accessToken); }
-    await setAccessTokenFromCurrentUser(spotifyApi);
+    const spotifyApi = await initSpotifyApi(accessToken);
 
     const result = await doAndWaitForRateLimit(
         async () => await getFullPagedResults(async (options) => {
