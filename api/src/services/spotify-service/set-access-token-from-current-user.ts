@@ -9,7 +9,7 @@ async function setAccessTokenFromCurrentUser(spotifyApi: SpotifyApi) {
     try {
         const user = await getCurrentUser();
         if (user) {
-            logger.info(`Found current user ${user.id} with accessToken = ${maskToken(user.accessToken)}`);
+            logger.debug(`Found current user ${user.id} with accessToken = ${maskToken(user.accessToken)}`);
             spotifyApi.setAccessToken(user.accessToken);
         }
     } catch (e) {
