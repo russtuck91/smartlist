@@ -31,6 +31,11 @@ async function publishAllPlaylists() {
         playlists.splice(process.env.PLAYLIST_PUBLISH_LIMIT as any);
     }
 
+    logger.info(`About to publish ${playlists.length} playlists...`);
+    playlists.map((p) =>
+        logger.info(`name = ${p.name} /// id = ${p.id} /// userId = ${p.userId}`),
+    );
+
     for (const playlist of playlists) {
         try {
             const user = await getUserById(playlist.userId);
