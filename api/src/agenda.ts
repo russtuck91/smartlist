@@ -7,6 +7,7 @@ import { MONGODB_URI } from './core/db/db';
 import logger from './core/logger/logger';
 
 import JobTypes from './jobs/job-types';
+import { publishAllPlaylists } from './services/playlist-service';
 
 const connectionOpts = { db: { address: MONGODB_URI, collection: 'jobs' } };
 
@@ -26,7 +27,13 @@ if (jobTypes.length) {
         logger.info('Started agenda');
 
         if (process.env.NODE_ENV !== 'development') {
-            await agenda.every('1 hour', JobTypes.playlistPublishing);
+            // await agenda.every('1 hour', JobTypes.playlistPublishing);
+
+            // Try the dumb, native way
+            const PER_HOUR = 1000 * 60 * 60;
+            setInterval(() => {
+                publishAllPlaylists();
+            }, PER_HOUR);
         }
 
         await agenda.now(JobTypes.playlistPublishing);
