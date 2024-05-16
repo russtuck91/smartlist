@@ -72,6 +72,7 @@ class AppServer extends Server {
         Sentry.init({
             dsn: 'https://bc8298e7d82ad68325980563f6415e5b@o4505802448175104.ingest.sentry.io/4505802454138880',
             release: `smartlist-api@${process.env.npm_package_version}`,
+            includeLocalVariables: true,
             integrations: [
                 // enable HTTP calls tracing
                 new Sentry.Integrations.Http({
