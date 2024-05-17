@@ -26,7 +26,6 @@ describe('updateUser', () => {
         const updateRequestArg = updateRequestCall[0];
         expect(updateRequestArg.conditions).toEqual({ username: testUsername });
         expect(updateRequestArg.updates.$set).toEqual({ ...userUpdate });
-        expect(updateRequestArg.updates.$setOnInsert).toEqual({ createdAt: now });
         expect(updateRequestArg.updates.$push).not.toHaveProperty('sessionToken');
         expect(updateRequestArg.updates.$push).toEqual({});
         expect(updateRequestArg.upsert).toBe(true);
@@ -46,7 +45,6 @@ describe('updateUser', () => {
         const updateRequestArg = updateRequestCall[0];
         expect(updateRequestArg.conditions).toEqual({ username: testUsername });
         expect(updateRequestArg.updates.$set).toEqual({ ...userUpdate });
-        expect(updateRequestArg.updates.$setOnInsert).toEqual({ createdAt: now });
         expect(updateRequestArg.updates.$push).toHaveProperty('sessionToken');
         expect(updateRequestArg.updates.$push).toEqual({ sessionToken: testSessionToken });
         expect(updateRequestArg.upsert).toBe(true);
