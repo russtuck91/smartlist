@@ -7,7 +7,7 @@ import initSpotifyApi from './init-spotify-api';
 
 
 async function getUsersPlaylists(accessToken: string): Promise<SpotifyApi.PagingObject<SpotifyApi.PlaylistObjectSimplified>> {
-    logger.info(`>>>> Entering getUsersPlaylists(accessToken = ${maskToken(accessToken)}`);
+    logger.debug(`>>>> Entering getUsersPlaylists(accessToken = ${maskToken(accessToken)}`);
 
     const spotifyApi = await initSpotifyApi(accessToken);
 
@@ -18,7 +18,7 @@ async function getUsersPlaylists(accessToken: string): Promise<SpotifyApi.Paging
         }),
     );
 
-    logger.info(`<<<< Exiting getUsersPlaylists() after finding user has ${result?.items.length} playlists`);
+    logger.debug(`<<<< Exiting getUsersPlaylists() after finding user has ${result?.items.length} playlists`);
     return result;
 }
 

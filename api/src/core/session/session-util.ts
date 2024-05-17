@@ -20,7 +20,7 @@ export async function doAndRetryWithCurrentUser(bodyFn: (accessToken: string) =>
 }
 
 export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>, user: User) {
-    logger.info(`>>>> Entering doAndRetry(accessToken = ${maskToken(user.accessToken)}`);
+    logger.debug(`>>>> Entering doAndRetry(accessToken = ${maskToken(user.accessToken)}`);
     try {
         return await bodyFn(user.accessToken);
     } catch (e) {
@@ -29,7 +29,7 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
                 logger.info('doAndRetry: accessToken has expired, will refresh accessToken and try again');
                 const newAccessToken = await refreshAccessToken(user);
 
-                logger.info(`Got new access token, now it is: ${maskToken(newAccessToken)}`);
+                logger.debug(`Got new access token, now it is: ${maskToken(newAccessToken)}`);
                 if (newAccessToken) {
                     return await bodyFn(newAccessToken);
                 }
@@ -51,8 +51,6 @@ export async function refreshAccessToken(user: User) {
         spotifyApi.setRefreshToken(refreshToken);
 
         const refreshResponse = await spotifyApi.refreshAccessToken();
-        logger.info('Newly refreshed access token details...');
-        logger.info(JSON.stringify(refreshResponse));
         const newAccessToken = refreshResponse.body.access_token;
 
         await userRepo.findOneByIdAndUpdate(
