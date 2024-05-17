@@ -15,9 +15,6 @@ describe('updateUser', () => {
     });
 
     it('should make updates and not push to sessionToken when not specified', async () => {
-        // Arrange
-        const now = new Date();
-
         // Act
         await updateUser(testUsername, userUpdate);
 
@@ -35,7 +32,6 @@ describe('updateUser', () => {
     it('should push sessionToken when specified', async () => {
         // Arrange
         const testSessionToken = 'testSessionToken';
-        const now = new Date();
 
         // Act
         await updateUser(testUsername, userUpdate, testSessionToken);
