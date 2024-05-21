@@ -1,9 +1,9 @@
 {
   "name": "smartlist",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
   "scripts": {
-    "poooostinstall": "run-p install:api install:web install:native",
+    "postinstall": "run-p install:api install:web install:native",
     "install:api": "cd api && npm install",
     "install:web": "cd web && npm install",
     "install:native": "cd native && npm install",
