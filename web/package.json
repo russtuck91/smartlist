@@ -33,7 +33,7 @@
     "classnames": "^2.2.6",
     "compress-create-react-app": "^1.4.4",
     "customize-cra": "^0.9.1",
-    "formik": "^1.5.1",
+    "formik": "^2.2.9",
     "history": "^4.7.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
