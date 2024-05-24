@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import httpContext from 'express-http-context';
 
 import userRepo from '../../repositories/user-repository';
-import { isSpotifyError } from '../../services/spotify-service/types';
+import { isSpotifyAuthError, isSpotifyError } from '../../services/spotify-service/types';
 import { getCurrentUser, updateUser } from '../../services/user-service';
 
 import logger from '../logger/logger';
@@ -64,17 +64,12 @@ export async function refreshAccessToken(user: User) {
 
         return newAccessToken;
     } catch (e) {
-        // TODO clean up here
         logger.info('Error in refreshAccessToken');
-        logger.info(e.body);
         logger.error(e);
-        logger.debug(`Stringified: ${JSON.stringify(e)}`);
-        /**
-         * e.body.error_description can be things like `Refresh token revoked` and `User does not exist`
-         */
-        if (isSpotifyError(e)) {
+        if (isSpotifyAuthError(e)) {
             if (e.statusCode === 400) {
-                if ((e.body as any).error === 'invalid_grant') {
+                /* e.body.error_description can be things like `Refresh token revoked` and `User does not exist` */
+                if (e.body.error === 'invalid_grant') {
                     await updateUser(user.username, { spotifyPermissionError: true });
                 }
             }
