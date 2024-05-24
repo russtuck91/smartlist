@@ -21,5 +21,6 @@ export const RouteLookup = (() => {
                 edit: `${base}/edit/:id`,
             };
         })(),
+        privacyPolicy: '/privacy-policy',
     };
 })();

@@ -17,6 +17,7 @@ import { LoginCallback } from './login/login-callback';
 import { Logout } from './login/logout';
 import { Navigation } from './navigation/navigation';
 import { PlaylistContainer } from './playlists/playlist-container';
+import PrivacyPolicy from './privacy-policy/privacy-policy';
 import ShakeFeedback from './shake-feedback/shake-feedback';
 
 interface AppContentsProps {}
@@ -61,6 +62,7 @@ export class RawAppContents extends React.Component<FullProps> {
                             {this.props.sessionToken && (
                                 <Route exact path={RouteLookup.account} component={Account} />
                             )}
+                            <Route exact path={RouteLookup.privacyPolicy} component={PrivacyPolicy} />
                             <Route exact path={RouteLookup.home} component={Home} />
                             <Route path={RouteLookup.index} component={IndexRouter} />
                         </Switch>
