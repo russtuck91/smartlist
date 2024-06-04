@@ -49,6 +49,7 @@ async function publishAllPlaylists() {
             logger.error(JSON.stringify(e));
         }
     }
+    logger.info('<<<< Exiting publishAllPlaylists()');
 }
 
 export default publishAllPlaylists;
