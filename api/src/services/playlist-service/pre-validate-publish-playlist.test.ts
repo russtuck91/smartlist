@@ -9,6 +9,7 @@ import updatePlaylist from './update-playlist';
 
 jest.mock('../spotify-service/spotify-service');
 jest.mock('../cache/spotify/spotify-cache-service');
+jest.mock('../subscription-service');
 jest.mock('../user-service');
 jest.mock('./publish-playlist');
 jest.mock('./update-playlist');

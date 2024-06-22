@@ -7,6 +7,7 @@ import spotifyService from '../spotify-service/spotify-service';
 import { getUserById } from '../user-service';
 
 import publishPlaylist from './publish-playlist';
+import sendPlaylistDeletedNotification from './send-playlist-deleted-notification';
 import updatePlaylist from './update-playlist';
 
 
@@ -33,6 +34,7 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
         // User has deleted playlist since last publish
         if (!playlist.deleted && !userHasPlaylist) {
             await updatePlaylist(playlist.id, { deleted: true });
+            sendPlaylistDeletedNotification(playlist.userId, playlist.name);
         }
 
         // Was previously deleted but now found to be not deleted

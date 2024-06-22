@@ -52,6 +52,7 @@
     "rimraf": "^3.0.2",
     "spotify-web-api-node": "^5.0.0",
     "ts-node": "^8.6.1",
+    "web-push": "^3.6.6",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -64,6 +65,7 @@
     "@types/lodash": "^4.14.149",
     "@types/mongodb": "^3.3.16",
     "@types/rimraf": "^3.0.0",
+    "@types/web-push": "^3.6.3",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
     "eslint": "^8.3.0",

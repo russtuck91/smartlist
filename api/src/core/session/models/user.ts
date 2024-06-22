@@ -12,4 +12,5 @@ export interface User extends DBObject {
 
     // Feature flags
     suppressNewCacheFeature: boolean;
+    enableNotificationFeature: boolean;
 }
