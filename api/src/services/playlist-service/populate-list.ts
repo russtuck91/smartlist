@@ -18,29 +18,36 @@ async function populateList(playlist: Playlist, accessToken: string): Promise<Tr
         name: 'Populate List',
     });
 
-    const results: (TrackList)[] = await Promise.all(
-        playlist.rules.map((rule) => {
-            return getListForRuleGroup(rule, accessToken, undefined);
-        }),
-    );
+    try {
+        const results: (TrackList)[] = await Promise.all(
+            playlist.rules.map((rule) => {
+                return getListForRuleGroup(rule, accessToken, undefined);
+            }),
+        );
 
-    const unionResult: TrackList = union(...results);
+        const unionResult: TrackList = union(...results);
 
-    // Send exceptions separately through getListForRules with a currentBatchOfSongs
-    const listOfTrackExclusions: TrackList[] = await Promise.all(
-        playlist.exceptions.map((rule) => {
-            return getListForRules([ rule ], accessToken, unionResult);
-        }),
-    );
+        // Send exceptions separately through getListForRules with a currentBatchOfSongs
+        const listOfTrackExclusions: TrackList[] = await Promise.all(
+            playlist.exceptions.map((rule) => {
+                return getListForRules([ rule ], accessToken, unionResult);
+            }),
+        );
 
-    // Difference each of them from the main batch of songs
-    const filteredForExceptions: TrackList = getDifferenceOfTrackLists(unionResult, listOfTrackExclusions);
+        // Difference each of them from the main batch of songs
+        const filteredForExceptions: TrackList = getDifferenceOfTrackLists(unionResult, listOfTrackExclusions);
 
-    const sortedList: TrackList = await sortTrackList(filteredForExceptions, playlist.trackSort, accessToken);
+        const sortedList: TrackList = await sortTrackList(filteredForExceptions, playlist.trackSort, accessToken);
 
-    logger.debug(`<<<< Exiting populateList(), the playlist will have ${sortedList.length} songs`);
-    transaction.finish();
-    return sortedList;
+        logger.debug(`<<<< Exiting populateList(), the playlist will have ${sortedList.length} songs`);
+        transaction.finish();
+        return sortedList;
+    } catch (e) {
+        logger.error('Error in populateList()');
+        logger.error(e);
+        transaction.setStatus('internal_error');
+        throw e;
+    }
 }
 
 export default populateList;
