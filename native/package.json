@@ -34,7 +34,7 @@
     "eslint-plugin-flowtype": "^8.0.3",
     "jest": "^27.5.1",
     "metro-react-native-babel-preset": "^0.67.0",
-    "react-test-renderer": "17.0.1",
+    "react-test-renderer": "17.0.2",
     "typescript": "^3.8.3"
   },
   "resolutions": {
