@@ -52,7 +52,6 @@
     "react-scripts": "^5.0.0",
     "react-virtuoso": "^2.19.1",
     "redux": "^4.0.5",
-    "sass-loader": "^7.1.0",
     "setimmediate": "^1.0.5",
     "shake.js": "^1.2.2",
     "typescript": "^3.8.0",
