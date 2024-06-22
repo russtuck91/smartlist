@@ -17,9 +17,10 @@ import path from 'path';
 import { MONGODB_URI } from './core/db/db';
 import logger from './core/logger/logger';
 import { setSessionTokenContext } from './core/session/session-util';
+import setSentryUserInfo from './core/session/set-sentry-user-info';
 
 import { BaseController } from './base-controller';
-import { getCurrentUser, refreshResourcesForCurrentUser } from './services/user-service';
+import { refreshResourcesForCurrentUser } from './services/user-service';
 
 const MongoStore = connectMongo(session);
 
@@ -51,7 +52,7 @@ class AppServer extends Server {
         this.app.use(httpContext.middleware);
         this.app.use(setSessionTokenContext);
         this.app.use(this.sslRedirectHandler);
-        this.app.use(this.setSentryUserInfo);
+        this.app.use(setSentryUserInfo);
         this.app.use(refreshResourcesForCurrentUser);
 
         this.app.use(session({
@@ -71,6 +72,7 @@ class AppServer extends Server {
         Sentry.init({
             dsn: 'https://bc8298e7d82ad68325980563f6415e5b@o4505802448175104.ingest.sentry.io/4505802454138880',
             release: `smartlist-api@${process.env.npm_package_version}`,
+            includeLocalVariables: true,
             integrations: [
                 // enable HTTP calls tracing
                 new Sentry.Integrations.Http({
@@ -93,20 +95,6 @@ class AppServer extends Server {
         } else {
             return (sslRedirect())(req, res, next);
         }
-    }
-
-    private async setSentryUserInfo(req: Request, res: Response, next: NextFunction) {
-        try {
-            const user = await getCurrentUser();
-            Sentry.setUser({
-                id: user.id,
-                username: user.username,
-            });
-        } catch (e) {
-            // eat the error
-            logger.info(e);
-        }
-        next();
     }
 
     private errorHandler(error: any, req: Request, res: Response, next: NextFunction) {

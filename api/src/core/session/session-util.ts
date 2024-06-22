@@ -2,10 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 import httpContext from 'express-http-context';
 
 import userRepo from '../../repositories/user-repository';
-import { isSpotifyError } from '../../services/spotify-service/types';
-import { getCurrentUser } from '../../services/user-service';
+import { isSpotifyAuthError, isSpotifyError } from '../../services/spotify-service/types';
+import { getCurrentUser, updateUser } from '../../services/user-service';
 
 import logger from '../logger/logger';
+import maskToken from '../logger/mask-token';
 import { SpotifyApi } from '../spotify/spotify-api';
 
 import { User } from './models/user';
@@ -19,7 +20,7 @@ export async function doAndRetryWithCurrentUser(bodyFn: (accessToken: string) =>
 }
 
 export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>, user: User) {
-    logger.debug('>>>> Entering doAndRetry()');
+    logger.debug(`>>>> Entering doAndRetry(accessToken = ${maskToken(user.accessToken)}`);
     try {
         return await bodyFn(user.accessToken);
     } catch (e) {
@@ -28,6 +29,7 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
                 logger.info('doAndRetry: accessToken has expired, will refresh accessToken and try again');
                 const newAccessToken = await refreshAccessToken(user);
 
+                logger.debug(`Got new access token, now it is: ${maskToken(newAccessToken)}`);
                 if (newAccessToken) {
                     return await bodyFn(newAccessToken);
                 }
@@ -62,7 +64,17 @@ export async function refreshAccessToken(user: User) {
 
         return newAccessToken;
     } catch (e) {
+        logger.info('Error in refreshAccessToken');
         logger.error(e);
+        if (isSpotifyAuthError(e)) {
+            if (e.statusCode === 400) {
+                /* e.body.error_description can be things like `Refresh token revoked` and `User does not exist` */
+                if (e.body.error === 'invalid_grant') {
+                    await updateUser(user.username, { spotifyPermissionError: true });
+                }
+            }
+        }
+        throw e;
     }
 }
 

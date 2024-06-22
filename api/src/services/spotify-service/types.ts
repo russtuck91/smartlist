@@ -1,3 +1,8 @@
+
+/**
+ * Reference: https://developer.spotify.com/documentation/web-api/concepts/api-calls
+ */
+
 export interface SpResponse<T> {
     body: T;
     headers: Record<string, string>;
@@ -11,4 +16,14 @@ interface SpotifyError extends SpResponse<{
 
 export function isSpotifyError(input: any): input is SpotifyError {
     return input.statusCode && input.body;
+}
+
+interface SpotifyAuthError extends SpResponse<{
+    error: string;
+    error_description: string;
+}> {
+}
+
+export function isSpotifyAuthError(input: any): input is SpotifyAuthError {
+    return input.statusCode && input.body && typeof input.body.error === 'string';
 }

@@ -1,6 +1,6 @@
 {
   "name": "smartlist",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "private": true,
   "scripts": {
     "postinstall": "run-p install:api install:web install:native",
@@ -34,7 +34,7 @@
   "dependencies": {
     "@types/jest": "^27.4.1",
     "@types/spotify-api": "0.0.2",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "npm-run-all": "^4.0.2",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",

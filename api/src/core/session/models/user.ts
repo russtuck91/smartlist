@@ -3,11 +3,12 @@ import { DBObject } from '../../shared-models';
 export interface User extends DBObject {
     username: string;
 
-    sessionTokens: string[];
+    sessionToken: string[];
 
     // Spotify
     accessToken: string;
     refreshToken: string;
+    spotifyPermissionError?: boolean;
 
     // Feature flags
     suppressNewCacheFeature: boolean;

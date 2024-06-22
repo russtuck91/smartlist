@@ -1,7 +1,9 @@
 require('dotenv').config();
 
 import AppServer from './app-server';
-require('./agenda');
+
+const agenda = require('./agenda');
+agenda.startAgenda();
 
 const appServer = new AppServer();
 

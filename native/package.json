@@ -1,6 +1,6 @@
 {
   "name": "native",
-  "version": "1.0.0",
+  "version": "1.2.3",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -16,7 +16,7 @@
     "react": "17.0.1",
     "react-native": "0.68.2",
     "react-native-bootsplash": "^4.6.0",
-    "react-native-webview": "^11.4.4",
+    "react-native-webview": "^11.22.7",
     "ts-node": "^8.6.1"
   },
   "devDependencies": {
