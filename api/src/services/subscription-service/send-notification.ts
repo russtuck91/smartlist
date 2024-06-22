@@ -3,6 +3,8 @@ import webpush from 'web-push';
 
 import subscriptionRepo from '../../repositories/subscription-repository';
 
+import { getUserById } from '../user-service';
+
 
 interface NotificationData {
     title: string;
@@ -38,6 +40,13 @@ async function sendNotification({
     title: string,
     body: string,
 }) {
+    // Feature flag enableNotificationFeature -- code block can be removed after go-live
+    const user = await getUserById(userId);
+    if (!user.enableNotificationFeature) {
+        console.debug(`Feature flag enableNotificationFeature is not enabled for userId = ${userId}`);
+        return;
+    }
+
     const subscriptions = await subscriptionRepo.find({
         conditions: { userId: new ObjectId(userId).toString() },
     });

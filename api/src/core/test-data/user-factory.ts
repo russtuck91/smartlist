@@ -18,4 +18,5 @@ export const userFactory = Factory.Sync.makeFactory<User>({
     refreshToken: 'testRefreshToken',
 
     suppressNewCacheFeature: false,
+    enableNotificationFeature: false,
 });
