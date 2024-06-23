@@ -33,12 +33,10 @@ if (!vapidKeys.publicKey || !vapidKeys.privateKey) {
 
 async function sendNotification({
     userId,
-    title,
-    body,
+    notification,
 }: {
     userId: string|ObjectID,
-    title: string,
-    body: string,
+    notification: NotificationData,
 }) {
     // Feature flag enableNotificationFeature -- code block can be removed after go-live
     const user = await getUserById(userId);
@@ -54,7 +52,6 @@ async function sendNotification({
         console.debug(`No subscriptions found for userId = ${userId}`);
         return;
     }
-    const notification: NotificationData = { title, body };
     const notificationData: NotificationPayload = { notification };
     subscriptions.map((subscription) => webpush.sendNotification(subscription, JSON.stringify(notificationData)));
 }

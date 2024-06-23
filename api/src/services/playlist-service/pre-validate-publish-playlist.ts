@@ -34,7 +34,7 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
         // User has deleted playlist since last publish
         if (!playlist.deleted && !userHasPlaylist) {
             await updatePlaylist(playlist.id, { deleted: true });
-            sendPlaylistDeletedNotification(playlist.userId, playlist.name);
+            sendPlaylistDeletedNotification(playlist);
         }
 
         // Was previously deleted but now found to be not deleted

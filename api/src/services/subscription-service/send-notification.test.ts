@@ -35,8 +35,10 @@ describe('sendNotification', () => {
         // Act
         await sendNotification({
             userId,
-            title: expectedNotificationTitle,
-            body: expectedNotificationBody,
+            notification: {
+                title: expectedNotificationTitle,
+                body: expectedNotificationBody,
+            },
         });
 
         // Assert
