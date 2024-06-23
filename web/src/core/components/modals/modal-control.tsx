@@ -1,6 +1,6 @@
 import {
     Modal, Paper,
-    Theme, WithStyles, withStyles,
+    StyleRules, WithStyles, withStyles,
 } from '@material-ui/core';
 import * as React from 'react';
 
@@ -10,7 +10,7 @@ interface ModalControlProps {
     body: React.ReactElement;
 }
 
-const useStyles = (theme: Theme) => ({
+const useStyles = (): StyleRules => ({
     modal: {
         display: 'flex',
         alignItems: 'center',

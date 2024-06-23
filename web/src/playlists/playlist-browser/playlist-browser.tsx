@@ -37,18 +37,15 @@ enum PlaylistBrowserSortOptions {
     oldestFirst = 'Oldest First',
 }
 
-const useStyles = (theme: Theme) => {
-    const rules: StyleRules = {
-        container: {
-            display: 'flex',
-            flexDirection: 'column',
-            flex: '1 1 auto',
-            overflowY: 'auto',
-            paddingBottom: theme.spacing(2),
-        },
-    };
-    return rules;
-};
+const useStyles = (theme: Theme): StyleRules => ({
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        flex: '1 1 auto',
+        overflowY: 'auto',
+        paddingBottom: theme.spacing(2),
+    },
+});
 
 type FullProps = PlaylistBrowserProps & WithStyles<typeof useStyles> & FormikProps<PlaylistBrowserFormValues>;
 
