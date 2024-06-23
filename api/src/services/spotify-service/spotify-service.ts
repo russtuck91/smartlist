@@ -9,6 +9,7 @@ import getMe from './get-me';
 import getTrackById from './get-track-by-id';
 import getTracksById from './get-tracks-by-id';
 import getTracksForAlbums from './get-tracks-for-albums';
+import getTracksForArtistName from './get-tracks-for-artist-name';
 import getTracksForArtists from './get-tracks-for-artists';
 import getTracksForPlaylist from './get-tracks-for-playlist';
 import removeTracksFromPlaylist from './remove-tracks-from-playlist';
@@ -41,6 +42,7 @@ class SpotifyService {
     getTracksById = getTracksById;
     getTracksForAlbums = getTracksForAlbums;
     getTracksForArtists = getTracksForArtists;
+    getTracksForArtistName = getTracksForArtistName;
     getTracksForPlaylist = getTracksForPlaylist;
 }
 

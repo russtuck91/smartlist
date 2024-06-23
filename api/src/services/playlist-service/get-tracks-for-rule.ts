@@ -17,8 +17,11 @@ async function getTracksForRule(rule: PlaylistRule, accessToken: string): Promis
     if (isPlaylistTypeRule(rule)) {
         return (await spotifyService.getTracksForPlaylist(rule.value.id, accessToken)).map(mapToTrack);
     }
-    if (isArtistIsRule(rule) && isSearchItem(rule.value)) {
-        return (await spotifyService.getTracksForArtists([ rule.value.id ], accessToken)).map(mapToTrack);
+    if (isArtistIsRule(rule)) {
+        if (isSearchItem(rule.value)) {
+            return (await spotifyService.getTracksForArtists([ rule.value.id ], accessToken)).map(mapToTrack);
+        }
+        return (await spotifyService.getTracksForArtistName(rule.value, accessToken)).map(mapToTrack);
     }
     if (isAlbumIsRule(rule) && isSearchItem(rule.value)) {
         return (await spotifyService.getTracksForAlbums([ rule.value.id ], accessToken)).map(mapToTrack);
