@@ -15,14 +15,16 @@ async function getAlbums(albumIds: string[], accessToken: string|undefined): Pro
     const batchSize = 20;
     const batchedIds = chunk(uniq(albumIds), batchSize);
 
-    let albums: SpotifyApi.AlbumObjectFull[] = [];
+    let albumsResponse: (SpotifyApi.AlbumObjectFull|null)[] = [];
     for (const batch of batchedIds) {
         await doAndWaitForRateLimit(async () => {
             const albumResponse = await spotifyApi.getAlbums(batch);
-            albums = albums.concat(albumResponse.body.albums);
+            albumsResponse = albumsResponse.concat(albumResponse.body.albums);
         });
     }
 
+    // Despite documentation, album can sometimes be null
+    const albums = albumsResponse.filter((a): a is SpotifyApi.AlbumObjectFull => !!a);
     return albums;
 }
 
