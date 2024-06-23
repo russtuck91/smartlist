@@ -2,6 +2,7 @@ import { DBObject } from '../../shared-models';
 
 export interface User extends DBObject {
     username: string;
+    email: string;
 
     sessionToken: string[];
 

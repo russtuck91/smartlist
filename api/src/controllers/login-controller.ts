@@ -73,6 +73,7 @@ export class LoginController {
                 const username = spotifyUser.id;
                 const accessTokenPatch: Partial<User> = {
                     username: username,
+                    email: spotifyUser.email,
                     accessToken: accessToken,
                     refreshToken: refreshToken,
                 };

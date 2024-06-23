@@ -11,6 +11,7 @@ export const userFactory = Factory.Sync.makeFactory<User>({
     updatedAt: moment().toDate(),
 
     username: 'testUsername',
+    email: 'testemail@domain.com',
 
     sessionToken: [],
 
