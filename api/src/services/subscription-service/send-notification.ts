@@ -10,6 +10,11 @@ interface NotificationData {
     title: string;
     body: string;
     image?: string;
+    actions?: Array<{
+        title: string;
+        action: string;
+    }>;
+    data?: Record<string, string>;
 }
 
 interface NotificationPayload {

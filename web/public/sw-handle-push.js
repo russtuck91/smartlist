@@ -7,8 +7,17 @@ self.addEventListener('push', function(e) {
     const notificationTitle = notificationData.title;
     const notificationOptions = {
         body: notificationData.body,
+        badge: notificationData.image || 'favicon.ico',
         icon: notificationData.image || 'favicon.ico',
+        actions: notificationData.actions,
+        data: notificationData.data,
     };
 
     e.waitUntil(self.registration.showNotification(notificationTitle, notificationOptions));
+});
+
+self.addEventListener('notificationclick', function(event) {
+    event.waitUntil(self.clients.openWindow(event.notification.data.url));
+
+    event.notification.close();
 });
