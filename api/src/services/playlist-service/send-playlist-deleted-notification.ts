@@ -10,7 +10,7 @@ function sendPlaylistDeletedNotification(playlist: Playlist) {
         userId,
         notification: {
             title: 'Playlist deleted from Spotify',
-            body: `The smart playlist ${playlistName} was deleted from Spotify. If this was an accident, click Publish to restore it.`,
+            body: `"${playlistName}" was deleted from Spotify. If this was an accident, click Publish to restore it.`,
             actions: [{
                 title: 'Publish',
                 action: publishUrl,
