@@ -19,6 +19,7 @@ export const RouteLookup = (() => {
                 base: base,
                 create: `${base}/create`,
                 edit: `${base}/edit/:id`,
+                publish: `${base}/publish/:id`,
             };
         })(),
         privacyPolicy: '/privacy-policy',

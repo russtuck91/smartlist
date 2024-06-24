@@ -5,6 +5,7 @@ import { sleep } from '../../../shared';
 import { playlistPublishedEvent } from '../core/analytics/analytics-utils';
 import { baseRequestUrl, requests } from '../core/requests/requests';
 
+import { getPlaylistQueryKey } from './use-fetch-playlist';
 import { getPlaylistsQueryKey } from './use-fetch-playlists';
 
 
@@ -21,6 +22,9 @@ export const usePlaylistPublish = (playlistId: string|undefined) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: getPlaylistsQueryKey() });
+            if (playlistId) {
+                queryClient.invalidateQueries({ queryKey: getPlaylistQueryKey(playlistId) });
+            }
         },
     });
 };
