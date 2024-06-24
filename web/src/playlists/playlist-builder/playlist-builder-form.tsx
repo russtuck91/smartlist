@@ -19,7 +19,7 @@ import {
 import { SecondaryAppBar } from '../../core/components/secondary-app-bar';
 import { ErrorBoundary } from '../../core/errors/error-boundary';
 import { CustomOptionRendererProps, DropdownField, TextField } from '../../core/forms/fields';
-import { history } from '../../core/history/history';
+import goBackOrBackupUrl from '../../core/history/go-back-or-backup-url';
 import logger from '../../core/logger/logger';
 import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
@@ -358,11 +358,7 @@ export class RawPlaylistBuilderForm extends React.Component<FullProps, PlaylistB
     };
 
     private onClickBackButton() {
-        if (history.location.key) {
-            history.goBack();
-        } else {
-            history.push(RouteLookup.playlists.base);
-        }
+        goBackOrBackupUrl(RouteLookup.playlists.base);
     }
 
     private areRulesValid(): boolean {
