@@ -7,7 +7,7 @@ self.addEventListener('push', function(e) {
     const notificationTitle = notificationData.title;
     const notificationOptions = {
         body: notificationData.body,
-        badge: notificationData.image || 'favicon.ico',
+        badge: notificationData.image || 'pwa-notification-badge.png',
         icon: notificationData.image || 'favicon.ico',
         actions: notificationData.actions,
         data: notificationData.data,
