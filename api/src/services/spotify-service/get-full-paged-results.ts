@@ -28,10 +28,10 @@ async function getFullPagedResults<T = any>(fn: PagedResultsSourceMethod<T>, max
     let offset = 0;
     const batchSize = 50;
 
-    // while number fetched is less than total reported, send request
+    // while pages fetched is less than total reported, send request
     while (
         (!maxPages || (offset / batchSize) < maxPages) &&
-        (result.total === -1 || result.total > result.items.length)
+        (result.total === -1 || (offset / batchSize) < Math.ceil(result.total / batchSize))
     ) {
         try {
             // logger.debug(`getFullPagedResults iteration #${(offset / batchSize) + 1} out of total ${result.total === -1 ? 'unknown' : Math.ceil(result.total / batchSize)}`);
@@ -51,6 +51,14 @@ async function getFullPagedResults<T = any>(fn: PagedResultsSourceMethod<T>, max
             }
 
             offset += batchSize;
+
+            /**
+             * `result.total` is not reliable- Spotify sometimes reports a total being higher than the actual results
+             * If any iteration stops producing results and items.length === 0, stop there
+             */
+            if (response.items.length === 0) {
+                result.total = result.items.length;
+            }
         } catch (e) {
             if (isSpotifyError(e)) {
                 if (e.statusCode === 404) {
@@ -64,6 +72,7 @@ async function getFullPagedResults<T = any>(fn: PagedResultsSourceMethod<T>, max
             throw e;
         }
     }
+    result.total = result.items.length;
 
     logger.debug(`<<<< Exiting getFullPagedResults after fetching ${offset / batchSize} pages`);
     return result;
