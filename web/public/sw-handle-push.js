@@ -12,7 +12,7 @@ self.addEventListener('push', function(e) {
         // `badge` is a very small icon that is usually displayed in the notification bar
         badge: notificationData.image || 'pwa-notification-badge.png',
         // `icon` usually represents the sender
-        icon: notificationData.image || 'android-chome-192x192.png',
+        icon: notificationData.image || 'android-chrome-192x192.png',
         // `image` represents the main content of the notification
 
         actions: notificationData.actions,
