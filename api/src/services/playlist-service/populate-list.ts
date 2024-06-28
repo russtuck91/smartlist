@@ -17,8 +17,6 @@ async function populateList(playlist: Playlist, accessToken: string): Promise<Tr
         op: 'populateList',
         name: 'Populate List',
     });
-    // Temporary: testing how to fail a transaction
-    transaction.setStatus('internal_error');
 
     try {
         const results: (TrackList)[] = await Promise.all(
@@ -48,6 +46,7 @@ async function populateList(playlist: Playlist, accessToken: string): Promise<Tr
         logger.error('Error in populateList()');
         logger.error(e);
         transaction.setStatus('internal_error');
+        transaction.finish();
         throw e;
     }
 }
