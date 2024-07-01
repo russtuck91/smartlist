@@ -33,6 +33,7 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
         // Was previously not deleted but now found to be deleted
         // User has deleted playlist since last publish
         if (!playlist.deleted && !userHasPlaylist) {
+            logger.info(`Playlist ${playlist.id} was found to be deleted. userHasPlaylist = ${userHasPlaylist}`);
             await updatePlaylist(playlist.id, { deleted: true });
             sendPlaylistDeletedNotification(playlist);
         }

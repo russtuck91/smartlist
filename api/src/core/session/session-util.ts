@@ -26,7 +26,7 @@ export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>,
     } catch (e) {
         if (isSpotifyError(e)) {
             if (e.statusCode === 401) {
-                logger.info('doAndRetry: accessToken has expired, will refresh accessToken and try again');
+                logger.debug('doAndRetry: accessToken has expired, will refresh accessToken and try again');
                 const newAccessToken = await refreshAccessToken(user);
 
                 logger.debug(`Got new access token, now it is: ${maskToken(newAccessToken)}`);

@@ -10,8 +10,8 @@ async function userHasPlaylist(playlistId: string, accessToken: string): Promise
     const usersPlaylists = await getUsersPlaylists(accessToken);
 
     if (!usersPlaylists) {
-        logger.debug('<<<< Exiting userHasPlaylist() after getting no playlists for the user');
-        logger.debug(usersPlaylists);
+        logger.info('<<<< Exiting userHasPlaylist() after getting no playlist response for the user');
+        logger.info(usersPlaylists);
         return false;
     }
 
