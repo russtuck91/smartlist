@@ -29,7 +29,6 @@
     "@types/react-dom": "^16.0.11",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
-    "@types/spotify-api": "0.0.2",
     "classnames": "^2.2.6",
     "compress-create-react-app": "^1.4.4",
     "customize-cra": "^0.9.1",
