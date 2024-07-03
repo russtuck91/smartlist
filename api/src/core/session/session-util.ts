@@ -13,13 +13,13 @@ import { SpotifyApi } from '../spotify/spotify-api';
 
 
 
-export async function doAndRetryWithCurrentUser(bodyFn: (accessToken: string) => Promise<void>) {
+export async function doAndRetryWithCurrentUser<T>(bodyFn: (accessToken: string) => Promise<T>) {
     const currentUser = await getCurrentUser();
 
-    await doAndRetry(bodyFn, currentUser);
+    return await doAndRetry(bodyFn, currentUser);
 }
 
-export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>, user: User) {
+export async function doAndRetry<T>(bodyFn: (accessToken: string) => Promise<T>, user: User) {
     logger.debug(`>>>> Entering doAndRetry(accessToken = ${maskToken(user.accessToken)}`);
     try {
         return await bodyFn(user.accessToken);
