@@ -32,9 +32,9 @@ export async function startAgenda() {
         setInterval(() => {
             publishAllPlaylists();
         }, PER_HOUR);
-    }
 
-    await agenda.now(JobTypes.playlistPublishing);
+        await agenda.now(JobTypes.playlistPublishing);
+    }
 }
 
 async function graceful() {

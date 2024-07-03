@@ -77,6 +77,7 @@ export class LoginController {
                     email: spotifyUser.email,
                     accessToken: accessToken,
                     refreshToken: refreshToken,
+                    spotifyPermissionError: false,
                 };
                 const sessionID = req.sessionID;
 
