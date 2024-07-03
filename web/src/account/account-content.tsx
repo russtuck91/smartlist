@@ -6,6 +6,7 @@ import { User } from '../../../shared';
 
 import FeedbackDialog from '../core/feedback/feedback-dialog';
 import { RouteLookup } from '../core/routes/route-lookup';
+import UserPermissionError from '../core/user/user-permission-error';
 
 
 interface AccountContentProps {
@@ -25,6 +26,7 @@ const AccountContent: React.FC<AccountContentProps> = ({
                     {' '}
                     {user.username}
                 </h2>
+                <UserPermissionError />
                 <div>
                     ID:
                     {' '}

@@ -15,6 +15,7 @@ import { DropdownField, TextField } from '../../core/forms/fields';
 import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
+import UserPermissionError from '../../core/user/user-permission-error';
 
 import { PlaylistContainer } from '../playlist-container';
 import { useFetchPlaylists } from '../use-fetch-playlists';
@@ -67,6 +68,7 @@ const RawPlaylistBrowser: React.FC<FullProps> = (props) => {
             </SecondaryAppBar>
             <Container className={props.classes.container}>
                 <CreatePlaylistButton />
+                <UserPermissionError />
                 {renderFormArea()}
                 {renderPlaylistList()}
                 {renderDeleteDialog()}
