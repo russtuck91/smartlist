@@ -2,7 +2,6 @@ import { ObjectId } from 'mongodb';
 
 import { PlaylistDeleteOptions } from '../../../../shared';
 
-import { User } from '../../core/session/models';
 import { doAndRetry } from '../../core/session/session-util';
 
 import playlistRepo from '../../repositories/playlist-repository';
@@ -14,7 +13,7 @@ import getPlaylistById from './get-playlist-by-id';
 
 
 async function deletePlaylist(id: string, options: PlaylistDeleteOptions) {
-    const currentUser: User = await getCurrentUser();
+    const currentUser = await getCurrentUser();
 
     if (options.deleteSpotifyPlaylist) {
         await doAndRetry(async (accessToken) => {

@@ -1,6 +1,6 @@
 import { MongoRepository } from 'mongtype';
 
-import { User } from '../core/session/models';
+import { User } from '../../../shared';
 
 import dbc from './dbc';
 

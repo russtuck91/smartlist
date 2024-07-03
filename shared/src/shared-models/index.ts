@@ -6,3 +6,4 @@ export * from './playlist-rule-variants';
 export * from './spotify';
 export * from './track';
 export * from './track-details';
+export * from './user';

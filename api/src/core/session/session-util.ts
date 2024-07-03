@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import httpContext from 'express-http-context';
 
+import { User } from '../../../../shared';
+
 import userRepo from '../../repositories/user-repository';
 import { isSpotifyAuthError, isSpotifyError } from '../../services/spotify-service/types';
 import { getCurrentUser, updateUser } from '../../services/user-service';
@@ -8,8 +10,6 @@ import { getCurrentUser, updateUser } from '../../services/user-service';
 import logger from '../logger/logger';
 import maskToken from '../logger/mask-token';
 import { SpotifyApi } from '../spotify/spotify-api';
-
-import { User } from './models/user';
 
 
 

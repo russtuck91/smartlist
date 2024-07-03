@@ -2,9 +2,10 @@ import { Controller, Get } from '@overnightjs/core';
 import { Response } from 'express';
 import { Request } from 'express-serve-static-core';
 
+import { User } from '../../../shared';
+
 import logger from '../core/logger/logger';
 import maskToken from '../core/logger/mask-token';
-import { User } from '../core/session/models';
 import { baseUiUrl } from '../core/shared-models';
 import { SpotifyApi } from '../core/spotify/spotify-api';
 

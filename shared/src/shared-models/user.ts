@@ -1,6 +1,7 @@
-import { DBObject } from '../../shared-models';
+import { SimpleDBObject } from './db';
 
-export interface User extends DBObject {
+
+export interface User extends SimpleDBObject {
     username: string;
     email: string;
 
