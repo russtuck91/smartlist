@@ -57,6 +57,7 @@ async function getFullPagedResults<T = any>(fn: PagedResultsSourceMethod<T>, max
              * If any iteration stops producing results and items.length === 0, stop there
              */
             if (response.items.length === 0) {
+                logger.info(`getFullPagedResults is forcibly correcting the total param after getting no results and earlier checks did not catch. Original total was ${result.total} and will now be set to ${result.items.length}`);
                 result.total = result.items.length;
             }
         } catch (e) {
@@ -72,7 +73,7 @@ async function getFullPagedResults<T = any>(fn: PagedResultsSourceMethod<T>, max
             throw e;
         }
     }
-    result.total = result.items.length;
+    // result.total = result.items.length;
 
     logger.debug(`<<<< Exiting getFullPagedResults after fetching ${offset / batchSize} pages`);
     return result;
