@@ -6,6 +6,7 @@ import populateList from './populate-list';
 
 
 jest.mock('../spotify-service/spotify-service');
+jest.mock('../user-service');
 
 describe('populateList', () => {
     const getListForRuleGroupSpy = jest.spyOn(getListForRuleGroup, 'default');
