@@ -5,7 +5,7 @@ import { User } from '../../../../shared';
 
 import userRepo from '../../repositories/user-repository';
 import { isSpotifyAuthError, isSpotifyError } from '../../services/spotify-service/types';
-import { getCurrentUser, updateUser } from '../../services/user-service';
+import { getCurrentUser, sendSpotifyPermissionErrorNotification, updateUser } from '../../services/user-service';
 
 import logger from '../logger/logger';
 import maskToken from '../logger/mask-token';
@@ -71,6 +71,7 @@ export async function refreshAccessToken(user: User) {
                 /* e.body.error_description can be things like `Refresh token revoked` and `User does not exist` */
                 if (e.body.error === 'invalid_grant') {
                     await updateUser(user.username, { spotifyPermissionError: true });
+                    sendSpotifyPermissionErrorNotification(user);
                 }
             }
         }
