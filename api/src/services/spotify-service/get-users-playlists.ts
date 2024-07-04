@@ -24,7 +24,12 @@ async function getUsersPlaylists(accessToken: string): Promise<SpotifyApi.Paging
     const user = await getUserByAccessToken(accessToken);
     if (user?.id === '5ed7d5f1b50fdd98fb12caec' && result?.items.length <= 200) {
         logger.info('ALERT: Issue with my user playlists :: ', result?.items.length);
-        logger.info(result?.items);
+        logger.info(`result type is ${typeof result} and value is...`);
+        logger.info(JSON.stringify(result));
+        logger.info(`result.items type is ${typeof result?.items} and value is...`);
+        logger.info(JSON.stringify(result?.items));
+        logger.info(`result.items.length type is ${typeof result?.items.length} and value is...`);
+        logger.info(result?.items.length);
     }
     logger.debug(`<<<< Exiting getUsersPlaylists() after finding user has ${result?.items.length} playlists`);
     return result;
