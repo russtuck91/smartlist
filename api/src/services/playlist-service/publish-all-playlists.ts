@@ -39,7 +39,7 @@ async function publishAllPlaylists() {
     for (const playlist of playlists) {
         try {
             const user = await getUserById(playlist.userId);
-            if (user) {
+            if (user && !user.spotifyPermissionError) {
                 await doAndRetry(async (accessToken: string) => {
                     await preValidatePublishPlaylist(playlist, accessToken);
                 }, user);
