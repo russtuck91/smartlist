@@ -14,7 +14,7 @@ import getListForRules from './get-list-for-rules';
 import sortTrackList from './sort-track-list';
 
 
-async function populateList(playlist: Playlist, accessToken: string): Promise<TrackList> {
+async function populateList(playlist: Playlist, accessTokenOld: string): Promise<TrackList> {
     logger.debug('>>>> Entering populateList()');
     const transaction = startTransaction({
         op: 'populateList',
@@ -23,7 +23,7 @@ async function populateList(playlist: Playlist, accessToken: string): Promise<Tr
 
     try {
         const user = await getUserById(playlist.userId);
-        return await doAndRetry(async () => {
+        return await doAndRetry(async (accessToken) => {
             const results: (TrackList)[] = await Promise.all(
                 playlist.rules.map((rule) => {
                     return getListForRuleGroup(rule, accessToken, undefined);
