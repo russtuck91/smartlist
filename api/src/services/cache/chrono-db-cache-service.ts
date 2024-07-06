@@ -41,7 +41,7 @@ class ChronoDbCacheService {
         }
 
         // Get user id from access token
-        const userId = (await getUserByAccessToken(accessToken))?.id;
+        const userId = (await getUserByAccessToken(accessToken)).id;
         // Get cached list from DB
         const cachedList = await this.getCachedListIfValid(userId, freshFirstPage);
         if (cachedList) {
@@ -56,7 +56,7 @@ class ChronoDbCacheService {
         const freshResults = await this.sourceMethod(accessToken);
 
         // donotawait - save new results to cache
-        this.storeFreshResultsInCache(userId!, freshResults);
+        this.storeFreshResultsInCache(userId, freshResults);
 
         logger.debug('<<<< Exiting ChronoDbCacheService.getFullList() after fetching fresh list');
         if (!onReturnFreshResults) {
@@ -65,7 +65,7 @@ class ChronoDbCacheService {
         return onReturnFreshResults(freshResults);
     };
 
-    private getCachedListIfValid = async (userId: string|undefined, freshFirstPage: SpotifyApi.SavedTrackObject[]) => {
+    private getCachedListIfValid = async (userId: string, freshFirstPage: SpotifyApi.SavedTrackObject[]) => {
         const cachedList = await this.repo.findOne({
             userId: userId,
         });

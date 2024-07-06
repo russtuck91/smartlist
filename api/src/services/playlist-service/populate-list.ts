@@ -6,7 +6,7 @@ import { Playlist, TrackList } from '../../../../shared';
 import logger from '../../core/logger/logger';
 import { doAndRetry } from '../../core/session/session-util';
 
-import { getUserById } from '../user-service';
+import { getUserByAccessToken } from '../user-service';
 
 import getDifferenceOfTrackLists from './get-difference-of-track-lists';
 import getListForRuleGroup from './get-list-for-rule-group';
@@ -14,7 +14,7 @@ import getListForRules from './get-list-for-rules';
 import sortTrackList from './sort-track-list';
 
 
-async function populateList(playlist: Playlist, accessTokenOld: string): Promise<TrackList> {
+async function populateList(playlist: Playlist, initialAccessToken: string): Promise<TrackList> {
     logger.debug('>>>> Entering populateList()');
     const transaction = startTransaction({
         op: 'populateList',
@@ -22,7 +22,7 @@ async function populateList(playlist: Playlist, accessTokenOld: string): Promise
     });
 
     try {
-        const user = await getUserById(playlist.userId);
+        const user = await getUserByAccessToken(initialAccessToken);
         return await doAndRetry(async (accessToken) => {
             const results: (TrackList)[] = await Promise.all(
                 playlist.rules.map((rule) => {
