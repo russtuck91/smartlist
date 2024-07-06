@@ -30,6 +30,8 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
     }
 
     async bulkUpdateResources(resources: Resource[]) {
+        logger.info(`>>>> Entering CacheRepository.bulkUpdateResources(resources.length = ${resources.length}`);
+        if (!resources.length) return;
         const cacheRecords = this.createCacheRecordsFromResources(resources);
         await this.bulkUpdate(cacheRecords);
     }
