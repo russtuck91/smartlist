@@ -20,7 +20,7 @@ async function getTracksForPlaylist(playlistId: string, accessToken: string|unde
     if (!result) return [];
     // Despite documentation, `track` can sometimes be null
     const resultTracks: (SpotifyApi.TrackObjectFull|null)[] = result.items.map((item) => item.track);
-    const tracks = resultTracks.filter((t): t is SpotifyApi.TrackObjectFull => !!t);
+    const tracks = resultTracks.filter((t): t is SpotifyApi.TrackObjectFull => !!t && !!t.id);
     return tracks;
 }
 
