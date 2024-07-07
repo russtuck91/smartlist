@@ -11,7 +11,7 @@ import { isSpotifyError } from './types';
 export const batchSize = 100;
 
 async function addTracksToPlaylist(playlistId: string, trackUris: string[], accessToken: string|undefined) {
-    logger.debug(`>>>> Entering addTracksToPlaylist(playlistId = ${playlistId}`);
+    logger.debug(`>>>> Entering addTracksToPlaylist(playlistId = ${playlistId}, trackUris.length = ${trackUris.length}`);
 
     const batchedUris = chunk(trackUris, batchSize);
 
@@ -23,7 +23,7 @@ async function addTracksToPlaylist(playlistId: string, trackUris: string[], acce
                 await spotifyApi.addTracksToPlaylist(playlistId, uriBatch),
             );
         } catch (e) {
-            logger.info(`Error in addTracksToPlaylist batch(playlistId = ${playlistId}`);
+            logger.info(`Error in addTracksToPlaylist batch(playlistId = ${playlistId}, trackUris.length = ${trackUris.length}`);
             logger.info(uriBatch);
             handleError(e);
         }

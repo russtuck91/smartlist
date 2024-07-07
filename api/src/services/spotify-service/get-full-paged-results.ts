@@ -56,7 +56,7 @@ async function getFullPagedResults<T = any>(fn: PagedResultsSourceMethod<T>, max
              * `result.total` is not reliable- Spotify sometimes reports a total being higher than the actual results
              * If any iteration stops producing results and items.length === 0, stop there
              */
-            if (response.items.length === 0) {
+            if (response.items.length === 0 && result.total !== result.items.length) {
                 logger.info(`getFullPagedResults is forcibly correcting the total param after getting no results and earlier checks did not catch. Original total was ${result.total} and will now be set to ${result.items.length}`);
                 result.total = result.items.length;
             }
