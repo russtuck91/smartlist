@@ -7,6 +7,7 @@ import publishPlaylist from './publish-playlist';
 
 jest.mock('../spotify-service/spotify-service');
 jest.mock('../cache/spotify/spotify-cache-service');
+jest.mock('../user-service');
 jest.mock('./populate-list', () => () => []);
 
 const mockedCreateNewPlaylist = jest.mocked(spotifyService.createNewPlaylist);
