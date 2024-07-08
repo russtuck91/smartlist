@@ -7,13 +7,18 @@ import initSpotifyApi from './init-spotify-api';
 import { isSpotifyError } from './types';
 
 
+// Spotify API accepts maximum of 10,000 tracks
+const maxTracks = 10000;
+
 // Spotify API requires batches of 100 max
 export const batchSize = 100;
 
 async function addTracksToPlaylist(playlistId: string, trackUris: string[], accessToken: string|undefined) {
     logger.debug(`>>>> Entering addTracksToPlaylist(playlistId = ${playlistId}, trackUris.length = ${trackUris.length}`);
 
-    const batchedUris = chunk(trackUris, batchSize);
+    const limitedUris = trackUris.slice(0, maxTracks);
+
+    const batchedUris = chunk(limitedUris, batchSize);
 
     const spotifyApi = await initSpotifyApi(accessToken);
 
