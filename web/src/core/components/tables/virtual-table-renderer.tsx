@@ -10,7 +10,9 @@ import React, { ComponentPropsWithRef } from 'react';
 import { ItemProps, ListProps, TableProps, TableVirtuoso } from 'react-virtuoso';
 
 import { ExpansionRowContentRenderer } from './expansion-row-content-renderer';
-import { ColumnConfig, ColumnSet, CustomCellFormatter, ExpandableRowOptions } from './models';
+import {
+    ColumnConfig, ColumnSet, CustomCellFormatter, ExpandableRowOptions, FooterLabelRenderer,
+} from './models';
 import { RowContentRenderer } from './row-content-renderer';
 
 
@@ -20,7 +22,7 @@ export interface VirtualTableRendererProps {
 
     isLoading?: boolean;
     customCellFormatter?: CustomCellFormatter;
-    footerLabel?: React.ReactNode;
+    footerLabel?: FooterLabelRenderer;
     expandableRows?: ExpandableRowOptions;
 }
 
@@ -210,10 +212,11 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
     private renderFooterContent = () => {
         const { classes, data, footerLabel } = this.props;
 
+        const count = data.length;
         return (
             <TableRow className={classes.footerContent}>
                 <TablePagination
-                    count={data.length}
+                    count={count}
                     rowsPerPage={-1}
                     rowsPerPageOptions={[]}
                     page={0}
@@ -226,7 +229,7 @@ export class RawVirtualTableRenderer extends React.Component<FullProps, VirtualT
                             <>
                                 {paginationInfo.count}
                                 {' '}
-                                {footerLabel}
+                                {footerLabel?.({ count })}
                             </>
                         );
                     }}
