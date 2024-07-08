@@ -1,23 +1,38 @@
 import logger from '../../core/logger/logger';
 import maskToken from '../../core/logger/mask-token';
 
-import getUsersPlaylists from './get-users-playlists';
+import { getUserByAccessToken } from '../user-service';
+
+import initSpotifyApi from './init-spotify-api';
+import { isSpotifyError } from './types';
 
 
 async function userHasPlaylist(playlistId: string, accessToken: string): Promise<boolean> {
     logger.debug(`>>>> Entering userHasPlaylist(playlistId = ${playlistId} /// accessToken = ${maskToken(accessToken)}`);
 
-    const usersPlaylists = await getUsersPlaylists(accessToken);
+    const spotifyApi = await initSpotifyApi(accessToken);
 
-    if (!usersPlaylists) {
-        logger.info('<<<< Exiting userHasPlaylist() after getting no playlist response for the user');
-        logger.info(usersPlaylists);
-        return false;
+    const user = await getUserByAccessToken(accessToken);
+    try {
+        const userFollowPlaylistResponse = await spotifyApi.areFollowingPlaylist(user.username, playlistId, [user.username]);
+        const result = userFollowPlaylistResponse.body[0];
+        logger.debug(`<<<< Exiting userHasPlaylist() after checking and user ${result ? 'DID' : 'DID NOT'} have this playlist.`);
+        return result;
+    } catch (e) {
+        if (isSpotifyError(e)) {
+            // Playlist not found
+            if (
+                (e.body.error?.status === 404) ||
+                (e.body.error?.status === 502 && e.body.error?.message === 'Error while loading resource') ||
+                (e.body.error?.status === 400 && e.body.error?.message === 'Invalid base62 id')
+            ) {
+                return false;
+            }
+        }
+        logger.info('Error in userHasPlaylist()');
+        logger.error(e);
+        throw e;
     }
-
-    const result = !!(usersPlaylists.items.find((item) => item.id === playlistId));
-    logger.debug(`<<<< Exiting userHasPlaylist() after getting user playlists. User had ${usersPlaylists.items.length} playlists and ${result ? 'DID' : 'DID NOT'} have this playlist.`);
-    return result;
 }
 
 export default userHasPlaylist;
