@@ -4,7 +4,7 @@ import maskToken from '../../core/logger/mask-token';
 import { getUserByAccessToken } from '../user-service';
 
 import initSpotifyApi from './init-spotify-api';
-import { isSpotifyError } from './types';
+import { isSpotify401Error, isSpotifyError } from './types';
 
 
 async function userHasPlaylist(playlistId: string, accessToken: string): Promise<boolean> {
@@ -29,8 +29,10 @@ async function userHasPlaylist(playlistId: string, accessToken: string): Promise
                 return false;
             }
         }
-        logger.info('Error in userHasPlaylist()');
-        logger.error(e);
+        if (!isSpotify401Error(e)) {
+            logger.info('Error in userHasPlaylist()');
+            logger.error(e);
+        }
         throw e;
     }
 }

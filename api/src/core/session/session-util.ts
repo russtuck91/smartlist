@@ -4,7 +4,7 @@ import httpContext from 'express-http-context';
 import { User } from '../../../../shared';
 
 import userRepo from '../../repositories/user-repository';
-import { isSpotifyAuthError, isSpotifyError } from '../../services/spotify-service/types';
+import { isSpotify401Error, isSpotifyAuthError, isSpotifyError } from '../../services/spotify-service/types';
 import { getCurrentUser, sendSpotifyPermissionErrorNotification, updateUser } from '../../services/user-service';
 
 import logger from '../logger/logger';
@@ -25,7 +25,7 @@ export async function doAndRetry<T>(bodyFn: (accessToken: string) => Promise<T>,
         return await bodyFn(user.accessToken);
     } catch (e) {
         if (isSpotifyError(e)) {
-            if (e.statusCode === 401) {
+            if (isSpotify401Error(e)) {
                 logger.debug('doAndRetry: accessToken has expired, will refresh accessToken and try again');
                 const newAccessToken = await refreshAccessToken(user);
 

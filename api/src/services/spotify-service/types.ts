@@ -27,3 +27,7 @@ interface SpotifyAuthError extends SpResponse<{
 export function isSpotifyAuthError(input: any): input is SpotifyAuthError {
     return input.statusCode && input.body && typeof input.body.error === 'string';
 }
+
+export function isSpotify401Error(input: any): input is SpotifyError {
+    return isSpotifyError(input) && input.statusCode === 401;
+}
