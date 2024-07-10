@@ -26,6 +26,7 @@ async function userHasPlaylist(playlistId: string, accessToken: string): Promise
                 (e.body.error?.status === 502 && e.body.error?.message === 'Error while loading resource') ||
                 (e.body.error?.status === 400 && e.body.error?.message === 'Invalid base62 id')
             ) {
+                logger.info('<<<< Exiting userHasPlaylist() from playlist not found exception');
                 return false;
             }
         }
