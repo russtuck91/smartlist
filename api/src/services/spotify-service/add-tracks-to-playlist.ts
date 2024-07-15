@@ -4,7 +4,7 @@ import logger from '../../core/logger/logger';
 
 import doAndWaitForRateLimit from './do-and-wait-for-rate-limit';
 import initSpotifyApi from './init-spotify-api';
-import { isSpotifyError } from './types';
+import { isSpotify401Error, isSpotifyError } from './types';
 
 
 // Spotify API accepts maximum of 10,000 tracks
@@ -44,7 +44,9 @@ function handleError(e) {
             }
         }
     }
-    logger.error(e);
+    if (!isSpotify401Error(e)) {
+        logger.error(e);
+    }
     throw e;
 }
 
