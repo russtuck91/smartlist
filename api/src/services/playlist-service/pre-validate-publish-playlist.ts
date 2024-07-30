@@ -27,7 +27,7 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
 
     // Has been published before
     if (playlist.spotifyPlaylistId) {
-        const userHasPlaylist = await spotifyService.userHasPlaylist(playlist.spotifyPlaylistId, accessToken);
+        const userHasPlaylist = await spotifyService.userHasPlaylist(playlist.spotifyPlaylistId, accessToken, !playlist.deleted);
         logger.info(`Does user has playlist of id ${playlist.id} ... ${userHasPlaylist} and type = ${typeof userHasPlaylist}`);
 
         // Was previously not deleted but now found to be deleted
