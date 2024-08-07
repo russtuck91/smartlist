@@ -1,3 +1,4 @@
+import { sleep } from '../../../../shared';
 
 
 async function doAndRetryWhenUnexpected<T>(
@@ -14,6 +15,10 @@ async function doAndRetryWhenUnexpected<T>(
             return result;
         }
 
+        // delay next run
+        if (remainingRuns > 1) {
+            await sleep(10 * 1000);
+        }
         // decrement
         remainingRuns--;
     }
