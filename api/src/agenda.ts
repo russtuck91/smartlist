@@ -33,7 +33,7 @@ export async function startAgenda() {
             publishAllPlaylists();
         }, PER_HOUR);
 
-        await agenda.now(JobTypes.playlistPublishing);
+        // await agenda.now(JobTypes.playlistPublishing);
     }
 }
 
