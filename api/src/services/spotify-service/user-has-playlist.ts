@@ -16,7 +16,7 @@ async function userHasPlaylist(playlistId: string, accessToken: string, existing
         const user = await getUserByAccessToken(accessToken);
         try {
             const userFollowPlaylistResponse = await spotifyApi.areFollowingPlaylist(user.username, playlistId, [user.username]);
-            const result = userFollowPlaylistResponse.body[0];
+            const result = userFollowPlaylistResponse.body[0]!;
             logger.debug(`<<<< Exiting userHasPlaylist() after checking and user ${result ? 'DID' : 'DID NOT'} have this playlist.`);
             return result;
         } catch (e) {

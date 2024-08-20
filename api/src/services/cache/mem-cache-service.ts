@@ -31,7 +31,7 @@ class MemCacheService<Resource extends CacheableResource> {
             }, this.store);
         }
 
-        const result = ids.map((id) => this.store[id]);
+        const result = ids.map((id) => this.store[id]!);
 
         logger.debug('<<<< Exiting MemCacheService.getItems()');
         return result;

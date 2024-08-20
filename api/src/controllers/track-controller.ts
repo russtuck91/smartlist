@@ -13,7 +13,7 @@ export class TrackController {
     @Wrapper(expressAsyncHandler)
     async getTrackDetails(req: Request, res: Response) {
         await doAndRetryWithCurrentUser(async (accessToken) => {
-            const details = await trackService.getTrackDetails(req.params.id, accessToken);
+            const details = await trackService.getTrackDetails(req.params.id!, accessToken);
 
             res.send(details);
         });

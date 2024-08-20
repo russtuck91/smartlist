@@ -23,7 +23,7 @@ export class PlaylistsController {
     @Get(':id')
     @Wrapper(expressAsyncHandler)
     async getPlaylistById(req: Request, res: Response) {
-        const playlist = await playlistService.getPlaylistById(req.params.id);
+        const playlist = await playlistService.getPlaylistById(req.params.id!);
 
         res.send(playlist);
     }
@@ -32,7 +32,7 @@ export class PlaylistsController {
     @Wrapper(expressAsyncHandler)
     async updatePlaylist(req: Request, res: Response) {
         const playlist: Playlist = req.body;
-        const result = await playlistService.updatePlaylist(req.params.id, playlist);
+        const result = await playlistService.updatePlaylist(req.params.id!, playlist);
 
         res.send(result);
     }
@@ -50,7 +50,7 @@ export class PlaylistsController {
     @Wrapper(expressAsyncHandler)
     async deletePlaylist(req: Request, res: Response) {
         const deleteOptions: PlaylistDeleteOptions = req.body;
-        await playlistService.deletePlaylist(req.params.id, deleteOptions);
+        await playlistService.deletePlaylist(req.params.id!, deleteOptions);
 
         res.send({});
     }
@@ -73,7 +73,7 @@ export class PlaylistsController {
     @Wrapper(expressAsyncHandler)
     async publishPlaylist(req: Request, res: Response) {
         await doAndRetryWithCurrentUser(async (accessToken) => {
-            const playlistId = req.params.id;
+            const playlistId = req.params.id!;
 
             await playlistService.publishPlaylistById(playlistId, accessToken);
 

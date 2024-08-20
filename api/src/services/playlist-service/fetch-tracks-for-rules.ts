@@ -13,7 +13,7 @@ async function fetchTracksForRules(rules: PlaylistRule[], accessToken: string): 
 
     // Send special rules through specific APIs, others through getFullSearchResults
     for (let i = rules.length - 1; i >= 0; i--) {
-        const rule = rules[i];
+        const rule = rules[i]!;
         const ruleResults = await getTracksForRule(rule, accessToken);
         if (ruleResults) {
             listsOfTrackResults.push(ruleResults);
