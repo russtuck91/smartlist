@@ -30,7 +30,7 @@ async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], acce
 
     let albumMap: Record<string, Album> = {};
     let artistMap: Record<string, Artist> = {};
-    let audioFeaturesMap = {};
+    let audioFeaturesMap: Record<string, SpotifyApi.AudioFeaturesObject> = {};
 
     // Resources only needed if Genre filter is set
     if (rules.find((rule) => isGenreRule(rule))) {
@@ -59,15 +59,27 @@ async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], acce
     }
 
     const filteredList = trackList.filter((track) => {
+        const trackAlbum = albumMap[track.id];
+        const trackArtists = track.artistIds.map((id) => artistMap[id]).filter((a): a is Artist => !!a);
+        const trackAudioFeatures = audioFeaturesMap[track.id];
+        const filterFn = (thisFilter: PlaylistRule) => filterTrack(track, thisFilter, { trackAlbum, trackArtists, trackAudioFeatures });
         return filterOut ?
-            !rules.some((thisFilter) => filterTrack(track, thisFilter, { albumMap, artistMap, audioFeaturesMap })) :
-            rules.every((thisFilter) => filterTrack(track, thisFilter, { albumMap, artistMap, audioFeaturesMap }));
+            !rules.some(filterFn) :
+            rules.every(filterFn);
     });
 
     return filteredList;
 }
 
-function filterTrack(track: Track, thisFilter: PlaylistRule, { albumMap, artistMap, audioFeaturesMap }) {
+function filterTrack(track: Track, thisFilter: PlaylistRule, {
+    trackAlbum,
+    trackArtists,
+    trackAudioFeatures,
+}: {
+    trackAlbum?: Album,
+    trackArtists: Artist[],
+    trackAudioFeatures?: SpotifyApi.AudioFeaturesObject,
+}) {
     if (isArtistRule(thisFilter)) {
         return !!filterTrackByArtist(track, thisFilter);
     }
@@ -81,7 +93,14 @@ function filterTrack(track: Track, thisFilter: PlaylistRule, { albumMap, artistM
     }
 
     if (isGenreRule(thisFilter)) {
-        return filterTrackByGenre(track, thisFilter, albumMap, artistMap);
+        let trackGenres: string[] = [];
+        if (trackAlbum) {
+            trackGenres = trackGenres.concat(trackAlbum.genres);
+        }
+        trackArtists.map((artist) => {
+            trackGenres = trackGenres.concat(artist.genres);
+        });
+        return filterTrackByGenre(track, thisFilter, trackGenres);
     }
 
     if (isYearRule(thisFilter)) {
@@ -89,18 +108,15 @@ function filterTrack(track: Track, thisFilter: PlaylistRule, { albumMap, artistM
     }
 
     if (isTempoRule(thisFilter)) {
-        const thisAudioFeatures = audioFeaturesMap[track.id];
-        return filterTrackByTempo(track, thisFilter, thisAudioFeatures);
+        return trackAudioFeatures && filterTrackByTempo(track, thisFilter, trackAudioFeatures);
     }
 
     if (isEnergyRule(thisFilter)) {
-        const thisAudioFeatures = audioFeaturesMap[track.id];
-        return filterTrackByEnergy(track, thisFilter, thisAudioFeatures);
+        return trackAudioFeatures && filterTrackByEnergy(track, thisFilter, trackAudioFeatures);
     }
 
     if (isInstrumentalRule(thisFilter)) {
-        const thisAudioFeatures = audioFeaturesMap[track.id];
-        return filterTrackByInstrumental(track, thisFilter, thisAudioFeatures);
+        return trackAudioFeatures && filterTrackByInstrumental(track, thisFilter, trackAudioFeatures);
     }
 }
 
@@ -156,19 +172,8 @@ function filterTrackByTrack(track: Track, thisFilter: TrackRule) {
     }
 }
 
-function filterTrackByGenre(track: Track, thisFilter: GenreRule, albumMap: Record<string, Album>, artistMap: Record<string, Artist>) {
-    const fullAlbum = albumMap[track.albumId];
-    const fullArtists = track.artistIds.map((id) => artistMap[id]);
-
-    let allGenres: string[] = [];
-    if (fullAlbum) {
-        allGenres = allGenres.concat(fullAlbum.genres);
-    }
-    fullArtists.map((artist) => {
-        allGenres = allGenres.concat(artist.genres);
-    });
-
-    const shouldPass = allGenres.some((genre) => {
+function filterTrackByGenre(track: Track, thisFilter: GenreRule, trackGenres: string[]) {
+    const shouldPass = trackGenres.some((genre) => {
         if (thisFilter.comparator === RuleComparator.Is) {
             return genre.toLowerCase() === thisFilter.value.toLowerCase();
         }

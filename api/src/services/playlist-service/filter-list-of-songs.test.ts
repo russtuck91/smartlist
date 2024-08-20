@@ -11,7 +11,7 @@ describe('filter by artist', () => {
         // Arrange
         const expectedArtistName = 'some artist';
         const tracks = trackFactory.buildList(10);
-        tracks[0].artistNames = [expectedArtistName];
+        tracks[0]!.artistNames = [expectedArtistName];
         const playlistRule = artistIsRuleFactory.build({
             value: expectedArtistName,
         });
@@ -29,7 +29,7 @@ describe('filter by artist', () => {
         const ruleValue = 'contains value';
         const expectedArtistName = `some ${ruleValue} here`;
         const tracks = trackFactory.buildList(10);
-        tracks[0].artistNames = [expectedArtistName];
+        tracks[0]!.artistNames = [expectedArtistName];
         const playlistRule = artistContainsRuleFactory.build({
             value: ruleValue,
         });
@@ -48,7 +48,7 @@ describe('filter by album', () => {
         // Arrange
         const expectedAlbumName = 'some album';
         const tracks = trackFactory.buildList(10);
-        tracks[0].albumName = expectedAlbumName;
+        tracks[0]!.albumName = expectedAlbumName;
         const playlistRule = albumContainsRuleFactory.build({
             value: expectedAlbumName,
         });
