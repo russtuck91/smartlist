@@ -53,7 +53,7 @@
     "redux": "^4.0.5",
     "setimmediate": "^1.0.5",
     "shake.js": "^1.2.2",
-    "typescript": "^3.8.0",
+    "typescript": "~4.4.4",
     "use-debounce": "^9.0.4",
     "winston": "^3.3.3",
     "winston-transport": "^4.4.0",

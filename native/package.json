@@ -35,7 +35,7 @@
     "jest": "^27.5.1",
     "metro-react-native-babel-preset": "^0.67.0",
     "react-test-renderer": "17.0.2",
-    "typescript": "^3.8.3"
+    "typescript": "~4.4.4"
   },
   "resolutions": {
     "@types/react": "^17"
