@@ -17,7 +17,10 @@ function getFieldStringValueForRule(rule: PlaylistRule) {
 
 async function getFullSearchResults(rules: PlaylistRule[], accessToken: string|undefined): Promise<SpotifyApi.PagingObject<SpotifyApi.TrackObjectFull>|undefined> {
     logger.debug('>>>> Entering getFullSearchResults()');
-    if (rules.length === 0) { return; }
+    if (rules.length === 0) {
+        logger.debug('<<<< Exiting getFullSearchResults() after no rules provided');
+        return;
+    }
 
     const spotifyApi = await initSpotifyApi(accessToken);
 

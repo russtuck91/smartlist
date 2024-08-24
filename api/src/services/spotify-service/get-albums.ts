@@ -25,6 +25,7 @@ async function getAlbums(albumIds: string[], accessToken: string|undefined): Pro
 
     // Despite documentation, album can sometimes be null
     const albums = albumsResponse.filter((a): a is SpotifyApi.AlbumObjectFull => !!a);
+    logger.debug(`<<<< Exiting getAlbums() after successful fetch with ${albums.length} albums`);
     return albums;
 }
 

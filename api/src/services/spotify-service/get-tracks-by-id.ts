@@ -7,7 +7,7 @@ import initSpotifyApi from './init-spotify-api';
 
 
 async function getTracksById(trackIds: string[], accessToken: string|undefined): Promise<SpotifyApi.TrackObjectFull[]> {
-    logger.debug(`>>>> Entering getTracksById(albumIds = ${truncate(trackIds.join(','))}`);
+    logger.debug(`>>>> Entering getTracksById(trackIds = ${truncate(trackIds.join(','))}`);
 
     const spotifyApi = await initSpotifyApi(accessToken);
 

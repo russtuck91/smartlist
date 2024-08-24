@@ -25,6 +25,7 @@ async function getAlbumsForArtists(artistIds: string[], accessToken: string|unde
         albums = albums.concat(thisArtistAlbums?.items || []);
     }
 
+    logger.debug(`<<<< Exiting getAlbumsForArtists() after successful fetch with ${albums.length} albums`);
     return albums;
 }
 
