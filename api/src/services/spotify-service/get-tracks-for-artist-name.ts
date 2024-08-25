@@ -1,7 +1,8 @@
 import logger from '../../core/logger/logger';
 
+import spotifyCacheService from '../cache/spotify/spotify-cache-service';
+
 import doAndWaitForRateLimit from './do-and-wait-for-rate-limit';
-import getTracksForArtist from './get-tracks-for-artist';
 import initSpotifyApi from './init-spotify-api';
 
 
@@ -20,7 +21,7 @@ async function getTracksForArtistName(artistName: string, accessToken: string) {
         return [];
     }
 
-    const result = await getTracksForArtist(artist.id, accessToken);
+    const result = await spotifyCacheService.getTracksForArtist(artist.id, accessToken);
     return result;
 }
 

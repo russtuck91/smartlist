@@ -21,7 +21,7 @@ async function getTracksForRule(rule: PlaylistRule, accessToken: string): Promis
         if (isSearchItem(rule.value)) {
             return await spotifyCacheService.getTracksForArtist(rule.value.id, accessToken);
         }
-        return (await spotifyService.getTracksForArtistName(rule.value, accessToken)).map(mapToTrack);
+        return await spotifyService.getTracksForArtistName(rule.value, accessToken);
     }
     if (isAlbumIsRule(rule) && isSearchItem(rule.value)) {
         return (await spotifyService.getTracksForAlbums([ rule.value.id ], accessToken)).map(mapToTrack);
