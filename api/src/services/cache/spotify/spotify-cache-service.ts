@@ -1,6 +1,7 @@
 import albumCacheService from './album-cache-service';
 import artistCacheService from './artist-cache-service';
 import audioFeaturesCacheService from './audio-features-cache-service';
+import getTracksForArtist from './get-tracks-for-artist';
 import searchForGenre from './search-for-genre';
 import trackCacheService from './track-cache-service';
 import userSavedTracksCacheService from './user-saved-tracks-cache-service';
@@ -15,6 +16,7 @@ class SpotifyCacheService {
     getAlbums = albumCacheService.getItems;
     getArtists = artistCacheService.getItems;
     getAudioFeatures = audioFeaturesCacheService.getItems;
+    getTracksForArtist = getTracksForArtist;
 
     searchForGenre = searchForGenre;
 }

@@ -1,6 +1,7 @@
 import addTracksToPlaylist from './add-tracks-to-playlist';
 import createNewPlaylist from './create-new-playlist';
 import getAlbums from './get-albums';
+import getAlbumsForArtist from './get-albums-for-artist';
 import getArtists from './get-artists';
 import getAudioFeatures from './get-audio-features';
 import getFullMySavedTracks from './get-full-my-saved-tracks';
@@ -36,6 +37,7 @@ class SpotifyService {
     unfollowPlaylist = unfollowPlaylist;
 
     getAlbums = getAlbums;
+    getAlbumsForArtist = getAlbumsForArtist;
     getArtists = getArtists;
     getAudioFeatures = getAudioFeatures;
     getTrackById = getTrackById;
