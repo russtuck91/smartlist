@@ -11,4 +11,5 @@ export interface Album {
     thumbnail?: string;
     genres: string[];
     popularity: number;
+    trackIds: string[];
 }
