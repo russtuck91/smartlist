@@ -13,6 +13,7 @@ interface RangeInputProps extends Partial<FormFieldProps> {
     value?: BetweenValue;
     renderStart?: (props: FormFieldProps) => React.ReactNode;
     renderEnd?: (props: FormFieldProps) => React.ReactNode;
+    type?: string;
 }
 
 export class RangeInput extends React.Component<RangeInputProps> {
@@ -35,6 +36,7 @@ export class RangeInput extends React.Component<RangeInputProps> {
             ...this.getCommonInputProps(),
             id: `${this.props.id}.start`,
             value: this.props.value?.start,
+            type: this.props.type,
         };
         if (this.props.renderStart) {
             return this.props.renderStart(inputProps);
@@ -52,6 +54,7 @@ export class RangeInput extends React.Component<RangeInputProps> {
             ...this.getCommonInputProps(),
             id: `${this.props.id}.end`,
             value: this.props.value?.end,
+            type: this.props.type,
         };
         if (this.props.renderEnd) {
             return this.props.renderEnd(inputProps);
