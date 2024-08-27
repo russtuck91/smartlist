@@ -29,13 +29,12 @@ async function addTracksToPlaylist(playlistId: string, trackUris: string[], acce
             );
         } catch (e) {
             logger.info(`Error in addTracksToPlaylist batch(playlistId = ${playlistId}, trackUris.length = ${trackUris.length}`);
-            logger.info(uriBatch);
-            handleError(e);
+            handleError(e, uriBatch);
         }
     }
 }
 
-function handleError(e) {
+function handleError(e, uriBatch) {
     if (isSpotifyError(e)) {
         if (e.statusCode === 400) {
             if (e.body.error?.message === 'Invalid base62 id') {
@@ -46,6 +45,7 @@ function handleError(e) {
     }
     if (!isSpotify401Error(e)) {
         logger.error(e);
+        logger.info(uriBatch);
     }
     throw e;
 }
