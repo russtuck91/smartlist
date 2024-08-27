@@ -13,7 +13,7 @@ import populateList from './populate-list';
 import updatePlaylist from './update-playlist';
 
 
-async function publishPlaylist(playlist: Playlist, initialAccessToken: string) {
+async function publishPlaylist(playlist: Playlist) {
     logger.debug(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
     const transaction = startTransaction({
         op: 'publishPlaylist',

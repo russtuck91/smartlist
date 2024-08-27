@@ -72,14 +72,12 @@ export class PlaylistsController {
     @Post('publish/:id')
     @Wrapper(expressAsyncHandler)
     async publishPlaylist(req: Request, res: Response) {
-        await doAndRetryWithCurrentUser(async (accessToken) => {
-            const playlistId = req.params.id!;
+        const playlistId = req.params.id!;
 
-            await playlistService.publishPlaylistById(playlistId, accessToken);
+        await playlistService.publishPlaylistById(playlistId);
 
-            res.send({
-                publishedPlaylistId: playlistId,
-            });
+        res.send({
+            publishedPlaylistId: playlistId,
         });
     }
 }

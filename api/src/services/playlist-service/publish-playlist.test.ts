@@ -28,7 +28,7 @@ describe('publishPlaylist', () => {
         });
 
         // Act
-        await publishPlaylist(playlist, '');
+        await publishPlaylist(playlist);
 
         // Assert
         expect(spotifyService.createNewPlaylist).toHaveBeenCalled();
@@ -40,7 +40,7 @@ describe('publishPlaylist', () => {
         mockedUserHasPlaylist.mockResolvedValue(false);
 
         // Act
-        await publishPlaylist(playlist, '');
+        await publishPlaylist(playlist);
 
         // Assert
         expect(spotifyService.createNewPlaylist).toHaveBeenCalled();
@@ -52,7 +52,7 @@ describe('publishPlaylist', () => {
         mockedUserHasPlaylist.mockResolvedValue(true);
 
         // Act
-        await publishPlaylist(playlist, '');
+        await publishPlaylist(playlist);
 
         // Assert
         expect(spotifyService.removeTracksFromPlaylist).toHaveBeenCalled();

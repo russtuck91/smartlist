@@ -31,7 +31,7 @@ describe('preValidatePublishPlaylist', () => {
         await preValidatePublishPlaylist(playlist, '');
 
         // Assert
-        expect(publishPlaylist).toHaveBeenCalledWith(playlist, '');
+        expect(publishPlaylist).toHaveBeenCalledWith(playlist);
         expect(updatePlaylist).not.toHaveBeenCalled();
     });
 
@@ -46,7 +46,7 @@ describe('preValidatePublishPlaylist', () => {
         await preValidatePublishPlaylist(playlist, '');
 
         // Assert
-        expect(publishPlaylist).toHaveBeenCalledWith(playlist, '');
+        expect(publishPlaylist).toHaveBeenCalledWith(playlist);
         expect(updatePlaylist).toHaveBeenCalledWith(playlist.id, { deleted: false });
     });
 

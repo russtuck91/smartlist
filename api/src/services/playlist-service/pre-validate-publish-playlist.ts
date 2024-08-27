@@ -48,7 +48,7 @@ async function preValidatePublishPlaylist(playlist: Playlist, accessToken: strin
         }
     }
 
-    return publishPlaylist(playlist, accessToken);
+    return publishPlaylist(playlist);
 }
 
 export default preValidatePublishPlaylist;
