@@ -37,7 +37,7 @@ async function userHasPlaylist(playlistId: string, accessToken: string, existing
             }
             throw e;
         }
-    }, (result) => result !== existingValue, 1);
+    }, (result) => result !== existingValue, 2);
 }
 
 export default userHasPlaylist;

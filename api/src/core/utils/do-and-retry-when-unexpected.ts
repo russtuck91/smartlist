@@ -1,5 +1,7 @@
 import { sleep } from '../../../../shared';
 
+import logger from '../logger/logger';
+
 
 async function doAndRetryWhenUnexpected<T>(
     bodyFn: () => Promise<T>,
@@ -9,6 +11,10 @@ async function doAndRetryWhenUnexpected<T>(
     let remainingRuns = numRetries + 1;
     let result;
     while (remainingRuns > 0) {
+        const currentRetryNum = 1 + numRetries - remainingRuns;
+        if (currentRetryNum > 0) {
+            logger.info(`doAndRetryWhenUnexpected: Doing retry #${currentRetryNum} after unexpected value found`);
+        }
         result = await bodyFn();
         const isUnexpected = checkIfUnexpected(result);
         if (!isUnexpected) {

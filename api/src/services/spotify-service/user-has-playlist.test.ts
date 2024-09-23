@@ -5,7 +5,7 @@ import userHasPlaylist from './user-has-playlist';
 
 jest.mock('../user-service');
 
-jest.setTimeout(20_000);
+jest.setTimeout(30_000);
 
 describe('userHasPlaylist', () => {
     const areFollowingPlaylistSpy = jest.spyOn(SpotifyApi.prototype, 'areFollowingPlaylist');
