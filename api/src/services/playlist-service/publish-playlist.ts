@@ -26,8 +26,7 @@ async function publishPlaylist(playlist: Playlist) {
             const list = await populateList(playlist, accessToken);
 
             let spotifyPlaylistId = playlist.spotifyPlaylistId;
-            const userHasPlaylist = spotifyPlaylistId && await spotifyService.userHasPlaylist(spotifyPlaylistId, accessToken, !playlist.deleted);
-            if (spotifyPlaylistId && userHasPlaylist) {
+            if (spotifyPlaylistId) {
                 // Remove all tracks from playlist
                 await spotifyService.removeTracksFromPlaylist(spotifyPlaylistId, accessToken);
             } else {

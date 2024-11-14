@@ -11,7 +11,6 @@ jest.mock('../user-service');
 jest.mock('./populate-list', () => () => []);
 
 const mockedCreateNewPlaylist = jest.mocked(spotifyService.createNewPlaylist);
-const mockedUserHasPlaylist = jest.mocked(spotifyService.userHasPlaylist);
 
 
 describe('publishPlaylist', () => {
@@ -34,22 +33,9 @@ describe('publishPlaylist', () => {
         expect(spotifyService.createNewPlaylist).toHaveBeenCalled();
     });
 
-    it('should create new playlist if previous one was deleted', async () => {
-        // Arrange
-        const playlist = playlistFactory.build();
-        mockedUserHasPlaylist.mockResolvedValue(false);
-
-        // Act
-        await publishPlaylist(playlist);
-
-        // Assert
-        expect(spotifyService.createNewPlaylist).toHaveBeenCalled();
-    });
-
     it('should update existing playlist if created & not deleted', async () => {
         // Arrange
         const playlist = playlistFactory.build();
-        mockedUserHasPlaylist.mockResolvedValue(true);
 
         // Act
         await publishPlaylist(playlist);

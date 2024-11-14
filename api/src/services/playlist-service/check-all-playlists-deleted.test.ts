@@ -4,23 +4,16 @@ import { playlistFactory } from '../../core/test-data';
 
 import playlistRepo from '../../repositories/playlist-repository';
 
-import preValidatePublishPlaylist from './pre-validate-publish-playlist';
-import publishAllPlaylists from './publish-all-playlists';
+import checkAllPlaylistsDeleted from './check-all-playlists-deleted';
+import checkPlaylistDeleted from './check-playlist-deleted';
 
 
-jest.mock('../spotify-service/spotify-service');
-jest.mock('./pre-validate-publish-playlist');
+jest.mock('./check-playlist-deleted');
 
 const mockedFind = jest.mocked(playlistRepo.find);
-const mockedPreValidatePublishPlaylist = jest.mocked(preValidatePublishPlaylist);
+const mockedCheckPlaylistDeleted = jest.mocked(checkPlaylistDeleted);
 
-
-describe('publishAllPlaylists', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        delete process.env.PLAYLIST_PUBLISH_LIMIT;
-    });
-
+describe('checkAllPlaylistsDeleted', () => {
     it('should sort playlists by priority', async () => {
         // Arrange
         const playlist1 = playlistFactory.build({
@@ -47,28 +40,14 @@ describe('publishAllPlaylists', () => {
         ]);
 
         // Act
-        await publishAllPlaylists();
+        await checkAllPlaylistsDeleted();
 
         // Assert
-        expect(mockedPreValidatePublishPlaylist.mock.calls).toMatchObject([
+        expect(mockedCheckPlaylistDeleted.mock.calls).toMatchObject([
             [playlist1],
             [playlist2],
             [playlist3],
             [playlist4],
         ]);
-    });
-
-    it('should limit playlists to publish by env var', async () => {
-        // Arrange
-        const playlists = playlistFactory.buildList(10);
-        mockedFind.mockResolvedValue(playlists);
-        const expectedCalls = 1;
-        process.env.PLAYLIST_PUBLISH_LIMIT = String(expectedCalls);
-
-        // Act
-        await publishAllPlaylists();
-
-        // Assert
-        expect(mockedPreValidatePublishPlaylist).toHaveBeenCalledTimes(expectedCalls);
     });
 });

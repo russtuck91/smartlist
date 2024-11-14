@@ -1,3 +1,4 @@
+import checkAllPlaylistsDeleted from './check-all-playlists-deleted';
 import createPlaylist from './create-playlist';
 import deletePlaylist from './delete-playlist';
 import getPlaylistById from './get-playlist-by-id';
@@ -18,4 +19,5 @@ export {
 
     publishPlaylistById,
     publishAllPlaylists,
+    checkAllPlaylistsDeleted,
 };
