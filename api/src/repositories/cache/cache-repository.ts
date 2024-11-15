@@ -16,10 +16,15 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
     }
 
     async insertManyResources(resources: Resource[]) {
-        logger.info(`>>>> Entering CacheRepository.insertManyResources(resources.length = ${resources.length}`);
-        if (!resources.length) return;
-        const cacheRecords = this.createCacheRecordsFromResources(resources);
-        await this.insertMany(cacheRecords);
+        try {
+            logger.info(`>>>> Entering CacheRepository.insertManyResources(resources.length = ${resources.length}`);
+            if (!resources.length) return;
+            const cacheRecords = this.createCacheRecordsFromResources(resources);
+            await this.insertMany(cacheRecords);
+        } catch (e) {
+            logger.info('Error in CacheRepository.insertManyResources');
+            logger.error(e);
+        }
     }
 
     private async insertMany(items: SavedCacheRecord<Resource>[]) {
@@ -32,6 +37,11 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
     async bulkUpdateResources(resources: Resource[]) {
         logger.info(`>>>> Entering CacheRepository.bulkUpdateResources(resources.length = ${resources.length}`);
         if (!resources.length) return;
+        // Temp for debugging
+        if (resources.length === 1) {
+            logger.info(resources[0]);
+            logger.info(JSON.stringify(resources[0]));
+        }
         const cacheRecords = this.createCacheRecordsFromResources(resources);
         await this.bulkUpdate(cacheRecords);
     }

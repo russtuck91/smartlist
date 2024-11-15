@@ -27,8 +27,7 @@ class DbCacheService<Resource extends CacheableResource> {
         const resourceItemsFromDb = retrievedFromDB.map((record) => record.item);
 
         // donotawait - send stored items to check for revalidation - stale-while-revalidate
-        // TODO: this is executing too soon; should use a job or setInterval
-        this.revalidateCacheItems(retrievedFromDB, accessToken);
+        setTimeout(() => this.revalidateCacheItems(retrievedFromDB, accessToken), 500);
 
         // Any IDs not present in retrieved items need to be fetched
         const idsToFetch: string[] = ids.filter((id) => !retrievedFromDB.some((result) => result.item.id === id));
@@ -49,26 +48,31 @@ class DbCacheService<Resource extends CacheableResource> {
     };
 
     private async revalidateCacheItems(cacheItems: SavedCacheRecord<Resource>[], accessToken: string|undefined) {
-        logger.debug('>>>> Entering DbCacheService.revalidateCacheItems()');
+        try {
+            logger.debug('>>>> Entering DbCacheService.revalidateCacheItems()');
 
-        const needsUpdate = cacheItems.filter((cacheItem: SavedCacheRecord<Resource>) => {
-            const now = moment();
-            const daysAgo = now.diff(moment(cacheItem.lastFetched), 'days');
-            return daysAgo > 90;
-        });
-        if (needsUpdate.length === 0) {
-            // No updates needed, exit
-            logger.debug('<<<< Exiting DbCacheService.revalidateCacheItems() because no updates to resources needed');
-            return;
+            const needsUpdate = cacheItems.filter((cacheItem: SavedCacheRecord<Resource>) => {
+                const now = moment();
+                const daysAgo = now.diff(moment(cacheItem.lastFetched), 'days');
+                return daysAgo > 90;
+            });
+            if (needsUpdate.length === 0) {
+                // No updates needed, exit
+                logger.debug('<<<< Exiting DbCacheService.revalidateCacheItems() because no updates to resources needed');
+                return;
+            }
+
+            // Fetch items from source method
+            const needsUpdateIds = needsUpdate.map((cacheItem) => cacheItem.item.id);
+            const fetchedItems: Resource[] = await this.sourceMethod(needsUpdateIds, accessToken);
+
+            // Send refreshed items to DB cache
+            await this.repo.bulkUpdateResources(fetchedItems);
+            logger.debug(`<<<< Exiting DbCacheService.revalidateCacheItems() after updating ${fetchedItems.length} items`);
+        } catch (e) {
+            logger.info('Error in DbCacheService.revalidateCacheItems');
+            logger.error(e);
         }
-
-        // Fetch items from source method
-        const needsUpdateIds = needsUpdate.map((cacheItem) => cacheItem.item.id);
-        const fetchedItems: Resource[] = await this.sourceMethod(needsUpdateIds, accessToken);
-
-        // Send refreshed items to DB cache
-        this.repo.bulkUpdateResources(fetchedItems);
-        logger.debug(`<<<< Exiting DbCacheService.revalidateCacheItems() after updating ${fetchedItems.length} items`);
     }
 
     setItems = async (items: Resource[]) => {

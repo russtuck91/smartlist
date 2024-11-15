@@ -83,10 +83,15 @@ class ChronoDbCacheService {
     };
 
     private async storeFreshResultsInCache(userId: string, freshResults: SpotifyApi.SavedTrackObject[]) {
-        const freshUserSavedTrackRef: UserSavedTrackReference[] = freshResults.map(mapToUserSavedTrackReference);
-        this.repo.updateTracksForUserId(userId, freshUserSavedTrackRef);
+        try {
+            const freshUserSavedTrackRef: UserSavedTrackReference[] = freshResults.map(mapToUserSavedTrackReference);
+            await this.repo.updateTracksForUserId(userId, freshUserSavedTrackRef);
 
-        spotifyCacheService.setTracks(freshResults.map(mapToTrack));
+            await spotifyCacheService.setTracks(freshResults.map(mapToTrack));
+        } catch (e) {
+            logger.info('Error in ChronoDbCacheService.storeFreshResultsInCache');
+            logger.error(e);
+        }
     }
 
     getFullTrackList = async (accessToken: string): Promise<Track[]> => {
