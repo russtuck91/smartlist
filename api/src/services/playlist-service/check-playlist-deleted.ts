@@ -13,6 +13,10 @@ import updatePlaylist from './update-playlist';
 async function checkPlaylistDeleted(playlist: Playlist) {
     try {
         const user = await getUserById(playlist.userId);
+        if (user.spotifyPermissionError) {
+            logger.debug('>>>> Exiting checkPlaylistDeleted() after finding user has permission error');
+            return;
+        }
         await doAndRetry(async (accessToken) => {
             // Has not been published before
             if (!playlist.spotifyPlaylistId) {

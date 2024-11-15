@@ -22,7 +22,7 @@ async function preValidatePublishPlaylist(playlist: Playlist) {
 
     const user = await getUserById(playlist.userId);
     if (user.spotifyPermissionError) {
-        logger.info('<<<< Exiting preValidatePublishPlaylist() after finding user has permission error');
+        logger.debug('<<<< Exiting preValidatePublishPlaylist() after finding user has permission error');
         return;
     }
 
