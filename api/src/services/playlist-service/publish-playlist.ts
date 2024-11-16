@@ -14,7 +14,7 @@ import updatePlaylist from './update-playlist';
 
 
 async function publishPlaylist(playlist: Playlist) {
-    logger.debug(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
+    logger.info(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
     const transaction = startTransaction({
         op: 'publishPlaylist',
         name: 'Publish Playlist',

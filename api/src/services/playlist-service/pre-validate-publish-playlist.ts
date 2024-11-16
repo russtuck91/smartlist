@@ -8,7 +8,7 @@ import publishPlaylist from './publish-playlist';
 
 
 async function preValidatePublishPlaylist(playlist: Playlist) {
-    logger.info(`>>>> Entering preValidatePublishPlaylist(playlist.id = ${playlist.id}`);
+    logger.debug(`>>>> Entering preValidatePublishPlaylist(playlist.id = ${playlist.id}`);
 
     if (playlist.disabled) {
         logger.info('<<<< Exiting preValidatePublishPlaylist() after finding playlist is marked disabled');
@@ -16,7 +16,7 @@ async function preValidatePublishPlaylist(playlist: Playlist) {
     }
 
     if (playlist.deleted) {
-        logger.info('<<<< Exiting preValidatePublishPlaylist() after finding playlist is marked deleted');
+        logger.debug('<<<< Exiting preValidatePublishPlaylist() after finding playlist is marked deleted');
         return;
     }
 
