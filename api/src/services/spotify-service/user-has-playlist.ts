@@ -4,6 +4,7 @@ import doAndRetryWhenUnexpected from '../../core/utils/do-and-retry-when-unexpec
 
 import { getUserByAccessToken } from '../user-service';
 
+import doAndWaitForRateLimit from './do-and-wait-for-rate-limit';
 import initSpotifyApi from './init-spotify-api';
 import { isSpotify401Error, isSpotifyError } from './types';
 
@@ -15,7 +16,9 @@ async function userHasPlaylist(playlistId: string, accessToken: string, existing
         const spotifyApi = await initSpotifyApi(accessToken);
         const user = await getUserByAccessToken(accessToken);
         try {
-            const userFollowPlaylistResponse = await spotifyApi.areFollowingPlaylist(user.username, playlistId, [user.username]);
+            const userFollowPlaylistResponse = await doAndWaitForRateLimit(async () => {
+                return await spotifyApi.areFollowingPlaylist(user.username, playlistId, [user.username]);
+            });
             const result = userFollowPlaylistResponse.body[0]!;
             logger.debug(`<<<< Exiting userHasPlaylist() after checking and user ${result ? 'DID' : 'DID NOT'} have this playlist.`);
             return result;
