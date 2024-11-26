@@ -14,6 +14,8 @@ jest.mock('./pre-validate-publish-playlist');
 const mockedFind = jest.mocked(playlistRepo.find);
 const mockedPreValidatePublishPlaylist = jest.mocked(preValidatePublishPlaylist);
 
+jest.setTimeout(10_000);
+
 
 describe('publishAllPlaylists', () => {
     beforeEach(() => {

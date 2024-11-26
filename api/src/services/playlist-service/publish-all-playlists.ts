@@ -1,5 +1,7 @@
 import moment from 'moment';
 
+import { sleep } from '../../../../shared';
+
 import logger from '../../core/logger/logger';
 
 import playlistRepo from '../../repositories/playlist-repository';
@@ -36,6 +38,8 @@ async function publishAllPlaylists() {
     for (const playlist of playlists) {
         try {
             await preValidatePublishPlaylist(playlist);
+            // Wait to reduce memory consumption
+            await sleep(2000);
         } catch (e) {
             logger.info(`error publishing playlist ${playlist.id.toString()}`);
             logger.error(JSON.stringify(e));

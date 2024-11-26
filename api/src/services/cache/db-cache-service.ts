@@ -72,6 +72,7 @@ class DbCacheService<Resource extends CacheableResource> {
         } catch (e) {
             logger.info('Error in DbCacheService.revalidateCacheItems');
             logger.error(e);
+            logger.info(JSON.stringify(e));
         }
     }
 
