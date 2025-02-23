@@ -1,13 +1,18 @@
 import moment from 'moment';
-
-import { sleep } from '../../../../shared';
+import { pool } from 'workerpool';
 
 import logger from '../../core/logger/logger';
 
 import playlistRepo from '../../repositories/playlist-repository';
 
-import preValidatePublishPlaylist from './pre-validate-publish-playlist';
 
+const publishPlaylistPool = pool(`${__dirname}/publish-playlist-process.ts`, {
+    workerType: 'process',
+    maxWorkers: 5,
+    forkOpts: {
+        execArgv: ['-r', 'ts-node/register'],
+    },
+});
 
 async function publishAllPlaylists() {
     logger.info('>>>> Entering publishAllPlaylists()');
@@ -35,16 +40,11 @@ async function publishAllPlaylists() {
         logger.info(`name = ${p.name} /// id = ${p.id} /// userId = ${p.userId}`),
     );
 
-    for (const playlist of playlists) {
-        try {
-            await preValidatePublishPlaylist(playlist);
-            // Wait to reduce memory consumption
-            await sleep(2000);
-        } catch (e) {
-            logger.info(`error publishing playlist ${playlist.id.toString()}`);
-            logger.error(JSON.stringify(e));
-        }
-    }
+    await Promise.all(playlists.map((playlist) => {
+        return publishPlaylistPool.exec('publishPlaylistProcess', [playlist]);
+    }));
+
+    publishPlaylistPool.terminate();
     logger.info('<<<< Exiting publishAllPlaylists()');
 }
 

@@ -54,7 +54,8 @@
     "spotify-web-api-node": "^5.0.0",
     "ts-node": "^8.6.1",
     "web-push": "^3.6.6",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "workerpool": "^9.2.0"
   },
   "devDependencies": {
     "@jest/types": "^27.5.1",
