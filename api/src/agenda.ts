@@ -30,6 +30,11 @@ export async function startAgenda() {
         setInterval(() => {
             publishAllPlaylists();
         }, PER_HOUR);
+
+        // First run
+        setTimeout(() => {
+            publishAllPlaylists();
+        }, 1000 * 60);
         // await agenda.now(JobTypes.playlistPublishing);
 
         const PER_TWO_HOURS = 2 * 1000 * 60 * 60;
