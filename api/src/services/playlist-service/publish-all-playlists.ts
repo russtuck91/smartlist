@@ -6,7 +6,7 @@ import logger from '../../core/logger/logger';
 import playlistRepo from '../../repositories/playlist-repository';
 
 
-const publishPlaylistPool = pool(`${__dirname}/publish-playlist-process.ts`, {
+const publishPlaylistPool = pool(`${__dirname}/publish-playlist-process`, {
     workerType: 'process',
     maxWorkers: 5,
     forkOpts: {
