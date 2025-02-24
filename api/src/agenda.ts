@@ -32,9 +32,11 @@ export async function startAgenda() {
         }, PER_HOUR);
 
         // First run
-        setTimeout(() => {
-            publishAllPlaylists();
-        }, 1000 * 60);
+        if (process.env.PUBLISH_ALL_ON_STARTUP) {
+            setTimeout(() => {
+                publishAllPlaylists();
+            }, 1000 * 60);
+        }
         // await agenda.now(JobTypes.playlistPublishing);
 
         const PER_TWO_HOURS = 2 * 1000 * 60 * 60;
