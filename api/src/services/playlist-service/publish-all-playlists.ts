@@ -8,9 +8,9 @@ import playlistRepo from '../../repositories/playlist-repository';
 
 const publishPlaylistPool = pool(`${__dirname}/publish-playlist-process`, {
     workerType: 'process',
-    maxWorkers: 5,
+    maxWorkers: 3,
     forkOpts: {
-        execArgv: ['-r', 'ts-node/register'],
+        execArgv: ['--max-old-space-size=64', '-r', 'ts-node/register'],
     },
 });
 
