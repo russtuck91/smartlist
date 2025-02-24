@@ -4,7 +4,7 @@
   "private": true,
   "main": "build/api/src/start.js",
   "scripts": {
-    "start": "node build/api/src/start.js",
+    "start": "node --max-old-space-size=256 build/api/src/start.js",
     "start:ssl": "HTTPS=true SSL_CRT_FILE=../localhost.pem SSL_KEY_FILE=../localhost-key.pem npm run start",
     "dev": "nodemon",
     "prebuild": "npm run lint && npm run test",
