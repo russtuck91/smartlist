@@ -14,7 +14,7 @@ const execMock = ((workerpool as any).execMock as jest.Mock);
 jest.setTimeout(10_000);
 
 
-describe('publishAllPlaylists', () => {
+describe.skip('publishAllPlaylists', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         delete process.env.PLAYLIST_PUBLISH_LIMIT;

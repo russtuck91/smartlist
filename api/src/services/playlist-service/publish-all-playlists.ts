@@ -1,9 +1,13 @@
 import moment from 'moment';
 import { pool } from 'workerpool';
 
+import { sleep } from '../../../../shared';
+
 import logger from '../../core/logger/logger';
 
 import playlistRepo from '../../repositories/playlist-repository';
+
+import preValidatePublishPlaylist from './pre-validate-publish-playlist';
 
 
 const publishPlaylistPool = pool(`${__dirname}/publish-playlist-process`, {
@@ -40,11 +44,24 @@ async function publishAllPlaylists() {
         logger.info(`name = ${p.name} /// id = ${p.id} /// userId = ${p.userId}`),
     );
 
-    await Promise.all(playlists.map((playlist) => {
-        return publishPlaylistPool.exec('publishPlaylistProcess', [playlist]);
-    }));
+    if (process.env.ENABLE_PUBLISH_POOL) {
+        await Promise.all(playlists.map((playlist) => {
+            return publishPlaylistPool.exec('publishPlaylistProcess', [playlist]);
+        }));
 
-    publishPlaylistPool.terminate();
+        publishPlaylistPool.terminate();
+    } else {
+        for (const playlist of playlists) {
+            try {
+                await preValidatePublishPlaylist(playlist);
+                // Wait to reduce memory consumption
+                await sleep(2000);
+            } catch (e) {
+                logger.info(`error publishing playlist ${playlist.id.toString()}`);
+                logger.error(JSON.stringify(e));
+            }
+        }
+    }
     logger.info('<<<< Exiting publishAllPlaylists()');
 }
 
