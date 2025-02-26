@@ -36,12 +36,12 @@ async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], acce
     if (rules.find((rule) => isGenreRule(rule))) {
         const allAlbumIds: string[] = [];
         const allArtistIds: string[] = [];
-        trackList.map((track) => {
+        for (const track of trackList) {
             allAlbumIds.push(track.albumId);
-            track.artistIds.map((aId) => {
+            for (const aId of track.artistIds) {
                 allArtistIds.push(aId);
-            });
-        });
+            }
+        }
 
         const albums = await spotifyCacheService.getAlbums(allAlbumIds, accessToken);
         albumMap = keyBy(albums, 'id');
@@ -51,14 +51,14 @@ async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], acce
 
     if (rules.find((rule) => isTempoRule(rule) || isEnergyRule(rule) || isInstrumentalRule(rule))) {
         const allTrackIds: string[] = [];
-        trackList.map((track) => {
+        for (const track of trackList) {
             allTrackIds.push(track.id);
-        });
+        }
         const audioFeatures = await spotifyCacheService.getAudioFeatures(allTrackIds, accessToken);
         audioFeaturesMap = keyBy(audioFeatures, 'id');
     }
 
-    const filteredList = trackList.filter((track) => {
+    trackList = trackList.filter((track) => {
         const trackAlbum = albumMap[track.id];
         const trackArtists = track.artistIds.map((id) => artistMap[id]).filter((a): a is Artist => !!a);
         const trackAudioFeatures = audioFeaturesMap[track.id];
@@ -68,7 +68,7 @@ async function filterListOfSongs(trackList: Track[], rules: PlaylistRule[], acce
             rules.every(filterFn);
     });
 
-    return filteredList;
+    return trackList;
 }
 
 function filterTrack(track: Track, thisFilter: PlaylistRule, {
