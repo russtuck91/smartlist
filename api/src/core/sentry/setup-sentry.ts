@@ -19,7 +19,7 @@ function setupSentry({
             new ProfilingIntegration(),
         ],
         tracesSampleRate: 0.01,
-        profilesSampleRate: 1.0,
+        profilesSampleRate: 0.01,
     });
 }
 
