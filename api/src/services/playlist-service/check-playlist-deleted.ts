@@ -11,6 +11,7 @@ import updatePlaylist from './update-playlist';
 
 
 async function checkPlaylistDeleted(playlist: Playlist) {
+    logger.debug(`>>> Entering checkPlaylistDeleted(playlist.id = ${playlist.id}`);
     try {
         const user = await getUserById(playlist.userId);
         if (user.spotifyPermissionError) {

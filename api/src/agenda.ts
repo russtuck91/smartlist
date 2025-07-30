@@ -19,6 +19,10 @@ jobTypes.forEach((type) => {
     module.default(agenda);
 });
 
+const PER_HOUR = 1000 * 60 * 60;
+const PER_THREE_HOURS = 3 * PER_HOUR;
+const PER_SIX_HOURS = 6 * PER_HOUR;
+
 export async function startAgenda() {
     logger.info('Starting agenda');
     await agenda.start();
@@ -26,10 +30,9 @@ export async function startAgenda() {
 
     if (process.env.NODE_ENV !== 'development') {
         // Do it the native way
-        const PER_HOUR = 1000 * 60 * 60;
         setInterval(() => {
             publishAllPlaylists();
-        }, PER_HOUR);
+        }, PER_THREE_HOURS);
 
         // First run
         if (process.env.PUBLISH_ALL_ON_STARTUP) {
@@ -39,8 +42,7 @@ export async function startAgenda() {
         }
         // await agenda.now(JobTypes.playlistPublishing);
 
-        const PER_TWO_HOURS = 2 * 1000 * 60 * 60;
-        setInterval(() => checkAllPlaylistsDeleted(), PER_TWO_HOURS);
+        setInterval(() => checkAllPlaylistsDeleted(), PER_SIX_HOURS);
     }
 }
 

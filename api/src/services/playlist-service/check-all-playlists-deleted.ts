@@ -1,33 +1,36 @@
-import moment from 'moment';
+import { Playlist } from '../../../../shared';
 
 import logger from '../../core/logger/logger';
 
 import playlistRepo from '../../repositories/playlist-repository';
+import batchProcess from '../../utils/batch-process';
 
 import checkPlaylistDeleted from './check-playlist-deleted';
 
 
+const BATCH_SIZE = 20;
+
 async function checkAllPlaylistsDeleted() {
     logger.info('>>>> Entering checkAllPlaylistsDeleted()');
 
-    const playlists = await playlistRepo.find({
-        conditions: {},
+    await batchProcess<Playlist>({
+        fetchBatch: (offset) => {
+            return playlistRepo.find({
+                conditions: {},
+                sort: {
+                    lastPublished: 1,
+                },
+                limit: BATCH_SIZE,
+                skip: offset,
+            });
+        },
+        processBatch: async (playlists) => {
+            for (const playlist of playlists) {
+                await checkPlaylistDeleted(playlist);
+            }
+        },
+        batchSize: BATCH_SIZE,
     });
-    playlists.sort((a, b) => {
-        const deleteCompare = Number(a.deleted) - Number(b.deleted);
-        if (deleteCompare) return deleteCompare;
-        if (!a.deleted && !b.deleted) {
-            return moment(a.lastPublished).diff( moment(b.lastPublished) );
-        }
-        if (a.deleted && b.deleted) {
-            return moment(b.lastPublished).diff( moment(a.lastPublished) );
-        }
-        return 0;
-    });
-
-    for (const playlist of playlists) {
-        await checkPlaylistDeleted(playlist);
-    }
 
     logger.info('<<<< Exiting checkAllPlaylistsDeleted()');
 }
