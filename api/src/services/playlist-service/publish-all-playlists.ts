@@ -1,5 +1,4 @@
 import moment from 'moment';
-import { pool } from 'workerpool';
 
 import { Playlist, sleep } from '../../../../shared';
 
@@ -10,28 +9,6 @@ import batchProcess from '../../utils/batch-process';
 
 import preValidatePublishPlaylist from './pre-validate-publish-playlist';
 
-
-const publishPlaylistPool = pool(`${__dirname}/publish-playlist-process`, {
-    workerType: 'process',
-    maxWorkers: 1,
-    forkOpts: {
-        execArgv: ['--max-old-space-size=64', '-r', 'ts-node/register'],
-    },
-});
-
-function sortPlaylists(playlists: Playlist[]) {
-    playlists.sort((a, b) => {
-        const deleteCompare = Number(a.deleted) - Number(b.deleted);
-        if (deleteCompare) return deleteCompare;
-        if (!a.deleted && !b.deleted) {
-            return moment(a.lastPublished).diff( moment(b.lastPublished) );
-        }
-        if (a.deleted && b.deleted) {
-            return moment(b.lastPublished).diff( moment(a.lastPublished) );
-        }
-        return 0;
-    });
-}
 
 const BATCH_SIZE = 20;
 
