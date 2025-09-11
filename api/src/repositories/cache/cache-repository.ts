@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongodb';
 import { CollectionProps, DBSource, MongoRepository } from 'mongtype';
 
 import logger from '../../core/logger/logger';
@@ -67,6 +68,12 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
             lastFetched: now,
         }));
         return cachedRecords;
+    }
+
+    async deleteMany(conditions: FilterQuery<SavedCacheRecord<Resource>>) {
+        const collection = await this.collection;
+
+        return await collection.deleteMany(conditions);
     }
 }
 
