@@ -1,7 +1,8 @@
 import moment from 'moment';
+import { ObjectId } from 'mongodb';
 
 import logger from '../../core/logger/logger';
-import { CacheableResource, SavedCacheRecord } from '../../core/shared-models';
+import { CacheableResource, HasId, SavedCacheRecord } from '../../core/shared-models';
 
 import CacheRepository from '../../repositories/cache/cache-repository';
 
@@ -10,6 +11,7 @@ import { SourceMethod } from './types';
 
 const REVALIDATE_DAYS = 14;
 const EVICT_DAYS = 60;
+const MAX_ITEMS = 50_000;
 
 class DbCacheService<Resource extends CacheableResource> {
     repo: CacheRepository<Resource>;
@@ -29,17 +31,21 @@ class DbCacheService<Resource extends CacheableResource> {
         });
         const resourceItemsFromDb = retrievedFromDB.map((record) => record.item);
 
-        // donotawait - send stored items to check for revalidation - stale-while-revalidate
-        setTimeout(() => this.revalidateCacheItems(retrievedFromDB, accessToken), 500);
+        // Fire actions for items found from DB, delayed as not needed for response
+        setTimeout(() => this.afterDbCacheHit(retrievedFromDB, accessToken), 500);
 
         // Any IDs not present in retrieved items need to be fetched
         const idsToFetch: string[] = ids.filter((id) => !retrievedFromDB.some((result) => result.item.id === id));
         const fetchedItems = await this.getItemsFromFetch(idsToFetch, accessToken);
 
         logger.debug(`<<<< Exiting DbCacheService.getItems() after getting ${resourceItemsFromDb.length} items from DB and ${fetchedItems.length} items from fetch`);
-        setTimeout(() => this.pruneCache(), 3000);
         return [ ...resourceItemsFromDb, ...fetchedItems ];
     };
+
+    private async afterDbCacheHit(retrievedFromDB: SavedCacheRecord<Resource>[], accessToken: string|undefined) {
+        await this.repo.incrementUsageCounts(retrievedFromDB.map((record) => record.item.id));
+        await this.revalidateCacheItems(retrievedFromDB, accessToken);
+    }
 
     private async getItemsFromFetch(idsToFetch: string[], accessToken: string|undefined) {
         if (idsToFetch.length === 0) {
@@ -51,8 +57,8 @@ class DbCacheService<Resource extends CacheableResource> {
         // Fetch remaining IDs from source method
         const fetchedItems: Resource[] = await this.sourceMethod(idsToFetch, accessToken);
 
-        // donotawait - send new fetched items to DB cache
-        this.repo.insertManyResources(fetchedItems);
+        // Fire actions for items fetched from source method, delayed as not needed for response
+        setTimeout(() => this.afterSourceFetch(fetchedItems), 0);
 
         logger.debug(`Fetched ${fetchedItems.length} items`);
         return fetchedItems;
@@ -87,11 +93,21 @@ class DbCacheService<Resource extends CacheableResource> {
         }
     }
 
+    private async afterSourceFetch(fetchedItems: Resource[]) {
+        await this.repo.insertManyResources(fetchedItems);
+        setTimeout(() => this.pruneAllCache(), 3000);
+    }
+
     /**
      * Prune unnecessary records from DB, run in the background
      */
-    private async pruneCache() {
-        logger.debug('>>>> Entering DbCacheService.pruneCache()');
+    private async pruneAllCache() {
+        await this.pruneExpiredCache();
+        await this.pruneLFUCache();
+    }
+
+    private async pruneExpiredCache() {
+        logger.debug('>>>> Entering DbCacheService.pruneExpiredCache()');
         try {
             const cutoffDate = moment().subtract(EVICT_DAYS, 'days').toDate();
             const result = await this.repo.deleteMany({
@@ -99,7 +115,30 @@ class DbCacheService<Resource extends CacheableResource> {
             });
             logger.debug(`Pruned ${result.deletedCount} expired cache items`);
         } catch (e) {
-            logger.error('Error during cache pruning');
+            logger.error('Error during expired cache pruning');
+            console.error(e);
+        }
+    }
+
+    private async pruneLFUCache() {
+        logger.debug('>>>> Entering DbCacheService.pruneLFUCache()');
+        try {
+            const totalDocs = await this.repo.countDocuments();
+
+            if (totalDocs > MAX_ITEMS) {
+                const numToDelete = totalDocs - MAX_ITEMS;
+                const docsToDelete: (SavedCacheRecord<Resource> & HasId)[] = await this.repo.find({
+                    conditions: {},
+                    sort: { usageCount: 1, lastFetched: 1 },
+                    limit: numToDelete,
+                });
+                const idsToDelete = docsToDelete.map((doc) => new ObjectId(doc.id));
+
+                const result = await this.repo.deleteMany({ _id: { $in: idsToDelete } });
+                logger.debug(`Pruned ${result.deletedCount} LFU cache items`);
+            }
+        } catch (e) {
+            logger.error('Error during LFU cache pruning');
             console.error(e);
         }
     }

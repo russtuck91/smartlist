@@ -2,6 +2,7 @@
 export interface SavedCacheRecord<T> {
     item: T;
     lastFetched: Date;
+    usageCount: number;
 }
 
 export interface CacheableResource {

@@ -53,7 +53,12 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
         const operations = cacheItems.map((cacheItem) => ({
             updateOne: {
                 filter: { 'item.id': cacheItem.item.id },
-                update: { $set: cacheItem },
+                update: {
+                    $set: {
+                        item: cacheItem.item,
+                        lastFetched: cacheItem.lastFetched,
+                    },
+                },
                 upsert: true,
             },
         }));
@@ -66,6 +71,7 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
         const cachedRecords: SavedCacheRecord<Resource>[] = resources.map((item) => ({
             item,
             lastFetched: now,
+            usageCount: 1,
         }));
         return cachedRecords;
     }
@@ -74,6 +80,20 @@ class CacheRepository<Resource extends CacheableResource> extends MongoRepositor
         const collection = await this.collection;
 
         return await collection.deleteMany(conditions);
+    }
+
+    async countDocuments() {
+        const collection = await this.collection;
+        return await collection.countDocuments();
+    }
+
+    async incrementUsageCounts(ids: string[]) {
+        if (!ids.length) return;
+        const collection = await this.collection;
+        await collection.updateMany(
+            { 'item.id': { $in: ids } },
+            { $inc: { usageCount: 1 } },
+        );
     }
 }
 
