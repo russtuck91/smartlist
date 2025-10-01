@@ -8,6 +8,8 @@ import getIntersectionOfTrackLists from './get-intersection-of-track-lists';
 import getTracksForRule from './get-tracks-for-rule';
 
 
+// TODO promises from getTracksForRule calls do more in parallel
+
 async function fetchTracksForRules(rules: PlaylistRule[], accessToken: string): Promise<Track[]> {
     const listsOfTrackResults: (Track[])[] = [];
 
