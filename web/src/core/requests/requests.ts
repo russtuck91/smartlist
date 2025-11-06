@@ -46,7 +46,8 @@ async function makeDirectRequest(method: string, url: string, body?: any, header
                 store.dispatch(clearSessionToken());
                 break;
             default:
-                logger.error(response.statusText, response.status, response.url);
+                // Don't want to log to persistent logging here, just use console
+                console.error(response.statusText, response.status, response.url);
                 throw new Error(response.statusText);
         }
         return;
