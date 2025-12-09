@@ -20,6 +20,9 @@ class DbCacheService<Resource extends CacheableResource> {
     constructor(repo: CacheRepository<Resource>, sourceMethod: SourceMethod<Resource>) {
         this.repo = repo;
         this.sourceMethod = sourceMethod;
+
+        // Initial background prune on startup
+        setTimeout(() => this.pruneAllCache(), 1000);
     }
 
     getItems = async (ids: string[], accessToken: string|undefined): Promise<Resource[]> => {
