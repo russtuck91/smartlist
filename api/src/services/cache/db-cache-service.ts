@@ -69,7 +69,7 @@ class DbCacheService<Resource extends CacheableResource> {
 
     private async revalidateCacheItems(cacheItems: SavedCacheRecord<Resource>[], accessToken: string|undefined) {
         try {
-            logger.debug('>>>> Entering DbCacheService.revalidateCacheItems()');
+            logger.info(`>>>> Entering DbCacheService.revalidateCacheItems(cacheItems.length = ${cacheItems.length})`);
 
             const now = moment();
             const needsUpdate = cacheItems.filter((cacheItem: SavedCacheRecord<Resource>) => {

@@ -7,7 +7,7 @@ import { SpResponse } from './types';
 
 
 async function getAlbumsForArtist(artistId: string, accessToken: string|undefined) {
-    logger.debug(`>>>> Entering getAlbumsForArtist(artistId = ${artistId}`);
+    logger.info(`>>>> Entering getAlbumsForArtist(artistId = ${artistId}`);
 
     const spotifyApi = await initSpotifyApi(accessToken);
 
