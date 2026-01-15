@@ -51,6 +51,7 @@ class DbCacheService<Resource extends CacheableResource> {
     }
 
     private async getItemsFromFetch(idsToFetch: string[], accessToken: string|undefined) {
+        logger.info(`>>>> Entering DbCacheService.getItemsFromFetch(idsToFetch.length = ${idsToFetch.length})`);
         if (idsToFetch.length === 0) {
             // No fetching needed, return and exit
             logger.debug('All items found in DB cache, fetch not needed');
@@ -63,7 +64,7 @@ class DbCacheService<Resource extends CacheableResource> {
         // Fire actions for items fetched from source method, delayed as not needed for response
         setTimeout(() => this.afterSourceFetch(fetchedItems), 0);
 
-        logger.debug(`Fetched ${fetchedItems.length} items`);
+        logger.info(`Fetched ${fetchedItems.length} items`);
         return fetchedItems;
     }
 
@@ -124,9 +125,10 @@ class DbCacheService<Resource extends CacheableResource> {
     }
 
     private async pruneLFUCache() {
-        logger.debug('>>>> Entering DbCacheService.pruneLFUCache()');
+        logger.info('>>>> Entering DbCacheService.pruneLFUCache()');
         try {
             const totalDocs = await this.repo.countDocuments();
+            logger.info(`Total cache items: ${totalDocs}`);
 
             if (totalDocs > MAX_ITEMS) {
                 const numToDelete = totalDocs - MAX_ITEMS;
@@ -138,7 +140,7 @@ class DbCacheService<Resource extends CacheableResource> {
                 const idsToDelete = docsToDelete.map((doc) => new ObjectId(doc.id));
 
                 const result = await this.repo.deleteMany({ _id: { $in: idsToDelete } });
-                logger.debug(`Pruned ${result.deletedCount} LFU cache items`);
+                logger.info(`Pruned ${result.deletedCount} LFU cache items`);
             }
         } catch (e) {
             logger.error('Error during LFU cache pruning');
