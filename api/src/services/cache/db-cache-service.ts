@@ -136,6 +136,7 @@ class DbCacheService<Resource extends CacheableResource> {
                     conditions: {},
                     sort: { usageCount: 1, lastFetched: 1 },
                     limit: numToDelete,
+                    projection: { _id: 1 },
                 });
                 const idsToDelete = docsToDelete.map((doc) => new ObjectId(doc.id));
 
