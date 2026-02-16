@@ -13,7 +13,7 @@ import populateList from './populate-list';
 import updatePlaylist from './update-playlist';
 
 
-async function publishPlaylist(playlist: Playlist) {
+async function publishPlaylist(playlist: Playlist, forcePublish = false) {
     logger.info(`>>>> Entering publishPlaylist(playlist.id = ${playlist.id}`);
     const transaction = startTransaction({
         op: 'publishPlaylist',
@@ -27,6 +27,15 @@ async function publishPlaylist(playlist: Playlist) {
 
             let spotifyPlaylistId = playlist.spotifyPlaylistId;
             if (spotifyPlaylistId) {
+                if (!forcePublish) {
+                    // Check if track list is same as currently published, if so skip publish
+                    const existingList = await spotifyService.getTracksForPlaylist(spotifyPlaylistId, accessToken);
+                    if (existingList.length === list.length && existingList.every((item, i) => item.uri === list[i]!.uri)) {
+                        logger.info('<<<< Exiting publishPlaylist - Track list is same as currently published, skipping publish');
+                        return;
+                    }
+                }
+
                 // Remove all tracks from playlist
                 await spotifyService.removeTracksFromPlaylist(spotifyPlaylistId, accessToken);
             } else {
@@ -51,15 +60,15 @@ async function publishPlaylist(playlist: Playlist) {
             };
             await updatePlaylist(playlist.id, playlistUpdate);
 
-            transaction.finish();
             logger.info(`<<<< Exiting publishPlaylist after successful publish. playlist.id = ${playlist.id} /// accessToken = ${maskToken(accessToken)}`);
         }, user);
     } catch (e) {
         logger.error('Error in publishPlaylist()');
         logger.error(e);
         transaction.setStatus('internal_error');
-        transaction.finish();
         throw e;
+    } finally {
+        transaction.finish();
     }
 }
 
