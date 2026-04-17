@@ -1,54 +1,50 @@
 import moment from 'moment';
 
+import { Playlist, sleep } from '../../../../shared';
+
 import logger from '../../core/logger/logger';
-import { doAndRetry } from '../../core/session/session-util';
 
 import playlistRepo from '../../repositories/playlist-repository';
-
-import { getUserById } from '../user-service';
+import batchProcess from '../../utils/batch-process';
 
 import preValidatePublishPlaylist from './pre-validate-publish-playlist';
 
 
+const BATCH_SIZE = 20;
+
 async function publishAllPlaylists() {
     logger.info('>>>> Entering publishAllPlaylists()');
 
-    const playlists = await playlistRepo.find({
-        conditions: {},
-    });
-    playlists.sort((a, b) => {
-        const deleteCompare = Number(a.deleted) - Number(b.deleted);
-        if (deleteCompare) return deleteCompare;
-        if (!a.deleted && !b.deleted) {
-            return moment(a.lastPublished).diff( moment(b.lastPublished) );
-        }
-        if (a.deleted && b.deleted) {
-            return moment(b.lastPublished).diff( moment(a.lastPublished) );
-        }
-        return 0;
-    });
-    if (process.env.PLAYLIST_PUBLISH_LIMIT) {
-        playlists.splice(process.env.PLAYLIST_PUBLISH_LIMIT as any);
-    }
-
-    logger.info(`About to publish ${playlists.length} playlists...`);
-    playlists.map((p) =>
-        logger.info(`name = ${p.name} /// id = ${p.id} /// userId = ${p.userId}`),
-    );
-
-    for (const playlist of playlists) {
-        try {
-            const user = await getUserById(playlist.userId);
-            if (user) {
-                await doAndRetry(async (accessToken: string) => {
-                    await preValidatePublishPlaylist(playlist, accessToken);
-                }, user);
+    await batchProcess<Playlist>({
+        fetchBatch: (offset) =>
+            playlistRepo.find({
+                conditions: {
+                    deleted: { $ne: true },
+                    disabled: { $ne: true },
+                },
+                sort: { lastPublished: 1 },
+                limit: BATCH_SIZE,
+                skip: offset,
+            }),
+        processBatch: async (playlists) => {
+            logger.info(`About to publish ${playlists.length} playlists...`);
+            for (const p of playlists) {
+                logger.info(`name = ${p.name} /// id = ${p.id} /// userId = ${p.userId}`);
             }
-        } catch (e) {
-            logger.info(`error publishing playlist ${playlist.id.toString()}`);
-            logger.error(JSON.stringify(e));
-        }
-    }
+
+            for (const playlist of playlists) {
+                try {
+                    await preValidatePublishPlaylist(playlist);
+                    await sleep(2000);
+                } catch (e) {
+                    logger.info(`Error publishing playlist ${playlist.id.toString()}`);
+                    logger.error(JSON.stringify(e));
+                }
+            }
+        },
+        batchSize: BATCH_SIZE,
+    });
+
     logger.info('<<<< Exiting publishAllPlaylists()');
 }
 

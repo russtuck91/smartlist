@@ -1,5 +1,5 @@
 
-import { StyleRules, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { StyleRules, WithStyles, withStyles } from '@material-ui/core';
 import React from 'react';
 import { isMobile } from 'react-device-detect';
 import { connect, ConnectedProps } from 'react-redux';
@@ -22,7 +22,7 @@ import ShakeFeedback from './shake-feedback/shake-feedback';
 
 interface AppContentsProps {}
 
-const useStyles = (theme: Theme): StyleRules => ({
+const useStyles = (): StyleRules => ({
     root: {
         display: 'flex',
         flex: '1 1 auto',

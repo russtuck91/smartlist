@@ -6,6 +6,7 @@ import { RouteLookup } from '../core/routes/route-lookup';
 
 import { PlaylistBrowser } from './playlist-browser/playlist-browser';
 import { PlaylistBuilder } from './playlist-builder/playlist-builder';
+import PlaylistPublisherPage from './playlist-publisher/playlist-publisher-page';
 
 export class PlaylistContainer extends React.Component {
     static requestUrl = `${baseRequestUrl}/playlists`;
@@ -16,6 +17,7 @@ export class PlaylistContainer extends React.Component {
                 <Route exact path={RouteLookup.playlists.create} component={PlaylistBuilder} />
                 <Route path={RouteLookup.playlists.edit} component={PlaylistBuilder} />
                 <Route exact path={RouteLookup.playlists.base} component={PlaylistBrowser} />
+                <Route exact path={RouteLookup.playlists.publish} component={PlaylistPublisherPage} />
             </Switch>
         );
     }

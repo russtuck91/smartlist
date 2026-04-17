@@ -1,11 +1,10 @@
 import { Formik } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { sleep } from '../../../../shared';
 
-import logger from '../logger/logger';
-import { baseRequestUrl, requests } from '../requests/requests';
-import isUserLoggedIn from '../session/is-user-logged-in';
+import { requests } from '../requests/requests';
+import { useFetchUserMe } from '../user/use-fetch-user-me';
 
 import FeedbackDialogForm from './feedback-dialog-form';
 import { FeedbackFormValues, FeedbackType } from './models';
@@ -18,82 +17,49 @@ interface FeedbackDialogProps {
     initialValues?: Partial<FeedbackFormValues>;
 }
 
-interface FeedbackDialogState {
-    userInfo?: SpotifyApi.CurrentUsersProfileResponse;
-    submitSuccess: boolean;
-}
+const FeedbackDialog: React.FC<FeedbackDialogProps> = (props) => {
+    const { data: user } = useFetchUserMe();
+    const [submitSuccess, setSubmitSuccess] = useState(false);
 
-class FeedbackDialog extends React.Component<FeedbackDialogProps, FeedbackDialogState> {
-    state: FeedbackDialogState = {
-        submitSuccess: false,
-    };
+    return (
+        <Formik
+            initialValues={getDefaultFormValues()}
+            enableReinitialize
+            onSubmit={onSubmit}
+        >
+            {(formikProps) => (
+                <FeedbackDialogForm
+                    formik={formikProps}
+                    isOpen={props.isOpen}
+                    onClose={props.onClose}
+                    submitSuccess={submitSuccess}
+                    dialogTitle={props.dialogTitle}
+                />
+            )}
+        </Formik>
+    );
 
-    componentDidMount() {
-        this.getUserInfo();
-    }
-
-    render() {
-        return (
-            <Formik
-                initialValues={this.getDefaultFormValues()}
-                enableReinitialize
-                onSubmit={this.onSubmit}
-            >
-                {(formikProps) => (
-                    <FeedbackDialogForm
-                        formik={formikProps}
-                        isOpen={this.props.isOpen}
-                        onClose={this.props.onClose}
-                        submitSuccess={this.state.submitSuccess}
-                        dialogTitle={this.props.dialogTitle}
-                    />
-                )}
-            </Formik>
-        );
-    }
-
-    private async getUserInfo() {
-        if (!isUserLoggedIn()) {
-            return;
-        }
-        try {
-            const url = `${baseRequestUrl}/users/me`;
-            const userInfo = await requests.get(url);
-
-            this.setState({
-                userInfo: userInfo,
-            });
-        } catch (e) {
-            logger.error('Problem getting user info for feedback dialog.', e);
-        }
-    }
-
-    private getDefaultFormValues(): FeedbackFormValues {
+    function getDefaultFormValues(): FeedbackFormValues {
         return {
-            email: this.state.userInfo?.email || '',
+            email: user?.email || '',
             type: FeedbackType.General,
             message: '',
-            ...this.props.initialValues,
+            ...props.initialValues,
         };
     }
 
-    private onSubmit = async (values: FeedbackFormValues) => {
+    async function onSubmit(values: FeedbackFormValues) {
         // Submit to form service
         const extraHeaders = {
             Accept: 'application/json',
         };
         await requests.post('https://submit-form.com/JrTBGsMo', values, extraHeaders);
 
-        this.setState({
-            submitSuccess: true,
-        }, async () => {
-            await sleep(3000);
-            this.props.onClose();
-            this.setState({
-                submitSuccess: false,
-            });
-        });
-    };
-}
+        setSubmitSuccess(true);
+        await sleep(3000);
+        props.onClose();
+        setSubmitSuccess(false);
+    }
+};
 
 export default FeedbackDialog;

@@ -7,7 +7,7 @@ import { MONGODB_URI } from './core/db/db';
 import logger from './core/logger/logger';
 
 import JobTypes from './jobs/job-types';
-import { publishAllPlaylists } from './services/playlist-service';
+import { checkAllPlaylistsDeleted, publishAllPlaylists } from './services/playlist-service';
 
 
 const connectionOpts = { db: { address: MONGODB_URI, collection: 'jobs' } };
@@ -19,22 +19,31 @@ jobTypes.forEach((type) => {
     module.default(agenda);
 });
 
+const PER_HOUR = 1000 * 60 * 60;
+const PER_THREE_HOURS = 3 * PER_HOUR;
+const PER_SIX_HOURS = 6 * PER_HOUR;
+
 export async function startAgenda() {
     logger.info('Starting agenda');
     await agenda.start();
     logger.info('Started agenda');
 
     if (process.env.NODE_ENV !== 'development') {
-        // await agenda.every('1 hour', JobTypes.playlistPublishing);
-
-        // Try the dumb, native way
-        const PER_HOUR = 1000 * 60 * 60;
+        // Do it the native way
         setInterval(() => {
             publishAllPlaylists();
-        }, PER_HOUR);
-    }
+        }, PER_THREE_HOURS);
 
-    await agenda.now(JobTypes.playlistPublishing);
+        // First run
+        if (process.env.PUBLISH_ALL_ON_STARTUP) {
+            setTimeout(() => {
+                publishAllPlaylists();
+            }, 1000 * 60);
+        }
+        // await agenda.now(JobTypes.playlistPublishing);
+
+        setInterval(() => checkAllPlaylistsDeleted(), PER_SIX_HOURS);
+    }
 }
 
 async function graceful() {

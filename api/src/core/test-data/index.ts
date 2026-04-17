@@ -4,6 +4,7 @@ import { trackFactory } from './track-factory';
 import { userFactory } from './user-factory';
 
 export * from './spotify-api-type-factory';
+export * from './subscription-factory';
 export {
     albumContainsRuleFactory,
     artistContainsRuleFactory,

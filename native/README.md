@@ -1,32 +1,52 @@
-# Smartlist Native
+# Welcome to your Expo app 👋
 
-## Local environment setup
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-https://reactnative.dev/docs/environment-setup
+## Get started
 
-Follow steps for **React Native CLI Quickstart** (not **Expo CLI Quickstart**)
+1. Install dependencies
 
-Stop before the steps for **Creating a new application**
+   ```bash
+   npm install
+   ```
 
-## Running locally
+2. Start the app
 
-### `npm start`
+   ```bash
+   npx expo start
+   ```
 
-Run React Native's Metro server. Need to keep this running while running the React Native app on an emulator.
+   If working from Linux Crostini or Chromebook, start the app with tunnel flag
 
-### `npm run android`
+   ```bash
+   npx expo start --tunnel
+   ```
 
-Run the app on an emulated Android device.
+In the output, you'll find options to open the app in a
 
-### `npm run ios`
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-Run the app on an emulated iOS device.
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Build for a release to the app store
+## Build the app
 
-### `npm run build:android`
+```
+eas build --profile preview|production
+```
 
-Build the Android app and produce the `.aab` (Android App Bundle) file for distribution in the Play Store.
+## Learn more
 
-The generated AAB file can be found under `android/app/build/outputs/bundle/release/app-release.aab`
+To learn more about developing your project with Expo, look at the following resources:
 
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+
+## Join the community
+
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

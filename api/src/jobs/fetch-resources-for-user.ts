@@ -13,7 +13,7 @@ export interface FetchResourcesForUserParams {
 
 export default function(agenda: Agenda) {
     agenda.define<FetchResourcesForUserParams>(JobTypes.fetchResourcesForUser, async (job) => {
-        logger.info('>>>> Entering fetchResourcesForUser job');
+        logger.debug('>>>> Entering fetchResourcesForUser job');
         const { userId } = job.attrs.data;
 
         try {

@@ -12,6 +12,7 @@
         "moduleResolution": "node",
         "importHelpers": true,
         "noImplicitAny": false,
+        "noUncheckedIndexedAccess": true,
         "types": [
             "node",
             "jest"

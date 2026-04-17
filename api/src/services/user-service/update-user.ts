@@ -1,4 +1,4 @@
-import { User } from '../../core/session/models';
+import { User } from '../../../../shared';
 
 import userRepo from '../../repositories/user-repository';
 

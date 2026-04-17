@@ -15,6 +15,7 @@ import { DropdownField, TextField } from '../../core/forms/fields';
 import { history } from '../../core/history/history';
 import { requests } from '../../core/requests/requests';
 import { RouteLookup } from '../../core/routes/route-lookup';
+import UserPermissionError from '../../core/user/user-permission-error';
 
 import { PlaylistContainer } from '../playlist-container';
 import { useFetchPlaylists } from '../use-fetch-playlists';
@@ -37,18 +38,15 @@ enum PlaylistBrowserSortOptions {
     oldestFirst = 'Oldest First',
 }
 
-const useStyles = (theme: Theme) => {
-    const rules: StyleRules = {
-        container: {
-            display: 'flex',
-            flexDirection: 'column',
-            flex: '1 1 auto',
-            overflowY: 'auto',
-            paddingBottom: theme.spacing(2),
-        },
-    };
-    return rules;
-};
+const useStyles = (theme: Theme): StyleRules => ({
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        flex: '1 1 auto',
+        overflowY: 'auto',
+        paddingBottom: theme.spacing(2),
+    },
+});
 
 type FullProps = PlaylistBrowserProps & WithStyles<typeof useStyles> & FormikProps<PlaylistBrowserFormValues>;
 
@@ -70,6 +68,7 @@ const RawPlaylistBrowser: React.FC<FullProps> = (props) => {
             </SecondaryAppBar>
             <Container className={props.classes.container}>
                 <CreatePlaylistButton />
+                <UserPermissionError />
                 {renderFormArea()}
                 {renderPlaylistList()}
                 {renderDeleteDialog()}

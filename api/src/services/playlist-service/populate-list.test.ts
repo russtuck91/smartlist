@@ -6,6 +6,7 @@ import populateList from './populate-list';
 
 
 jest.mock('../spotify-service/spotify-service');
+jest.mock('../user-service');
 
 describe('populateList', () => {
     const getListForRuleGroupSpy = jest.spyOn(getListForRuleGroup, 'default');
@@ -14,7 +15,7 @@ describe('populateList', () => {
     it('should exclude songs from list', async () => {
         // Arrange
         const trackList = trackFactory.buildList(10);
-        const chosenExclusions = [trackList[1], trackList[2]];
+        const chosenExclusions = [trackList[1]!, trackList[2]!];
         getListForRuleGroupSpy.mockResolvedValueOnce(trackList);
         getListForRulesSpy.mockResolvedValueOnce(chosenExclusions);
         const playlist = playlistFactory.build();

@@ -29,6 +29,13 @@ export interface CustomCellFormatterProps<R = any> {
 }
 
 
+export type FooterLabelRenderer = (props: FooterLabelRendererProps) => React.ReactNode;
+
+export interface FooterLabelRendererProps {
+    count: number;
+}
+
+
 export interface ExpandableRowOptions {
     renderExpandedRow: (rowData: any) => React.ReactNode;
 }

@@ -1,32 +1,32 @@
 import { NextFunction, Request, Response } from 'express';
 import httpContext from 'express-http-context';
 
+import { User } from '../../../../shared';
+
 import userRepo from '../../repositories/user-repository';
-import { isSpotifyAuthError, isSpotifyError } from '../../services/spotify-service/types';
-import { getCurrentUser, updateUser } from '../../services/user-service';
+import { isSpotify401Error, isSpotifyAuthError, isSpotifyError } from '../../services/spotify-service/types';
+import { getCurrentUser, sendSpotifyPermissionErrorNotification, updateUser } from '../../services/user-service';
 
 import logger from '../logger/logger';
 import maskToken from '../logger/mask-token';
 import { SpotifyApi } from '../spotify/spotify-api';
 
-import { User } from './models/user';
 
 
-
-export async function doAndRetryWithCurrentUser(bodyFn: (accessToken: string) => Promise<void>) {
+export async function doAndRetryWithCurrentUser<T>(bodyFn: (accessToken: string) => Promise<T>) {
     const currentUser = await getCurrentUser();
 
-    await doAndRetry(bodyFn, currentUser);
+    return await doAndRetry(bodyFn, currentUser);
 }
 
-export async function doAndRetry(bodyFn: (accessToken: string) => Promise<void>, user: User) {
+export async function doAndRetry<T>(bodyFn: (accessToken: string) => Promise<T>, user: User) {
     logger.debug(`>>>> Entering doAndRetry(accessToken = ${maskToken(user.accessToken)}`);
     try {
         return await bodyFn(user.accessToken);
     } catch (e) {
         if (isSpotifyError(e)) {
-            if (e.statusCode === 401) {
-                logger.info('doAndRetry: accessToken has expired, will refresh accessToken and try again');
+            if (isSpotify401Error(e)) {
+                logger.debug('doAndRetry: accessToken has expired, will refresh accessToken and try again');
                 const newAccessToken = await refreshAccessToken(user);
 
                 logger.debug(`Got new access token, now it is: ${maskToken(newAccessToken)}`);
@@ -71,6 +71,7 @@ export async function refreshAccessToken(user: User) {
                 /* e.body.error_description can be things like `Refresh token revoked` and `User does not exist` */
                 if (e.body.error === 'invalid_grant') {
                     await updateUser(user.username, { spotifyPermissionError: true });
+                    sendSpotifyPermissionErrorNotification(user);
                 }
             }
         }

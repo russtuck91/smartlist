@@ -15,5 +15,6 @@ export function mapToAlbum(albumObjectFull: SpotifyApi.AlbumObjectFull): Album {
         thumbnail: findImageAtLeastSize(albumObjectFull.images, 40)?.url,
         genres: albumObjectFull.genres,
         popularity: albumObjectFull.popularity,
+        trackIds: albumObjectFull.tracks.items.map((t) => t.id),
     };
 }
