@@ -8,6 +8,7 @@ import spotifyCacheService from './spotify/spotify-cache-service';
 
 
 jest.mock('./spotify/spotify-cache-service');
+jest.mock('../user-service');
 
 describe('ChronoDbCacheService', () => {
     const mockSourceMethod = jest.fn<Promise<SpotifyApi.SavedTrackObject[]>, any>(async () => await []);

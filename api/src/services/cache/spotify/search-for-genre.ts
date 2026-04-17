@@ -24,8 +24,8 @@ async function searchForGenre(text: string) {
     const artistGenreMap = matchedArtists.reduce(recordToGenreMapReducer, {});
     const albumGenreMap = matchedAlbums.reduce(recordToGenreMapReducer, {});
 
-    const artistGenres = Object.keys(artistGenreMap).sort((a, b) => artistGenreMap[b] - artistGenreMap[a]);
-    const albumGenres = Object.keys(albumGenreMap).sort((a, b) => albumGenreMap[b] - albumGenreMap[a]);
+    const artistGenres = Object.keys(artistGenreMap).sort((a, b) => artistGenreMap[b]! - artistGenreMap[a]!);
+    const albumGenres = Object.keys(albumGenreMap).sort((a, b) => albumGenreMap[b]! - albumGenreMap[a]!);
 
     const uniqGenres = [...new Set([...artistGenres, ...albumGenres])];
     return uniqGenres;

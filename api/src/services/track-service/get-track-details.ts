@@ -24,7 +24,7 @@ async function getTrackDetails(id: string, accessToken: string|undefined): Promi
 
     return {
         genres,
-        audioFeatures: audioFeatures[0],
+        audioFeatures: audioFeatures[0]!,
     };
 }
 

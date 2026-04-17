@@ -1,8 +1,9 @@
 import httpContext from 'express-http-context';
 import { Unauthorized } from 'http-errors';
 
+import { User } from '../../../../shared';
+
 import logger from '../../core/logger/logger';
-import { User } from '../../core/session/models';
 
 import userRepo from '../../repositories/user-repository';
 

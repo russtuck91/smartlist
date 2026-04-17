@@ -8,6 +8,9 @@ import getCurrentUser from './get-current-user';
 
 
 async function refreshResourcesForCurrentUser(req: Request, res: Response, next: NextFunction) {
+    if (process.env.NODE_ENV === 'development') {
+        return next();
+    }
     try {
         const user = await getCurrentUser();
         agenda.create<FetchResourcesForUserParams>(JobTypes.fetchResourcesForUser, { userId: user.id })

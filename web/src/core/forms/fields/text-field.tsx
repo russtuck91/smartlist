@@ -11,6 +11,7 @@ interface TextInputProps extends Partial<FormFieldProps> {
     multiline?: boolean;
     rows?: number;
     startAdornment?: React.ReactNode;
+    type?: string;
 }
 
 export class TextInput extends React.Component<TextInputProps> {
@@ -36,6 +37,7 @@ export class TextInput extends React.Component<TextInputProps> {
                         </InputAdornment>
                     ) : null,
                 }}
+                type={this.props.type}
 
                 style={{ width: '100%' }}
             />

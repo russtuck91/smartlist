@@ -17,11 +17,11 @@ Built in all-Javascript MERN stack - MongoDB, Express, React, and Node.js. Also 
 
 [Local certificate setup](https://web.dev/articles/how-to-use-local-https)
 
-To run just the frontend over HTTPS, run web's `npm run start:ssl`
+To run just the frontend over HTTPS, run `cd web && npm run start:ssl`
 
 > Access it at https://localhost:3000/
 
-To run the whole app over HTTPS, build the stack and then run api's `npm run start:ssl`
+To run the whole app over HTTPS, build the stack and then run `cd api && npm run start:ssl`
 
 > Access it at https://localhost:5001/
 

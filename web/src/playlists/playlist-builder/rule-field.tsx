@@ -163,6 +163,7 @@ export class RawRuleField extends React.Component<FullProps> {
         return (
             <DefaultRangeField
                 id={`${treeId}.value`}
+                type={[RuleParam.Tempo, RuleParam.Energy].includes(rule.param) ? 'number' : undefined}
             />
         );
     }

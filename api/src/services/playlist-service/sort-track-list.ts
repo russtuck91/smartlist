@@ -30,7 +30,7 @@ async function sortTrackList(trackList: TrackList, sorting: PlaylistTrackSortOpt
     const sortFunctions: Record<Exclude<PlaylistTrackSortOption, PlaylistTrackSortOption.None>, () => Promise<TrackList>> = {
         [PlaylistTrackSortOption.Artist]: async () => {
             return trackList.sort((a, b) => {
-                const artistNameCompare = a.artistNames[0].localeCompare(b.artistNames[0]);
+                const artistNameCompare = a.artistNames[0]!.localeCompare(b.artistNames[0]!);
                 if (artistNameCompare) return artistNameCompare;
                 const releaseDateCompare = sortReleaseDate(a, b);
                 if (releaseDateCompare) return releaseDateCompare;

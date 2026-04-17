@@ -18,7 +18,7 @@ describe('sortTrackList', () => {
         const result = await sortTrackList(trackList, PlaylistTrackSortOption.Artist, '');
 
         // Assert
-        expect(result[0].artistNames[0].localeCompare(result[result.length - 1].artistNames[0])).toBe(-1);
+        expect(result[0]!.artistNames[0]!.localeCompare(result[result.length - 1]!.artistNames[0]!)).toBe(-1);
     });
 
     it('should sort list of tracks by artist name, secondarily by release date', async () => {
@@ -59,7 +59,7 @@ describe('sortTrackList', () => {
         const result = await sortTrackList(trackList, PlaylistTrackSortOption.Album, '');
 
         // Assert
-        expect(result[0].albumName.localeCompare(result[result.length - 1].albumName)).toBe(-1);
+        expect(result[0]!.albumName.localeCompare(result[result.length - 1]!.albumName)).toBe(-1);
     });
 
     it('should sort list of tracks by album name, secondarily by track number', async () => {
@@ -72,8 +72,8 @@ describe('sortTrackList', () => {
         const result = await sortTrackList(trackList, PlaylistTrackSortOption.Album, '');
 
         // Assert
-        expect(result[0].track_number).toBeLessThanOrEqual(result[result.length - 1].track_number);
-        expect(result[0].disc_number).toBeLessThanOrEqual(result[result.length - 1].disc_number);
+        expect(result[0]!.track_number).toBeLessThanOrEqual(result[result.length - 1]!.track_number);
+        expect(result[0]!.disc_number).toBeLessThanOrEqual(result[result.length - 1]!.disc_number);
     });
 
     it('should sort list of tracks by track name', async () => {
@@ -84,7 +84,7 @@ describe('sortTrackList', () => {
         const result = await sortTrackList(trackList, PlaylistTrackSortOption.Track, '');
 
         // Assert
-        expect(result[0].name.localeCompare(result[result.length - 1].name)).toBe(-1);
+        expect(result[0]!.name.localeCompare(result[result.length - 1]!.name)).toBe(-1);
     });
 
     it('should sort list of tracks by track name, secondarily by release date', async () => {

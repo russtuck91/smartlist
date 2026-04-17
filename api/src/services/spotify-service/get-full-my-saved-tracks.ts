@@ -10,14 +10,16 @@ async function getFullMySavedTracks(accessToken: string|undefined, maxPages?: nu
 
     const spotifyApi = await initSpotifyApi(accessToken);
 
-    const result: SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined = await getFullPagedResults(async (options) => {
+    const pagingResult: SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>|undefined = await getFullPagedResults(async (options) => {
         const apiResponse: SpResponse<SpotifyApi.PagingObject<SpotifyApi.SavedTrackObject>> = await spotifyApi.getMySavedTracks(options);
 
         return apiResponse.body;
     }, maxPages);
-    if (!result) return [];
-    const savedTrackObjects: SpotifyApi.SavedTrackObject[] = result.items;
-    return savedTrackObjects;
+    if (!pagingResult) return [];
+    // Despite documentation, `obj` can sometimes be null
+    const savedTrackObjects: (SpotifyApi.SavedTrackObject|null)[] = pagingResult.items;
+    const result = savedTrackObjects.filter((obj): obj is SpotifyApi.SavedTrackObject => !!obj && !!obj.track);
+    return result;
 }
 
 export default getFullMySavedTracks;

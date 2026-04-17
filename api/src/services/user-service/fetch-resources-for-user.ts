@@ -6,12 +6,12 @@ import spotifyCacheService from '../cache/spotify/spotify-cache-service';
 import getUserById from './get-user-by-id';
 
 async function fetchResourcesForUser(userId: string) {
-    logger.info(`>>>> Entering fetchResourcesForUser(userId = ${userId}`);
+    logger.debug(`>>>> Entering fetchResourcesForUser(userId = ${userId}`);
 
     const user = await getUserById(userId);
     const { accessToken } = user;
 
-    logger.info(`fetchResourcesForUser, user = ${userId} /// token = ${maskToken(accessToken)}`);
+    logger.debug(`fetchResourcesForUser, user = ${userId} /// token = ${maskToken(accessToken)}`);
     const tracks = await spotifyCacheService.getFullMySavedTracks(accessToken);
 
     const albumIds: string[] = [];

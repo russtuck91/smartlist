@@ -1,6 +1,5 @@
 import { Server } from '@overnightjs/core';
 import * as Sentry from '@sentry/node';
-import { ProfilingIntegration } from '@sentry/profiling-node';
 import * as bodyParser from 'body-parser';
 import connectMongo from 'connect-mongo';
 import cookieParser from 'cookie-parser';
@@ -16,6 +15,7 @@ import path from 'path';
 
 import { MONGODB_URI } from './core/db/db';
 import logger from './core/logger/logger';
+import setupSentry from './core/sentry/setup-sentry';
 import { setSessionTokenContext } from './core/session/session-util';
 import setSentryUserInfo from './core/session/set-sentry-user-info';
 
@@ -68,11 +68,7 @@ class AppServer extends Server {
     }
 
     private setupSentry() {
-        logger.info(`>>>> Entering setupSentry(), version = ${process.env.npm_package_version}`);
-        Sentry.init({
-            dsn: 'https://bc8298e7d82ad68325980563f6415e5b@o4505802448175104.ingest.sentry.io/4505802454138880',
-            release: `smartlist-api@${process.env.npm_package_version}`,
-            includeLocalVariables: true,
+        setupSentry({
             integrations: [
                 // enable HTTP calls tracing
                 new Sentry.Integrations.Http({
@@ -82,10 +78,7 @@ class AppServer extends Server {
                 new Sentry.Integrations.Express({
                     app: this.app,
                 }),
-                new ProfilingIntegration(),
             ],
-            tracesSampleRate: 0.01,
-            profilesSampleRate: 1.0,
         });
     }
 

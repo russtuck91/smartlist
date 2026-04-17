@@ -2,6 +2,7 @@ import {
     Avatar, Box, Grid, StyleRules, Theme, Typography,
     WithStyles, withStyles,
 } from '@material-ui/core';
+import { Error } from '@material-ui/icons';
 import { Alert, Skeleton } from '@material-ui/lab';
 import React from 'react';
 import LazyLoad from 'react-lazyload';
@@ -10,7 +11,8 @@ import { Track } from '../../../../shared';
 
 import Ellipsis from '../../core/components/ellipsis';
 import { VirtualTableRenderer } from '../../core/components/tables';
-import { ColumnFormatType, ColumnSet, CustomCellFormatterProps } from '../../core/components/tables/models';
+import { ColumnFormatType, ColumnSet, CustomCellFormatterProps, FooterLabelRendererProps } from '../../core/components/tables/models';
+import SmTooltip from '../../core/components/tooltips/sm-tooltip';
 import { Nullable } from '../../core/shared-models/types';
 
 import { TrackRowDetails } from './track-row-details';
@@ -78,7 +80,7 @@ class RawPlaylistPreviewArea extends React.Component<FullProps> {
 
                 isLoading={listPreview === undefined}
                 customCellFormatter={this.cellFormatter}
-                footerLabel="tracks"
+                footerLabel={this.renderFooterLabel}
                 expandableRows={{
                     renderExpandedRow: this.renderExpandedRow,
                 }}
@@ -111,6 +113,20 @@ class RawPlaylistPreviewArea extends React.Component<FullProps> {
             );
         }
     };
+
+    private renderFooterLabel({ count }: FooterLabelRendererProps) {
+        return (
+            <>
+                tracks
+                {' '}
+                {count > 10000 && (
+                    <SmTooltip title="Playlists are limited to 10,000 songs, anything more than that won't be published">
+                        <Error color="error" />
+                    </SmTooltip>
+                )}
+            </>
+        );
+    }
 
     private renderExpandedRow(rowData: Track) {
         return (
