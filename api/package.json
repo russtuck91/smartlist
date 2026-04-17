@@ -3,7 +3,6 @@
   "version": "1.5.4",
   "private": true,
   "main": "build/api/src/start.js",
-  "type": "module",
   "scripts": {
     "start": "node --max-old-space-size=256 build/api/src/start.js",
     "start:ssl": "HTTPS=true SSL_CRT_FILE=../localhost.pem SSL_KEY_FILE=../localhost-key.pem npm run start",
@@ -53,7 +52,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "spotify-web-api-node": "^5.0.0",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.9.2",
     "web-push": "^3.6.6",
     "winston": "^3.3.3",
     "workerpool": "^9.2.0"

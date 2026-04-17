@@ -2,7 +2,6 @@
   "name": "web",
   "version": "1.4.10",
   "private": true,
-  "type": "module",
   "scripts": {
     "start": "react-app-rewired start",
     "start:ssl": "HTTPS=true SSL_CRT_FILE=../localhost.pem SSL_KEY_FILE=../localhost-key.pem react-app-rewired start",
