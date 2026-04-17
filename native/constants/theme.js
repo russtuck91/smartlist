@@ -1,4 +1,2 @@
 
-const brandGreen = '#009688';
-
-module.exports = { brandGreen };
+export const brandGreen = '#009688';
