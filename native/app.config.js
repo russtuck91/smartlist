@@ -2,11 +2,11 @@ import { brandGreen } from './constants/theme.js';
 
 
 export default (() => {
-    const isPreview = process.env.APP_VARIANT === 'preview';
+    const APP_VARIANT = process.env.APP_VARIANT;
 
     return {
         'expo': {
-            'name': `Smartlist Music${isPreview ? ' Preview' : ''}`,
+            'name': `Smartlist Music${APP_VARIANT ? ` - ${APP_VARIANT}` : ''}`,
             'slug': 'smartlist-music',
             'version': '1.6.0',
             'orientation': 'portrait',
@@ -17,7 +17,7 @@ export default (() => {
                 'android',
             ],
             'android': {
-                'package': `com.smartlistmusic.smartlist${isPreview ? '.preview' : ''}`,
+                'package': `com.smartlistmusic.smartlist${APP_VARIANT ? `.${APP_VARIANT}` : ''}`,
                 'adaptiveIcon': {
                     'foregroundImage': './assets/images/android-icon-foreground.png',
                     'backgroundColor': brandGreen,
