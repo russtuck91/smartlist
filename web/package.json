@@ -2,12 +2,13 @@
   "name": "web",
   "version": "1.4.10",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "react-app-rewired start",
     "start:ssl": "HTTPS=true SSL_CRT_FILE=../localhost.pem SSL_KEY_FILE=../localhost-key.pem react-app-rewired start",
     "prebuild": "npm run lint && npm run test",
     "build": "react-app-rewired build && compress-cra",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint src",
     "test": "react-app-rewired test --watchAll=false",
     "eject": "react-scripts eject"
   },
@@ -53,7 +54,7 @@
     "redux": "^4.0.5",
     "setimmediate": "^1.0.5",
     "shake.js": "^1.2.2",
-    "typescript": "~4.4.4",
+    "typescript": "~4.8.4",
     "use-debounce": "^9.0.4",
     "winston": "^3.3.3",
     "winston-transport": "^4.4.0",
@@ -68,9 +69,9 @@
     "@types/react-select": "^3.0.10",
     "@types/setimmediate": "^1.0.2",
     "@types/workbox-webpack-plugin": "^5.1.8",
-    "@typescript-eslint/eslint-plugin": "^5.5.0",
-    "@typescript-eslint/parser": "^5.5.0",
-    "eslint": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.2",
+    "@typescript-eslint/parser": "^8.58.2",
+    "eslint": "^9.39.4",
     "eslint-plugin-react": "^7.27.1"
   }
 }
