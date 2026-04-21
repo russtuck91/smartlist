@@ -18,7 +18,6 @@ export default (() => {
             ],
             'android': {
                 'package': `com.smartlistmusic.smartlist${APP_VARIANT ? `.${APP_VARIANT}` : ''}`,
-                'versionCode': 160,
                 'adaptiveIcon': {
                     'foregroundImage': './assets/images/android-icon-foreground.png',
                     'backgroundColor': brandGreen,
