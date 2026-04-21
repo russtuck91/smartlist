@@ -3,7 +3,6 @@
   "version": "1.5.4",
   "private": true,
   "scripts": {
-    "postinstall": "run-p install:api install:web install:native",
     "install:api": "cd api && npm install",
     "install:web": "cd web && npm install",
     "install:native": "cd native && npm install",
