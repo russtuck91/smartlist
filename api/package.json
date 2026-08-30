@@ -19,7 +19,7 @@
     "@faker-js/faker": "^7.6.0",
     "@overnightjs/core": "^1.6.12",
     "@seiren/mongoutils": "^1.0.2",
-    "@sentry/node": "~7.56.0",
+    "@sentry/node": "~7.120.4",
     "@sentry/profiling-node": "1.1.2",
     "agenda": "^3.0.0",
     "analytics": "^0.7.13",
